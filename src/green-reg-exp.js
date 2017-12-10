@@ -6,6 +6,7 @@ const usedCharGetters = require('./used-char-getters')
 const fsmifiers = require('./fsmifiers')
 const serialisers = require('./serialisers')
 const constructors = require('./constructors')
+const reducers = require('./reducers')
 
 const toFsm = pattern =>
   fsmifiers.pattern(pattern, Object.keys(usedCharGetters.pattern(pattern)).concat([anythingElse]))
@@ -157,6 +158,11 @@ const greenRegExp = {
     }
 
     return brz[f.initial][outside]
+  },
+
+  reduce: string => {
+    const pattern = monoParsers.pattern(string)
+    return reducers.pattern(pattern)
   }
 }
 

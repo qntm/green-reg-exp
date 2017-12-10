@@ -162,7 +162,8 @@ module.exports = resolve({
     matchers.charclass,
     seq([fixed('('), matchers.pattern, fixed(')')])
       .map(([open, pattern, closed]) => pattern)
-  ]),
+  ])
+    .map(inner => constructors.multiplicand(inner)),
 
   mult: matchers => seq([matchers.multiplicand, matchers.multiplier])
     .map(([multiplicand, multiplier]) => constructors.mult(multiplicand, multiplier)),

@@ -20,8 +20,8 @@ const fsmifiers = {
     return fsm(alphabet, ['0', '1'], '0', ['1'], map)
   },
 
-  multiplicand: (multiplicand, alphabet) =>
-    fsmifiers[multiplicand.type](multiplicand, alphabet),
+  multiplicand: ({inner}, alphabet) =>
+    fsmifiers[inner.type](inner, alphabet),
 
   mult: ({multiplicand, multiplier}, alphabet) => {
     // worked example: (min, max) = (5, 7) or (5, inf)

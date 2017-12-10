@@ -21,14 +21,14 @@ describe('matchers', function () {
       expect(iterator.next().value).toEqual({
         j: 10,
         match: constructors.mult(
-          constructors.charclass(['f', 'g'], true),
+          constructors.multiplicand(constructors.charclass(['f', 'g'], true)),
           constructors.multiplier(1, 1)
         )
       })
       expect(iterator.next().value).toEqual({
         j: 11,
         match: constructors.mult(
-          constructors.charclass(['f', 'g'], true),
+          constructors.multiplicand(constructors.charclass(['f', 'g'], true)),
           constructors.multiplier(0, Infinity)
         )
       })
@@ -39,14 +39,14 @@ describe('matchers', function () {
       expect(iterator.next().value).toEqual({
         j: 12,
         match: constructors.mult(
-          constructors.charclass(['h'], false),
+          constructors.multiplicand(constructors.charclass(['h'], false)),
           constructors.multiplier(1, 1)
         )
       })
       expect(iterator.next().value).toEqual({
         j: 15,
         match: constructors.mult(
-          constructors.charclass(['h'], false),
+          constructors.multiplicand(constructors.charclass(['h'], false)),
           constructors.multiplier(5, 5)
         )
       })
@@ -57,22 +57,26 @@ describe('matchers', function () {
       expect(iterator.next().value).toEqual({
         j: 20,
         match: constructors.mult(
-          constructors.charclass([
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-            'u', 'v', 'w', 'x', 'y', 'z'
-          ], false),
+          constructors.multiplicand(
+            constructors.charclass([
+              'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+              'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+              'u', 'v', 'w', 'x', 'y', 'z'
+            ], false)
+          ),
           constructors.multiplier(1, 1)
         )
       })
       expect(iterator.next().value).toEqual({
         j: 21,
         match: constructors.mult(
-          constructors.charclass([
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-            'u', 'v', 'w', 'x', 'y', 'z'
-          ], false),
+          constructors.multiplicand(
+            constructors.charclass([
+              'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+              'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+              'u', 'v', 'w', 'x', 'y', 'z'
+            ], false)
+          ),
           constructors.multiplier(1, Infinity)
         )
       })
@@ -83,14 +87,18 @@ describe('matchers', function () {
       expect(iterator.next().value).toEqual({
         j: 22,
         match: constructors.mult(
-          constructors.charclass(['T'], false),
+          constructors.multiplicand(
+            constructors.charclass(['T'], false)
+          ),
           constructors.multiplier(1, 1)
         )
       })
       expect(iterator.next().value).toEqual({
         j: 26,
         match: constructors.mult(
-          constructors.charclass(['T'], false),
+          constructors.multiplicand(
+            constructors.charclass(['T'], false)
+          ),
           constructors.multiplier(2, Infinity)
         )
       })

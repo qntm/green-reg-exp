@@ -42,13 +42,27 @@ const multiplier = (lower, upper) => {
   return {type: 'multiplier', lower, upper}
 }
 
+const multiplicand = inner => {
+  if (inner.type !== 'charclass' && inner.type !== 'pattern') {
+    throw Error(inner.type)
+  }
+  return {type: 'multiplicand', inner}
+}
+
 /**
   A mult is a combination of a multiplicand with
   a multiplier.
   e.g. a, b{2}, c?, d*, [efg]{2,5}, f{2,}, (anysubpattern)+, .*, and so on
 */
-const mult = (multiplicand, multiplier) =>
-  ({type: 'mult', multiplicand, multiplier})
+const mult = (multiplicand, multiplier) => {
+  if (multiplicand.type !== 'multiplicand') {
+    throw Error()
+  }
+  if (multiplier.type !== 'multiplier') {
+    throw Error()
+  }
+  return {type: 'mult', multiplicand, multiplier}
+}
 
 /**
   A conc (short for "concatenation") is a tuple of mults i.e. an unbroken
@@ -56,8 +70,12 @@ const mult = (multiplicand, multiplier) =>
   e.g. abcde[^fg]*h{4}[a-z]+(subpattern)(subpattern2)
   To express the empty string, use an empty conc, conc().
 */
-const conc = mults =>
-  ({type: 'conc', mults})
+const conc = mults => {
+  if (mults.some(mult => mult.type !== 'mult')) {
+    throw Error()
+  }
+  return {type: 'conc', mults}
+}
 
 /**
   A pattern (also known as an "alt", short for "alternation") is a
@@ -74,7 +92,11 @@ const conc = mults =>
   This new subpattern again consists of two concs: "ghi" and "jkl".
 */
 
-const pattern = concs =>
-  ({type: 'pattern', concs})
+const pattern = concs => {
+  if (concs.some(conc => conc.type !== 'conc')) {
+    throw Error()
+  }
+  return {type: 'pattern', concs}
+}
 
-module.exports = {charclass, multiplier, mult, conc, pattern}
+module.exports = {charclass, multiplier, multiplicand, mult, conc, pattern}

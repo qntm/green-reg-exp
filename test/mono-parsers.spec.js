@@ -15,30 +15,38 @@ describe('monoParsers', function () {
   describe('mult', function () {
     it('works', function () {
       expect(monoParsers.mult('a')).toEqual(constructors.mult(
-        constructors.charclass(['a'], false),
+        constructors.multiplicand(
+          constructors.charclass(['a'], false)
+        ),
         constructors.multiplier(1, 1)
       ))
     })
 
     it('works better', function () {
       expect(monoParsers.mult('[a-g]+')).toEqual(constructors.mult(
-        constructors.charclass(['a', 'b', 'c', 'd', 'e', 'f', 'g'], false),
+        constructors.multiplicand(
+          constructors.charclass(['a', 'b', 'c', 'd', 'e', 'f', 'g'], false)
+        ),
         constructors.multiplier(1, Infinity)
       ))
       expect(monoParsers.mult('[a-g0-8$%]+')).toEqual(constructors.mult(
-        constructors.charclass([
-          'a', 'b', 'c', 'd', 'e', 'f', 'g',
-          '0', '1', '2', '3', '4', '5', '6', '7', '8',
-          '$', '%'
-        ], false),
+        constructors.multiplicand(
+          constructors.charclass([
+            'a', 'b', 'c', 'd', 'e', 'f', 'g',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8',
+            '$', '%'
+          ], false)
+        ),
         constructors.multiplier(1, Infinity)
       ))
       expect(monoParsers.mult('[a-g0-8$%\\^]+')).toEqual(constructors.mult(
-        constructors.charclass([
-          'a', 'b', 'c', 'd', 'e', 'f', 'g',
-          '0', '1', '2', '3', '4', '5', '6', '7', '8',
-          '$', '%', '^'
-        ], false),
+        constructors.multiplicand(
+          constructors.charclass([
+            'a', 'b', 'c', 'd', 'e', 'f', 'g',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8',
+            '$', '%', '^'
+          ], false)
+        ),
         constructors.multiplier(1, Infinity)
       ))
     })
@@ -48,7 +56,9 @@ describe('monoParsers', function () {
     it('works', function () {
       expect(monoParsers.conc('a')).toEqual(constructors.conc([
         constructors.mult(
-          constructors.charclass(['a'], false),
+          constructors.multiplicand(
+            constructors.charclass(['a'], false)
+          ),
           constructors.multiplier(1, 1)
         )
       ]))
@@ -60,7 +70,9 @@ describe('monoParsers', function () {
       expect(monoParsers.pattern('a')).toEqual(constructors.pattern([
         constructors.conc([
           constructors.mult(
-            constructors.charclass(['a'], false),
+            constructors.multiplicand(
+              constructors.charclass(['a'], false),
+            ),
             constructors.multiplier(1, 1)
           )
         ])
@@ -71,9 +83,12 @@ describe('monoParsers', function () {
       expect(monoParsers.pattern('()')).toEqual(constructors.pattern([
         constructors.conc([
           constructors.mult(
-            constructors.pattern([
-              constructors.conc([])
-            ]), constructors.multiplier(1, 1)
+            constructors.multiplicand(
+              constructors.pattern([
+                constructors.conc([])
+              ])
+            ),
+            constructors.multiplier(1, 1)
           )
         ])
       ]))
@@ -82,27 +97,30 @@ describe('monoParsers', function () {
     it('handles a big one', function () {
       expect(monoParsers.pattern('abc|def(ghi|jkl)')).toEqual(constructors.pattern([
         constructors.conc([
-          constructors.mult(constructors.charclass(['a'], false), constructors.multiplier(1, 1)),
-          constructors.mult(constructors.charclass(['b'], false), constructors.multiplier(1, 1)),
-          constructors.mult(constructors.charclass(['c'], false), constructors.multiplier(1, 1))
+          constructors.mult(constructors.multiplicand(constructors.charclass(['a'], false)), constructors.multiplier(1, 1)),
+          constructors.mult(constructors.multiplicand(constructors.charclass(['b'], false)), constructors.multiplier(1, 1)),
+          constructors.mult(constructors.multiplicand(constructors.charclass(['c'], false)), constructors.multiplier(1, 1))
         ]),
         constructors.conc([
-          constructors.mult(constructors.charclass(['d'], false), constructors.multiplier(1, 1)),
-          constructors.mult(constructors.charclass(['e'], false), constructors.multiplier(1, 1)),
-          constructors.mult(constructors.charclass(['f'], false), constructors.multiplier(1, 1)),
+          constructors.mult(constructors.multiplicand(constructors.charclass(['d'], false)), constructors.multiplier(1, 1)),
+          constructors.mult(constructors.multiplicand(constructors.charclass(['e'], false)), constructors.multiplier(1, 1)),
+          constructors.mult(constructors.multiplicand(constructors.charclass(['f'], false)), constructors.multiplier(1, 1)),
           constructors.mult(
-            constructors.pattern([
-              constructors.conc([
-                constructors.mult(constructors.charclass(['g'], false), constructors.multiplier(1, 1)),
-                constructors.mult(constructors.charclass(['h'], false), constructors.multiplier(1, 1)),
-                constructors.mult(constructors.charclass(['i'], false), constructors.multiplier(1, 1))
-              ]),
-              constructors.conc([
-                constructors.mult(constructors.charclass(['j'], false), constructors.multiplier(1, 1)),
-                constructors.mult(constructors.charclass(['k'], false), constructors.multiplier(1, 1)),
-                constructors.mult(constructors.charclass(['l'], false), constructors.multiplier(1, 1))
+            constructors.multiplicand(
+              constructors.pattern([
+                constructors.conc([
+                  constructors.mult(constructors.multiplicand(constructors.charclass(['g'], false)), constructors.multiplier(1, 1)),
+                  constructors.mult(constructors.multiplicand(constructors.charclass(['h'], false)), constructors.multiplier(1, 1)),
+                  constructors.mult(constructors.multiplicand(constructors.charclass(['i'], false)), constructors.multiplier(1, 1))
+                ]),
+                constructors.conc([
+                  constructors.mult(constructors.multiplicand(constructors.charclass(['j'], false)), constructors.multiplier(1, 1)),
+                  constructors.mult(constructors.multiplicand(constructors.charclass(['k'], false)), constructors.multiplier(1, 1)),
+                  constructors.mult(constructors.multiplicand(constructors.charclass(['l'], false)), constructors.multiplier(1, 1))
+                ])
               ])
-            ]), constructors.multiplier(1, 1)
+            ),
+            constructors.multiplier(1, 1)
           )
         ])
       ]))

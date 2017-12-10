@@ -38,9 +38,6 @@ const bracketEscape = chars => {
     .join('')
 }
 
-const regularEscape = chars =>
-  escapesRegular[chars[0]] || chars[0]
-
 const serialisers = {
   charclass: ({chars, negated}) =>
     JSON.stringify(chars) === JSON.stringify([
@@ -66,7 +63,7 @@ const serialisers = {
     : negated ? '[^' + bracketEscape(chars) + ']'
 
     // single character, not contained inside square brackets.
-    : chars.length === 1 ? regularEscape(chars)
+    : chars.length === 1 ? escapesRegular[chars[0]] || chars[0]
 
     // multiple characters (or possibly 0 characters)
     : '[' + bracketEscape(chars) + ']',
@@ -80,9 +77,9 @@ const serialisers = {
     : upper === Infinity ? '{' + String(lower) + ',}'
     : '{' + String(lower) + ',' + String(upper) + '}',
 
-  multiplicand: multiplicand =>
-    multiplicand.type === 'pattern' ? '(' + serialisers.pattern(multiplicand) + ')'
-    : serialisers.charclass(multiplicand),
+  multiplicand: ({inner}) =>
+    inner.type === 'pattern' ? '(' + serialisers.pattern(inner) + ')'
+    : serialisers.charclass(inner),
 
   mult: ({multiplicand, multiplier}) =>
     serialisers.multiplicand(multiplicand) + serialisers.multiplier(multiplier),

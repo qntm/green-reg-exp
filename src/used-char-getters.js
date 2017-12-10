@@ -7,6 +7,9 @@ const usedCharGetters = {
   charclass: ({chars}) =>
     Object.assign.apply(Object, [{}].concat(chars.map(chr => ({[chr]: true})))),
 
+  multiplicand: ({inner}) =>
+    usedCharGetters[inner.type](inner),
+
   mult: ({multiplicand}) =>
     usedCharGetters[multiplicand.type](multiplicand),
 
