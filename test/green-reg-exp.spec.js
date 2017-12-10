@@ -150,11 +150,11 @@ describe('greenRegExp', function () {
     })
   })
 
-  describe('intersection', () => {
-    fit('easy mode', () => {
+  fdescribe('intersection', () => {
+    it('easy mode', () => {
       const intersection = greenRegExp.intersection('abc...', '...def')
       // /abcdef/
-      expect(intersection.accepts(['a', 'b', 'c', 'd', 'e', 'f'])).toBe(true)
+      console.log(intersection)
     })
 
     it('dates', () => {

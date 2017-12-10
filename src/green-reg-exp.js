@@ -60,15 +60,10 @@ const greenRegExp = {
     const alphabet = Object.keys(charsUsed)
 
     const fsms = patterns.map(pattern => fsmifiers.pattern(pattern, alphabet.concat([anythingElse])))
-    console.log(fsms[0].toString())
-    console.log(fsms[1].toString())
-
     const f = intersection(fsms)
-    console.log(f.toString())
-    return
 
     // We need a new state not already used
-    const outside = Symbol()
+    const outside = Symbol('outside')
 
     // The set of strings that would be accepted by this FSM if you started
     // at state i is represented by the regex R_i.
@@ -98,20 +93,22 @@ const greenRegExp = {
     const brz = {}
     f.states.forEach(a => {
       brz[a] = {}
-      brz[a][outside] = '[]' // nothing
       f.states.forEach(b => {
         brz[a][b] = '[]' // nothing
       })
+      brz[a][outside] = '[]' // nothing
     })
 
     // Populate it with some initial data.
     Object.keys(f.map).forEach(a => {
-      Object.keys(f.map[a]).forEach(symbol => {
-        const b = f.map[a][symbol]
-        if (symbol == anythingElse) {
-          brz[a][b] = serialisers.charclass(constructors.charclass(alphabet, true))
-        } else {
-          brz[a][b] = serialisers.charclass(constructors.charclass([symbol], false))
+      Object.keys(f.map[a]).concat([anythingElse]).forEach(symbol => {
+        if (symbol in f.map[a]) {
+          const b = f.map[a][symbol]
+          if (symbol === anythingElse) {
+            brz[a][b] = serialisers.charclass(constructors.charclass(alphabet, true))
+          } else {
+            brz[a][b] = serialisers.charclass(constructors.charclass([symbol], false))
+          }
         }
       })
       if (f.finals.indexOf(a) !== -1) {
@@ -127,11 +124,15 @@ const greenRegExp = {
       // equations, we need to resolve the self-transition (if any).
       // e.g.    R_a = 0 R_a |   1 R_b |   2 R_c
       // becomes R_a =         0*1 R_b | 0*2 R_c
-      const loop = '(' + brz[a][a] + ')*'
+      const loop = brz[a][a] === '[]' ? '' : '(' + brz[a][a] + ')*'
       delete brz[a][a]
 
       Object.keys(brz[a]).forEach(right => {
-        brz[a][right] = loop + '(' + brz[a][right] + ')'
+        if (brz[a][right] === '[]') {
+          brz[a][right] = loop === '' ? '[]' : loop
+        } else {
+          brz[a][right] = loop === '' ? brz[a][right] : loop + '(' + brz[a][right] + ')'
+        }
       })
 
       // Note: even if we're down to our final equation, the above step still
@@ -147,9 +148,10 @@ const greenRegExp = {
         const univ = brz[b][a] // i.e. "3"
         delete brz[b][a]
 
-        Object.keys(brz[a]).forEach(right => {
-          console.log(brz[b][right].length, univ.length, brz[a][right].length)
-          brz[b][right] = '(' + brz[b][right] + ')(' + univ + ')(' + brz[a][right]
+        Object.keys(brz[a]).concat([outside]).forEach(right => {
+          const x = univ === '[]' || brz[a][right] === '[]' ? '[]' : '(' + univ + ')(' + brz[a][right] + ')'
+          const poss = [brz[b][right], x].filter(z => z !== '[]')
+          brz[b][right] = poss.length === 0 ? '[]' : poss.map(z => '(' + z + ')').join('|')
         })
       }
     }
