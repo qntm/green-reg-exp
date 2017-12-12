@@ -154,37 +154,41 @@ describe('greenRegExp', function () {
     it('easy mode', () => {
       const intersection = greenRegExp.intersection('abc...', '...def')
       // /abcdef/
-      // console.log(intersection)
+      console.log(intersection)
     })
 
-    it('dates', () => {
-      const intersection = greenRegExp.intersection('\\d{4}-\\d{2}-\\d{2}', '19.*')
+    fit('dates', () => {
+      //const intersection = greenRegExp.intersection('\\d{4}-\\d{2}-\\d{2}', '19.*')
       // /19\d{2}-\d{2}-\d{2}/
-      // console.log(intersection)
+      //const intersection2 = greenRegExp.intersection('[01][01]00-00-00', '00.*')
+      // /0000-00-00/
+      const intersection3 = greenRegExp.intersection('[01][01]00', '00.*')
+      // /0000/
+      console.log(intersection3)
     })
 
-    it('symbols', () => {
+    xit('symbols', () => {
       const intersection = greenRegExp.intersection('\\W*', '[a-g0-8$%\\^]+', '[^d]{2,8}')
       // /[$%\^]{2,8}
-      // console.log(intersection)
+      console.log(intersection)
     })
 
     it('complex stars', () => {
       const intersection = greenRegExp.intersection('[bc]*[ab]*', '[ab]*[bc]*')
       // /([ab]*a|[bc]*c)?b*/ or similar
-      // console.log(intersection)
+      console.log(intersection) // this is the wrong result...
     })
 
     it('epsilon intersection', () => {
       const intersection = greenRegExp.intersection('a*', 'b*')
       // //
-      // console.log(intersection)
+      console.log(intersection)
     })
 
     it('null intersection', () => {
       const intersection = greenRegExp.intersection('a', 'b')
       // /[]/
-      // console.log(intersection)
+      console.log(intersection)
     })
   })
 })

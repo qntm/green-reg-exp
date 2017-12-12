@@ -56,7 +56,7 @@ const multiplicand = inner => {
 */
 const mult = (multiplicand, multiplier) => {
   if (multiplicand.type !== 'multiplicand') {
-    throw Error()
+    throw Error('Expected multiplicand to have type multiplicand, not ' + multiplicand.type)
   }
   if (multiplier.type !== 'multiplier') {
     throw Error()
@@ -72,7 +72,8 @@ const mult = (multiplicand, multiplier) => {
 */
 const conc = mults => {
   if (mults.some(mult => mult.type !== 'mult')) {
-    throw Error()
+    console.error(mults)
+    throw Error('Bad type ' + mult.type + ', expected mult')
   }
   return {type: 'conc', mults}
 }

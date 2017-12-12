@@ -61,7 +61,9 @@ const greenRegExp = {
     const alphabet = Object.keys(charsUsed)
 
     const fsms = patterns.map(pattern => fsmifiers.pattern(pattern, alphabet.concat([anythingElse])))
+
     const f = intersection(fsms)
+    console.log(f.toString())
 
     // We need a new state not already used
     const outside = Symbol('outside')
@@ -91,29 +93,53 @@ const greenRegExp = {
     }
 
     // Our system of equations is represented like so:
-    const brz = {}
-    f.states.forEach(a => {
-      brz[a] = {}
-      f.states.forEach(b => {
-        brz[a][b] = '[]' // nothing
+    const brz = Object.assign.apply(Object, [{}].concat(f.states.map(a =>
+      ({
+        [a]: Object.assign.apply(Object, [{}].concat(f.states.concat([outside]).map(b =>
+          ({
+            [b]: constructors.pattern([
+              constructors.conc([
+                constructors.mult(
+                  constructors.multiplicand(
+                    constructors.charclass([], false)
+                  ),
+                  constructors.multiplier(1, 1)
+                )
+              ])
+            ])
+          })
+        )))
       })
-      brz[a][outside] = '[]' // nothing
-    })
+    )))
 
     // Populate it with some initial data.
-    Object.keys(f.map).forEach(a => {
-      Object.keys(f.map[a]).concat([anythingElse]).forEach(symbol => {
+    Reflect.ownKeys(f.map).forEach(a => {
+      Reflect.ownKeys(f.map[a]).forEach(symbol => {
         if (symbol in f.map[a]) {
           const b = f.map[a][symbol]
           if (symbol === anythingElse) {
-            brz[a][b] = serialisers.charclass(constructors.charclass(alphabet, true))
+            brz[a][b].concs.push(constructors.conc([
+              constructors.mult(
+                constructors.multiplicand(
+                  constructors.charclass(alphabet, true)
+                ),
+                constructors.multiplier(1, 1)
+              )
+            ]))
           } else {
-            brz[a][b] = serialisers.charclass(constructors.charclass([symbol], false))
+            brz[a][b].concs.push(constructors.conc([
+              constructors.mult(
+                constructors.multiplicand(
+                  constructors.charclass([symbol], false)
+                ),
+                constructors.multiplier(1, 1)
+              )
+            ]))
           }
         }
       })
       if (f.finals.indexOf(a) !== -1) {
-        brz[a][outside] = '' // empty conc
+        brz[a][outside].concs.push(constructors.conc([]))
       }
     })
 
@@ -125,15 +151,22 @@ const greenRegExp = {
       // equations, we need to resolve the self-transition (if any).
       // e.g.    R_a = 0 R_a |   1 R_b |   2 R_c
       // becomes R_a =         0*1 R_b | 0*2 R_c
-      const loop = brz[a][a] === '[]' ? '' : '(' + brz[a][a] + ')*'
+      const loopFactor = brz[a][a] // pattern
       delete brz[a][a]
 
-      Object.keys(brz[a]).forEach(right => {
-        if (brz[a][right] === '[]') {
-          brz[a][right] = loop === '' ? '[]' : loop
-        } else {
-          brz[a][right] = loop === '' ? brz[a][right] : loop + '(' + brz[a][right] + ')'
-        }
+      Reflect.ownKeys(brz[a]).forEach(right => {
+        brz[a][right] = constructors.pattern([
+          constructors.conc([
+            constructors.mult(
+              constructors.multiplicand(loopFactor),
+              constructors.multiplier(0, Infinity)
+            ),
+            constructors.mult(
+              constructors.multiplicand(brz[a][right]),
+              constructors.multiplier(1, 1)
+            )
+          ])
+        ])
       })
 
       // Note: even if we're down to our final equation, the above step still
@@ -146,24 +179,38 @@ const greenRegExp = {
         // e.g. substituting R_a =  0*1 R_b |      0*2 R_c
         // into              R_b =    3 R_a |        4 R_c | 5 R_d
         // yields            R_b = 30*1 R_b | (30*2|4) R_c | 5 R_d
-        const univ = brz[b][a] // i.e. "3"
+        const univ = brz[b][a] // pattern, in this case "3"
         delete brz[b][a]
 
-        Object.keys(brz[a]).concat([outside]).forEach(right => {
-          const x = univ === '[]' || brz[a][right] === '[]' ? '[]' : '(' + univ + ')(' + brz[a][right] + ')'
-          const poss = [brz[b][right], x].filter(z => z !== '[]')
-          brz[b][right] = poss.length === 0 ? '[]' : poss.map(z => '(' + z + ')').join('|')
+        Reflect.ownKeys(brz[a]).forEach(right => {
+          brz[b][right].concs.push(constructors.conc([
+            constructors.mult(
+              constructors.multiplicand(univ),
+              constructors.multiplier(1, 1)
+            ),
+            constructors.mult(
+              constructors.multiplicand(brz[a][right]),
+              constructors.multiplier(1, 1)
+            )
+          ]))
         })
       }
     }
 
-    return brz[f.initial][outside]
+    /*
+      Reflect.ownKeys(brz).forEach(a => {
+        Reflect.ownKeys(brz[a]).forEach(b => {
+          console.log(a, b, serialisers.pattern(brz[a][b]))
+        })
+      })
+    */
+
+    return serialisers.pattern(brz[f.initial][outside])
+    return serialisers.pattern(reducers.pattern(brz[f.initial][outside]))
   },
 
-  reduce: string => {
-    const pattern = monoParsers.pattern(string)
-    return reducers.pattern(pattern)
-  }
+  reduce: string =>
+    serialisers.pattern(reducers.pattern(monoParsers.pattern(string)))
 }
 
 module.exports = greenRegExp
