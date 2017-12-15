@@ -16,7 +16,13 @@ const charclass = (chars, negated) => {
     }
   })
 
-  chars = chars.slice().sort()
+  const seen = {}
+  chars.forEach(chr => {
+    if (chr in seen) {
+      throw Error('Duplicate character in charclass, ' + chr)
+    }
+    seen[chr] = true
+  })
 
   return {type: 'charclass', chars, negated}
 }
@@ -95,7 +101,8 @@ const conc = mults => {
 
 const pattern = concs => {
   if (concs.some(conc => conc.type !== 'conc')) {
-    throw Error()
+    console.error(conc)
+    throw Error('Bad type')
   }
   return {type: 'pattern', concs}
 }

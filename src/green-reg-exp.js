@@ -2,14 +2,14 @@
 
 const {anythingElse, intersection} = require('green-fsm')
 const monoParsers = require('./mono-parsers')
-const usedCharGetters = require('./used-char-getters')
-const fsmifiers = require('./fsmifiers')
-const serialisers = require('./serialisers')
+const getUsedChars = require('./get-used-chars')
+const fsmify = require('./fsmify')
+const serialise = require('./serialise')
 const constructors = require('./constructors')
-const reducers = require('./reducers')
+const reduce = require('./reduce')
 
 const toFsm = pattern =>
-  fsmifiers.pattern(pattern, Object.keys(usedCharGetters.pattern(pattern)).concat([anythingElse]))
+  fsmify(pattern, Object.keys(getUsedChars(pattern)).concat([anythingElse]))
 
 const greenRegExp = {
   parse: string => {
@@ -56,11 +56,13 @@ const greenRegExp = {
   intersection: (...strings) => {
     const patterns = strings.map(monoParsers.pattern)
 
-    const charsUsed = Object.assign.apply(Object, [{}].concat(patterns.map(usedCharGetters.pattern)))
+    const charsUseds = patterns.map(getUsedChars)
+
+    const charsUsed = Object.assign.apply(Object, [{}].concat(charsUseds))
 
     const alphabet = Object.keys(charsUsed)
 
-    const fsms = patterns.map(pattern => fsmifiers.pattern(pattern, alphabet.concat([anythingElse])))
+    const fsms = patterns.map(pattern => fsmify(pattern, [...alphabet, anythingElse]))
 
     const f = intersection(fsms)
     console.log(f.toString())
@@ -95,7 +97,7 @@ const greenRegExp = {
     // Our system of equations is represented like so:
     const brz = Object.assign.apply(Object, [{}].concat(f.states.map(a =>
       ({
-        [a]: Object.assign.apply(Object, [{}].concat(f.states.concat([outside]).map(b =>
+        [a]: Object.assign.apply(Object, [{}].concat([...f.states, outside].map(b =>
           ({
             [b]: constructors.pattern([
               constructors.conc([
@@ -111,35 +113,33 @@ const greenRegExp = {
         )))
       })
     )))
+    // Note that every single thing in the system is a PATTERN.
 
     // Populate it with some initial data.
     Reflect.ownKeys(f.map).forEach(a => {
       Reflect.ownKeys(f.map[a]).forEach(symbol => {
         if (symbol in f.map[a]) {
           const b = f.map[a][symbol]
-          if (symbol === anythingElse) {
-            brz[a][b].concs.push(constructors.conc([
+          brz[a][b] = reduce(constructors.pattern([
+            ...brz[a][b].concs,
+            constructors.conc([
               constructors.mult(
                 constructors.multiplicand(
-                  constructors.charclass(alphabet, true)
+                  symbol === anythingElse
+                    ? constructors.charclass(alphabet, true)
+                    : constructors.charclass([symbol], false)
                 ),
                 constructors.multiplier(1, 1)
               )
-            ]))
-          } else {
-            brz[a][b].concs.push(constructors.conc([
-              constructors.mult(
-                constructors.multiplicand(
-                  constructors.charclass([symbol], false)
-                ),
-                constructors.multiplier(1, 1)
-              )
-            ]))
-          }
+            ])
+          ]))
         }
       })
-      if (f.finals.indexOf(a) !== -1) {
-        brz[a][outside].concs.push(constructors.conc([]))
+      if (f.finals.includes(a)) {
+        brz[a][outside] = reduce(constructors.pattern([
+          ...brz[a][outside].concs,
+          constructors.conc([])
+        ]))
       }
     })
 
@@ -155,7 +155,7 @@ const greenRegExp = {
       delete brz[a][a]
 
       Reflect.ownKeys(brz[a]).forEach(right => {
-        brz[a][right] = constructors.pattern([
+        brz[a][right] = reduce(constructors.pattern([
           constructors.conc([
             constructors.mult(
               constructors.multiplicand(loopFactor),
@@ -166,7 +166,7 @@ const greenRegExp = {
               constructors.multiplier(1, 1)
             )
           ])
-        ])
+        ]))
       })
 
       // Note: even if we're down to our final equation, the above step still
@@ -183,34 +183,28 @@ const greenRegExp = {
         delete brz[b][a]
 
         Reflect.ownKeys(brz[a]).forEach(right => {
-          brz[b][right].concs.push(constructors.conc([
-            constructors.mult(
-              constructors.multiplicand(univ),
-              constructors.multiplier(1, 1)
-            ),
-            constructors.mult(
-              constructors.multiplicand(brz[a][right]),
-              constructors.multiplier(1, 1)
-            )
+          brz[b][right] = reduce(constructors.pattern([
+            ...brz[b][right].concs,
+            constructors.conc([
+              constructors.mult(
+                constructors.multiplicand(univ),
+                constructors.multiplier(1, 1)
+              ),
+              constructors.mult(
+                constructors.multiplicand(brz[a][right]),
+                constructors.multiplier(1, 1)
+              )
+            ])
           ]))
         })
       }
     }
 
-    /*
-      Reflect.ownKeys(brz).forEach(a => {
-        Reflect.ownKeys(brz[a]).forEach(b => {
-          console.log(a, b, serialisers.pattern(brz[a][b]))
-        })
-      })
-    */
-
-    return serialisers.pattern(brz[f.initial][outside])
-    return serialisers.pattern(reducers.pattern(brz[f.initial][outside]))
+    return serialise(brz[f.initial][outside])
   },
 
   reduce: string =>
-    serialisers.pattern(reducers.pattern(monoParsers.pattern(string)))
+    serialise(reduce(monoParsers.pattern(string)))
 }
 
 module.exports = greenRegExp

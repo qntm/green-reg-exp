@@ -150,27 +150,19 @@ describe('greenRegExp', function () {
     })
   })
 
-  describe('intersection', () => {
+  xdescribe('intersection', () => {
     it('easy mode', () => {
-      const intersection = greenRegExp.intersection('abc...', '...def')
-      // /abcdef/
-      console.log(intersection)
+      expect(greenRegExp.intersection('abc...', '...def')).toBe('abcdef')
     })
 
-    fit('dates', () => {
-      //const intersection = greenRegExp.intersection('\\d{4}-\\d{2}-\\d{2}', '19.*')
-      // /19\d{2}-\d{2}-\d{2}/
-      //const intersection2 = greenRegExp.intersection('[01][01]00-00-00', '00.*')
-      // /0000-00-00/
-      const intersection3 = greenRegExp.intersection('[01][01]00', '00.*')
-      // /0000/
-      console.log(intersection3)
+    it('dates', () => {
+      expect(greenRegExp.intersection('[01][01]00', '00.*')).toBe('0000')
+      expect(greenRegExp.intersection('[01][01]00-00-00', '00.*')).toBe('0000-00-00')
+      expect(greenRegExp.intersection('\\d{4}-\\d{2}-\\d{2}', '19.*')).toBe('19\\d{2}-\\d{2}-\\d{2}')
     })
 
     xit('symbols', () => {
-      const intersection = greenRegExp.intersection('\\W*', '[a-g0-8$%\\^]+', '[^d]{2,8}')
-      // /[$%\^]{2,8}
-      console.log(intersection)
+      expect(greenRegExp.intersection('\\W*', '[a-g0-8$%\\^]+', '[^d]{2,8}')).toBe('[$%\^]{2,8}')
     })
 
     it('complex stars', () => {
@@ -180,15 +172,11 @@ describe('greenRegExp', function () {
     })
 
     it('epsilon intersection', () => {
-      const intersection = greenRegExp.intersection('a*', 'b*')
-      // //
-      console.log(intersection)
+      expect(greenRegExp.intersection('a*', 'b*')).toBe('')
     })
 
     it('null intersection', () => {
-      const intersection = greenRegExp.intersection('a', 'b')
-      // /[]/
-      console.log(intersection)
+      expect(greenRegExp.intersection('a', 'b')).toBe('[]')
     })
   })
 })

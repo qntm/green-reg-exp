@@ -3,21 +3,21 @@
 // Note that used characters are returned as an OBJECT whose KEYS
 // are used characters.
 
-const usedCharGetters = {
+const getUsedChars = thing => ({
   charclass: ({chars}) =>
     Object.assign.apply(Object, [{}].concat(chars.map(chr => ({[chr]: true})))),
 
   multiplicand: ({inner}) =>
-    usedCharGetters[inner.type](inner),
+    getUsedChars(inner),
 
   mult: ({multiplicand}) =>
-    usedCharGetters[multiplicand.type](multiplicand),
+    getUsedChars(multiplicand),
 
   conc: ({mults}) =>
-    Object.assign.apply(Object, [{}].concat(mults.map(usedCharGetters.mult))),
+    Object.assign.apply(Object, [{}].concat(mults.map(getUsedChars))),
 
   pattern: ({concs}) =>
-    Object.assign.apply(Object, [{}].concat(concs.map(usedCharGetters.conc)))
-}
+    Object.assign.apply(Object, [{}].concat(concs.map(getUsedChars)))
+})[thing.type](thing)
 
-module.exports = usedCharGetters
+module.exports = getUsedChars

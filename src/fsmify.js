@@ -2,7 +2,7 @@
 
 const {fsm, multiply, star, concatenate, epsilon, union} = require('green-fsm')
 
-const fsmifiers = {
+const fsmify = (thing, alphabet) => ({
   charclass: ({chars, negated}, alphabet) => {
     // "0" is initial, "1" is final
     const map = {
@@ -21,13 +21,13 @@ const fsmifiers = {
   },
 
   multiplicand: ({inner}, alphabet) =>
-    fsmifiers[inner.type](inner, alphabet),
+    fsmify(inner, alphabet),
 
   mult: ({multiplicand, multiplier}, alphabet) => {
     // worked example: (min, max) = (5, 7) or (5, inf)
     // (mandatory, optional) = (5, 2) or (5, inf)
 
-    var unit = fsmifiers.multiplicand(multiplicand, alphabet)
+    var unit = fsmify(multiplicand, alphabet)
     // accepts e.g. "ab"
 
     // accepts "ababababab"
@@ -42,10 +42,10 @@ const fsmifiers = {
   },
 
   conc: ({mults}, alphabet) =>
-    concatenate(mults.map(mult => fsmifiers.mult(mult, alphabet))),
+    concatenate(mults.map(mult => fsmify(mult, alphabet))),
 
   pattern: ({concs}, alphabet) =>
-    union(concs.map(conc => fsmifiers.conc(conc, alphabet)))
-}
+    union(concs.map(conc => fsmify(conc, alphabet)))
+})[thing.type](thing, alphabet)
 
-module.exports = fsmifiers
+module.exports = fsmify

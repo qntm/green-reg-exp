@@ -5,22 +5,25 @@ const escapesRegular = require('./escapes-regular')
 
 const bracketEscape = chars => {
   const runs = []
-  chars.forEach(chr => {
-    // Start a new run?
-    if (
-      // no current run
-      runs.length === 0 ||
-      (
-        // current run is not empty and new char doesn't fit after previous one
-        runs[runs.length - 1].length > 0 &&
-        chr.charCodeAt(0) !== runs[runs.length - 1][runs[runs.length - 1].length - 1].charCodeAt(0) + 1
-      )
-    ) {
-      runs.push([])
-    }
+  chars
+    .slice()
+    .sort((a, b) => a.codePointAt(0) - b.codePointAt(0))
+    .forEach(chr => {
+      // Start a new run?
+      if (
+        // no current run
+        runs.length === 0 ||
+        (
+          // current run is not empty and new char doesn't fit after previous one
+          runs[runs.length - 1].length > 0 &&
+          chr.charCodeAt(0) !== runs[runs.length - 1][runs[runs.length - 1].length - 1].charCodeAt(0) + 1
+        )
+      ) {
+        runs.push([])
+      }
 
-    runs[runs.length - 1].push(chr)
-  })
+      runs[runs.length - 1].push(chr)
+    })
 
   return runs
     .map(run => run.map(chr => escapesBracket[chr] || chr))
@@ -38,7 +41,7 @@ const bracketEscape = chars => {
     .join('')
 }
 
-const serialisers = {
+const serialise = thing => ({
   charclass: ({chars, negated}) =>
     JSON.stringify(chars) === JSON.stringify([
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
@@ -78,21 +81,21 @@ const serialisers = {
     : '{' + String(lower) + ',' + String(upper) + '}',
 
   multiplicand: ({inner}) =>
-    inner.type === 'pattern' ? '(' + serialisers.pattern(inner) + ')'
-    : serialisers.charclass(inner),
+    inner.type === 'pattern' ? '(' + serialise(inner) + ')'
+    : serialise(inner),
 
   mult: ({multiplicand, multiplier}) =>
-    serialisers.multiplicand(multiplicand) + serialisers.multiplier(multiplier),
+    serialise(multiplicand) + serialise(multiplier),
 
   conc: ({mults}) =>
-    mults.map(serialisers.mult).join(''),
+    mults.map(serialise).join(''),
 
   pattern: ({concs}) => {
     if (concs.length === 0) {
-      throw Error("Can't serialise 0 concs")
+      return '[]'
     }
-    return concs.map(serialisers.conc).join('|')
+    return concs.map(serialise).join('|')
   }
-}
+})[thing.type](thing)
 
-module.exports = serialisers
+module.exports = serialise

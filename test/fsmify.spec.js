@@ -4,13 +4,13 @@
 
 const {anythingElse} = require('green-fsm')
 
-const monoParsers = require('../src/mono-parsers.js')
-const fsmifiers = require('../src/fsmifiers.js')
+const monoParsers = require('../src/mono-parsers')
+const fsmify = require('../src/fsmify')
 
-describe('fsmifiers', function () {
+describe('fsmify', function () {
   describe('charclass', function () {
     it('[^a]', function () {
-      var nota = fsmifiers.charclass(monoParsers.charclass('[^a]'), [anythingElse, 'a'])
+      var nota = fsmify(monoParsers.charclass('[^a]'), [anythingElse, 'a'])
 
       expect(nota.accepts([])).toBe(false)
       expect(nota.accepts(['a'])).toBe(false)
@@ -27,11 +27,11 @@ describe('fsmifiers', function () {
     // Odd bug with ([bc]*c)?[ab]*
     it('odd bug', function () {
       var bcStar = monoParsers.mult('[bc]*')
-      var int5A = fsmifiers.mult(bcStar, ['a', 'b', 'c', anythingElse])
+      var int5A = fsmify(bcStar, ['a', 'b', 'c', anythingElse])
       expect(int5A.accepts([])).toBe(true)
 
       var c = monoParsers.mult('c')
-      var int5B = fsmifiers.mult(c, ['a', 'b', 'c', anythingElse])
+      var int5B = fsmify(c, ['a', 'b', 'c', anythingElse])
       expect(int5B.accepts(['c'])).toBe(true)
     })
   })

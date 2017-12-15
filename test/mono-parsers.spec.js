@@ -71,7 +71,7 @@ describe('monoParsers', function () {
         constructors.conc([
           constructors.mult(
             constructors.multiplicand(
-              constructors.charclass(['a'], false),
+              constructors.charclass(['a'], false)
             ),
             constructors.multiplier(1, 1)
           )
