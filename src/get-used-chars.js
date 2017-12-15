@@ -13,8 +13,14 @@ const getUsedChars = thing => ({
   mult: ({multiplicand}) =>
     getUsedChars(multiplicand),
 
-  conc: ({mults}) =>
-    Object.assign.apply(Object, [{}].concat(mults.map(getUsedChars))),
+  anchor: ({end}) =>
+    ({}),
+
+  term: ({inner}) =>
+    getUsedChars(inner),
+
+  conc: ({terms}) =>
+    Object.assign.apply(Object, [{}].concat(terms.map(getUsedChars))),
 
   pattern: ({concs}) =>
     Object.assign.apply(Object, [{}].concat(concs.map(getUsedChars)))

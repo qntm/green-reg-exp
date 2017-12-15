@@ -71,17 +71,31 @@ const mult = (multiplicand, multiplier) => {
 }
 
 /**
-  A conc (short for "concatenation") is a tuple of mults i.e. an unbroken
-  string of mults occurring one after the other.
-  e.g. abcde[^fg]*h{4}[a-z]+(subpattern)(subpattern2)
+  "^" means "start of input", "$" means "end of input".
+  These get FACTORED OUT.
+  anchor(false) = "^", anchor(true) = "$"
+*/
+const anchor = end => {
+  return {type: 'anchor', end}
+}
+
+const term = inner => {
+  if (inner.type !== 'mult' && inner.type !== 'anchor') {
+    console.error(inner)
+    throw Error('Bad type ' + inner.type + ', expected mult or anchor')
+  }
+  return {type: 'term', inner}
+}
+
+/**
   To express the empty string, use an empty conc, conc().
 */
-const conc = mults => {
-  if (mults.some(mult => mult.type !== 'mult')) {
-    console.error(mults)
-    throw Error('Bad type ' + mult.type + ', expected mult')
+const conc = terms => {
+  if (terms.some(term => term.type !== 'term')) {
+    console.error(terms)
+    throw Error('Bad type ' + term.type + ', expected term')
   }
-  return {type: 'conc', mults}
+  return {type: 'conc', terms}
 }
 
 /**
@@ -93,7 +107,7 @@ const conc = mults => {
   this).
 
   e.g. "abc|def(ghi|jkl)" is an alt containing two concs: "abc" and
-  "def(ghi|jkl)". The latter is a conc containing four mults: "d", "e", "f"
+  "def(ghi|jkl)". The latter is a conc containing four terms: "d", "e", "f"
   and "(ghi|jkl)". The latter in turn is a mult consisting of an upper bound
   1, a lower bound 1, and a multiplicand which is a new subpattern, "ghi|jkl".
   This new subpattern again consists of two concs: "ghi" and "jkl".
@@ -107,4 +121,4 @@ const pattern = concs => {
   return {type: 'pattern', concs}
 }
 
-module.exports = {charclass, multiplier, multiplicand, mult, conc, pattern}
+module.exports = {charclass, multiplier, multiplicand, mult, conc, pattern, term, anchor}

@@ -84,11 +84,17 @@ const serialise = thing => ({
     inner.type === 'pattern' ? '(' + serialise(inner) + ')'
     : serialise(inner),
 
+  anchor: ({end}) =>
+    end ? '$' : '^',
+
   mult: ({multiplicand, multiplier}) =>
     serialise(multiplicand) + serialise(multiplier),
 
-  conc: ({mults}) =>
-    mults.map(serialise).join(''),
+  term: ({inner}) =>
+    serialise(inner),
+
+  conc: ({terms}) =>
+    terms.map(serialise).join(''),
 
   pattern: ({concs}) => {
     if (concs.length === 0) {

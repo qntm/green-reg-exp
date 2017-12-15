@@ -168,7 +168,18 @@ module.exports = resolve({
   mult: matchers => seq([matchers.multiplicand, matchers.multiplier])
     .map(([multiplicand, multiplier]) => constructors.mult(multiplicand, multiplier)),
 
-  conc: matchers => star(matchers.mult)
+  anchor: matchers => or([
+    fixed('^').map(() => constructors.anchor(false)),
+    fixed('$').map(() => constructors.anchor(true))
+  ]),
+
+  term: matchers => or([
+    matchers.mult,
+    matchers.anchor
+  ])
+    .map(constructors.term),
+
+  conc: matchers => star(matchers.term)
     .map(constructors.conc),
 
   pattern: matchers => wplus(matchers.conc, fixed('|'))

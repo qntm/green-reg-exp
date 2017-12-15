@@ -101,11 +101,13 @@ const greenRegExp = {
           ({
             [b]: constructors.pattern([
               constructors.conc([
-                constructors.mult(
-                  constructors.multiplicand(
-                    constructors.charclass([], false)
-                  ),
-                  constructors.multiplier(1, 1)
+                constructors.term(
+                  constructors.mult(
+                    constructors.multiplicand(
+                      constructors.charclass([], false)
+                    ),
+                    constructors.multiplier(1, 1)
+                  )
                 )
               ])
             ])
@@ -123,13 +125,15 @@ const greenRegExp = {
           brz[a][b] = reduce(constructors.pattern([
             ...brz[a][b].concs,
             constructors.conc([
-              constructors.mult(
-                constructors.multiplicand(
-                  symbol === anythingElse
-                    ? constructors.charclass(alphabet, true)
-                    : constructors.charclass([symbol], false)
-                ),
-                constructors.multiplier(1, 1)
+              constructors.term(
+                constructors.mult(
+                  constructors.multiplicand(
+                    symbol === anythingElse
+                      ? constructors.charclass(alphabet, true)
+                      : constructors.charclass([symbol], false)
+                  ),
+                  constructors.multiplier(1, 1)
+                )
               )
             ])
           ]))
@@ -157,13 +161,17 @@ const greenRegExp = {
       Reflect.ownKeys(brz[a]).forEach(right => {
         brz[a][right] = reduce(constructors.pattern([
           constructors.conc([
-            constructors.mult(
-              constructors.multiplicand(loopFactor),
-              constructors.multiplier(0, Infinity)
+            constructors.term(
+              constructors.mult(
+                constructors.multiplicand(loopFactor),
+                constructors.multiplier(0, Infinity)
+              )
             ),
-            constructors.mult(
-              constructors.multiplicand(brz[a][right]),
-              constructors.multiplier(1, 1)
+            constructors.term(
+              constructors.mult(
+                constructors.multiplicand(brz[a][right]),
+                constructors.multiplier(1, 1)
+              )
             )
           ])
         ]))
@@ -186,13 +194,17 @@ const greenRegExp = {
           brz[b][right] = reduce(constructors.pattern([
             ...brz[b][right].concs,
             constructors.conc([
-              constructors.mult(
-                constructors.multiplicand(univ),
-                constructors.multiplier(1, 1)
+              constructors.term(
+                constructors.mult(
+                  constructors.multiplicand(univ),
+                  constructors.multiplier(1, 1)
+                )
               ),
-              constructors.mult(
-                constructors.multiplicand(brz[a][right]),
-                constructors.multiplier(1, 1)
+              constructors.term(
+                constructors.mult(
+                  constructors.multiplicand(brz[a][right]),
+                  constructors.multiplier(1, 1)
+                )
               )
             ])
           ]))

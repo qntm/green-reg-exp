@@ -23,10 +23,18 @@ const equals = (self, other) => ({
     equals(self.multiplicand, other.multiplicand) &&
     equals(self.multiplier, other.multiplier),
 
+  anchor: (self, other) =>
+    self.type === other.type &&
+    self.end === other.end,
+
+  term: (self, other) =>
+    self.type === other.type &&
+    equals(self.inner, other.inner),
+
   conc: (self, other) =>
     self.type === other.type &&
-    self.mults.length === other.mults.length &&
-    self.mults.every((mult, i) => equals(mult, other.mults[i])),
+    self.terms.length === other.terms.length &&
+    self.terms.every((term, i) => equals(term, other.terms[i])),
 
   pattern: (self, other) =>
     self.type === other.type &&

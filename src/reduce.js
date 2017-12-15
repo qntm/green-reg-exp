@@ -29,10 +29,11 @@ const reduce = thing => ({
     if (
       multiplicand.inner.type === 'pattern' &&
       multiplicand.inner.concs.length === 1 &&
-      multiplicand.inner.concs[0].mults.length === 1 &&
-      equals(multiplicand.inner.concs[0].mults[0].multiplier, constructors.multiplier(1, 1))
+      multiplicand.inner.concs[0].terms.length === 1 &&
+      multiplicand.inner.concs[0].terms[0].inner.type === 'mult' &&
+      equals(multiplicand.inner.concs[0].terms[0].inner.multiplier, constructors.multiplier(1, 1))
     ) {
-      return reduce(multiplicand.inner.concs[0].mults[0].multiplicand)
+      return reduce(multiplicand.inner.concs[0].terms[0].inner.multiplicand)
     }
 
     const shrunk = constructors.multiplicand(reduce(multiplicand.inner))
@@ -52,50 +53,63 @@ const reduce = thing => ({
     return mult
   },
 
+  term: term => {
+    const shrunk = constructors.term(reduce(term.inner))
+    if (!equals(shrunk, term)) {
+      return reduce(shrunk)
+    }
+
+    return term
+  },
+
   conc: conc => {
     // Strip out []*, []{0}, etc. from the listing
     // /abc[]*def/ becomes /abcdef/
-    const killDeads = conc.mults.filter(mult =>
-      !equals(mult.multiplicand, monoParsers.multiplicand('[]')) ||
-      mult.multiplier.lower !== 0
+    const killDeads = conc.terms.filter(term =>
+      term.inner.type === 'mult' && (
+        !equals(term.inner.multiplicand, monoParsers.multiplicand('[]')) ||
+        term.inner.multiplier.lower !== 0
+      )
     )
-    if (killDeads.length < conc.mults.length) {
+    if (killDeads.length < conc.terms.length) {
       return reduce(constructors.conc(killDeads))
     }
 
     // /abc[]def/ becomes /[]/
-    if (conc.mults.length > 1 && conc.mults.some(mult => equals(mult, monoParsers.mult('[]')))) {
-      return reduce(constructors.conc([monoParsers.mult('[]')]))
+    if (conc.terms.length > 1 && conc.terms.some(term => equals(term, monoParsers.term('[]')))) {
+      return reduce(constructors.conc([monoParsers.term('[]')]))
     }
 
     // /(((aby)))/ becomes /aby/
     if (
-      conc.mults.length === 1 &&
-      conc.mults[0].multiplicand.inner.type === 'pattern' &&
-      conc.mults[0].multiplicand.inner.concs.length === 1 &&
-      equals(conc.mults[0].multiplier, constructors.multiplier(1, 1))
+      conc.terms.length === 1 &&
+      conc.terms[0].inner.type === 'mult' &&
+      conc.terms[0].inner.multiplicand.inner.type === 'pattern' &&
+      conc.terms[0].inner.multiplicand.inner.concs.length === 1 &&
+      equals(conc.terms[0].inner.multiplier, constructors.multiplier(1, 1))
     ) {
-      return reduce(conc.mults[0].multiplicand.inner.concs[0])
+      return reduce(conc.terms[0].inner.multiplicand.inner.concs[0])
     }
 
     // /a(d(ab|a*c))/ to /ad(ab|a*c)/
     // /ab(cd)ef/ to /abcdef/
-    for (let i = 0; i < conc.mults.length; i++) {
+    for (let i = 0; i < conc.terms.length; i++) {
       if (
-        conc.mults[i].multiplicand.inner.type === 'pattern' &&
-        conc.mults[i].multiplicand.inner.concs.length === 1 &&
-        conc.mults[i].multiplier.lower === 1 &&
-        conc.mults[i].multiplier.upper === 1
+        conc.terms[i].inner.type === 'mult' &&
+        conc.terms[i].inner.multiplicand.inner.type === 'pattern' &&
+        conc.terms[i].inner.multiplicand.inner.concs.length === 1 &&
+        conc.terms[i].inner.multiplier.lower === 1 &&
+        conc.terms[i].inner.multiplier.upper === 1
       ) {
         return reduce(constructors.conc(
-          conc.mults.slice(0, i)
-            .concat(conc.mults[i].multiplicand.inner.concs[0].mults)
-            .concat(conc.mults.slice(i + 1))
+          conc.terms.slice(0, i)
+            .concat(conc.terms[i].inner.multiplicand.inner.concs[0].terms)
+            .concat(conc.terms.slice(i + 1))
         ))
       }
     }
 
-    const shrunk = constructors.conc(conc.mults.map(reduce))
+    const shrunk = constructors.conc(conc.terms.map(reduce))
     if (!equals(shrunk, conc)) {
       return reduce(shrunk)
     }
@@ -109,10 +123,11 @@ const reduce = thing => ({
     const nonCharclassConcs = []
     pattern.concs.forEach(conc => {
       if (
-        conc.mults.length === 1
-        && conc.mults[0].multiplicand.inner.type === 'charclass'
-        && conc.mults[0].multiplier.lower === 1
-        && conc.mults[0].multiplier.upper === 1
+        conc.terms.length === 1
+        && conc.terms[0].inner.type === 'mult'
+        && conc.terms[0].inner.multiplicand.inner.type === 'charclass'
+        && conc.terms[0].inner.multiplier.lower === 1
+        && conc.terms[0].inner.multiplier.upper === 1
       ) {
         charclassConcs.push(conc)
       } else {
@@ -122,7 +137,7 @@ const reduce = thing => ({
 
     if (charclassConcs.length >= 2) {
       const charclasses = charclassConcs.map(charclassConc =>
-        charclassConc.mults[0].multiplicand.inner
+        charclassConc.terms[0].inner.multiplicand.inner
       )
 
       const combinedCharclass = charclasses.reduce((acc, next) => {
@@ -142,11 +157,13 @@ const reduce = thing => ({
       }, constructors.charclass([], false))
 
       const combinedCharclassConc = constructors.conc([
-        constructors.mult(
-          constructors.multiplicand(
-            combinedCharclass
-          ),
-          constructors.multiplier(1, 1)
+        constructors.term(
+          constructors.mult(
+            constructors.multiplicand(
+              combinedCharclass
+            ),
+            constructors.multiplier(1, 1)
+          )
         )
       ])
 
