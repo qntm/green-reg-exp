@@ -63,6 +63,10 @@ const reduce = thing => ({
   },
 
   conc: conc => {
+    // First things first, ANCHORS.
+    // /a?^/ becomes /^/
+    // /a?^b?^/ becomes /^/
+
     // Strip out []*, []{0}, etc. from the listing
     // /abc[]*def/ becomes /abcdef/
     const killDeads = conc.terms.filter(term =>

@@ -150,7 +150,7 @@ describe('greenRegExp', function () {
     })
   })
 
-  xdescribe('intersection', () => {
+  describe('intersection', () => {
     it('easy mode', () => {
       expect(greenRegExp.intersection('abc...', '...def')).toBe('abcdef')
     })
@@ -158,17 +158,17 @@ describe('greenRegExp', function () {
     it('dates', () => {
       expect(greenRegExp.intersection('[01][01]00', '00.*')).toBe('0000')
       expect(greenRegExp.intersection('[01][01]00-00-00', '00.*')).toBe('0000-00-00')
-      expect(greenRegExp.intersection('\\d{4}-\\d{2}-\\d{2}', '19.*')).toBe('19\\d{2}-\\d{2}-\\d{2}')
+      expect(greenRegExp.intersection('\\d{4}-\\d{2}-\\d{2}', '19.*')).toBe('19\\d\\d-\\d\\d-\\d\\d')
     })
 
     xit('symbols', () => {
       expect(greenRegExp.intersection('\\W*', '[a-g0-8$%\\^]+', '[^d]{2,8}')).toBe('[$%\^]{2,8}')
     })
 
-    it('complex stars', () => {
+    xit('complex stars', () => {
       const intersection = greenRegExp.intersection('[bc]*[ab]*', '[ab]*[bc]*')
       // /([ab]*a|[bc]*c)?b*/ or similar
-      console.log(intersection) // this is the wrong result...
+      console.log(intersection) // closer
     })
 
     it('epsilon intersection', () => {
@@ -177,6 +177,29 @@ describe('greenRegExp', function () {
 
     it('null intersection', () => {
       expect(greenRegExp.intersection('a', 'b')).toBe('[]')
+    })
+  })
+
+  describe('deAnchor', () => {
+    it('works on simple things', () => {
+      expect(greenRegExp.deAnchor('aaa^')).toBe('[]')
+      expect(greenRegExp.deAnchor('$bbb')).toBe('[]')
+      expect(greenRegExp.deAnchor('a{0,4}^bcd$e{0,5}')).toBe('bcd')
+      expect(greenRegExp.deAnchor('abc')).toBe('.*abc.*')
+    })
+
+    it('works on nasty things', () => {
+      expect(greenRegExp.deAnchor('abc(def|ghi)jkl|mno')).toBe('.*abc(def|ghi)jkl.*|.*mno.*')
+      expect(greenRegExp.deAnchor('abc(^$|def|ghi)jkl|mno')).toBe('.*abc(def|ghi)jkl.*|.*mno.*')
+    })
+
+    it('handles cross products!', () => {
+      expect(greenRegExp.deAnchor('(^|B)($|C)|D')).toBe('|C.*|.*B|.*BC.*|.*D.*')
+      expect(greenRegExp.deAnchor('abc(^def$|ghi)jkl(^mno$|pqr)stu|vwx')).toBe('.*abcghijklpqrstu.*|.*vwx.*')
+    })
+
+    it('works recursively', () => {
+      expect(greenRegExp.deAnchor('aaa(((^|b)))ccc')).toBe('.*aaabccc.*')
     })
   })
 })

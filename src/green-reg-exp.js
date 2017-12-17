@@ -7,6 +7,7 @@ const fsmify = require('./fsmify')
 const serialise = require('./serialise')
 const constructors = require('./constructors')
 const reduce = require('./reduce')
+const {deAnchorPattern} = require('./de-anchor')
 
 const toFsm = pattern =>
   fsmify(pattern, Object.keys(getUsedChars(pattern)).concat([anythingElse]))
@@ -65,7 +66,6 @@ const greenRegExp = {
     const fsms = patterns.map(pattern => fsmify(pattern, [...alphabet, anythingElse]))
 
     const f = intersection(fsms)
-    console.log(f.toString())
 
     // We need a new state not already used
     const outside = Symbol('outside')
@@ -216,7 +216,10 @@ const greenRegExp = {
   },
 
   reduce: string =>
-    serialise(reduce(monoParsers.pattern(string)))
+    serialise(reduce(monoParsers.pattern(string))),
+
+  deAnchor: string =>
+    serialise(deAnchorPattern(monoParsers.pattern(string)))
 }
 
 module.exports = greenRegExp

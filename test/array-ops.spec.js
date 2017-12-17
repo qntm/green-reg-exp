@@ -37,4 +37,19 @@ describe('arrayOps', () => {
       expect(arrayOps.equal(['a', 'b', 'c'], ['c', 'b', 'a', 'c'])).toBe(true)
     })
   })
+
+  describe('product', () => {
+    it('works', () => {
+      expect(arrayOps.product([])).toEqual([])
+      expect(arrayOps.product(['a'])).toEqual([['a']])
+      expect(arrayOps.product(['a', 'b'], ['c', 'd', 'e'])).toEqual([
+        ['a', 'c'],
+        ['a', 'd'],
+        ['a', 'e'],
+        ['b', 'c'],
+        ['b', 'd'],
+        ['b', 'e']
+      ])
+    })
+  })
 })
