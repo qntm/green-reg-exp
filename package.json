@@ -1,7 +1,12 @@
 {
   "name": "green-reg-exp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A little library for parsing and manipulating regular expressions.",
+  "homepage": "https://github.com/qntm/green-reg-exp",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/qntm/green-reg-exp.git"
+  },
   "main": "src/green-reg-exp.js",
   "directories": {
     "test": "test"
@@ -10,10 +15,6 @@
     "jasmine": "jasmine",
     "standard": "standard",
     "test": "npm run jasmine -- **/*.spec.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/qntm/green-reg-exp.git"
   },
   "keywords": [
     "regular",
@@ -25,7 +26,6 @@
   "bugs": {
     "url": "https://github.com/qntm/green-reg-exp/issues"
   },
-  "homepage": "https://github.com/qntm/green-reg-exp#readme",
   "devDependencies": {
     "jasmine": "^2.8.0",
     "standard": "^13.1.0"
