@@ -1,7 +1,7 @@
 'use strict'
 
 const {anythingElse, intersection} = require('green-fsm')
-const monoParsers = require('./mono-parsers')
+const matchers = require('./matchers')
 const getUsedChars = require('./get-used-chars')
 const fsmify = require('./fsmify')
 const serialise = require('./serialise')
@@ -14,7 +14,7 @@ const toFsm = pattern =>
 
 const greenRegExp = {
   parse: string => {
-    const pattern = monoParsers.pattern(string)
+    const pattern = matchers.pattern.parse1(string)
     let fsm
     return {
       pattern: pattern,
@@ -55,7 +55,7 @@ const greenRegExp = {
   },
 
   intersection: (...strings) => {
-    const patterns = strings.map(monoParsers.pattern)
+    const patterns = strings.map(matchers.pattern.parse1)
 
     const charsUseds = patterns.map(getUsedChars)
 
@@ -216,10 +216,10 @@ const greenRegExp = {
   },
 
   reduce: string =>
-    serialise(reduce(monoParsers.pattern(string))),
+    serialise(reduce(matchers.pattern.parse1(string))),
 
   deAnchor: string =>
-    serialise(deAnchorPattern(monoParsers.pattern(string)))
+    serialise(deAnchorPattern(matchers.pattern.parse1(string)))
 }
 
 module.exports = greenRegExp

@@ -1,12 +1,12 @@
 'use strict'
 
-const {unicode, or, fixed, seq, resolve, star, wplus} = require('green-parse')
+const { UNICODE, or, fixed, seq, resolve, star, plus } = require('green-parse')
 const constructors = require('./constructors.js')
 const escapesBracket = require('./escapes-bracket.js')
 const escapesRegular = require('./escapes-regular.js')
 
 // Non-special character, not escaped
-const matchNonEscapedBracketedChar = unicode
+const matchNonEscapedBracketedChar = UNICODE
   .filter(match => !(match in escapesBracket))
 
 // Special character, escaped
@@ -88,7 +88,7 @@ const matchShorthand = or([
 ])
 
 // single non-special character, not contained inside square brackets
-const matchNonEscapedCharacter = unicode
+const matchNonEscapedCharacter = UNICODE
   .filter(match => !(match in escapesRegular))
 
 // Special character, escaped
@@ -142,8 +142,8 @@ var matchSymbolicMultiplier = or([
   fixed('+').map(value => ({lower: 1, upper: Infinity}))
 ])
 
-module.exports = resolve({
-  charclass: matchers => or([
+module.exports = resolve(ref => ({
+  charclass: or([
     matchChar,
     matchShorthand,
     matchBracketed,
@@ -151,37 +151,37 @@ module.exports = resolve({
   ])
     .map(({chars, negated}) => constructors.charclass(chars, negated)),
 
-  multiplier: matchers => or([
+  multiplier: or([
     matchSymbolicMultiplier,
     matchOneBound,
     matchTwoBounds
   ])
     .map(({lower, upper}) => constructors.multiplier(lower, upper)),
 
-  multiplicand: matchers => or([
-    matchers.charclass,
-    seq([fixed('('), matchers.pattern, fixed(')')])
+  multiplicand: or([
+    ref('charclass'),
+    seq([fixed('('), ref('pattern'), fixed(')')])
       .map(([open, pattern, closed]) => pattern)
   ])
     .map(inner => constructors.multiplicand(inner)),
 
-  mult: matchers => seq([matchers.multiplicand, matchers.multiplier])
+  mult: seq([ref('multiplicand'), ref('multiplier')])
     .map(([multiplicand, multiplier]) => constructors.mult(multiplicand, multiplier)),
 
-  anchor: matchers => or([
+  anchor: or([
     fixed('^').map(() => constructors.anchor(false)),
     fixed('$').map(() => constructors.anchor(true))
   ]),
 
-  term: matchers => or([
-    matchers.mult,
-    matchers.anchor
+  term: or([
+    ref('mult'),
+    ref('anchor')
   ])
     .map(constructors.term),
 
-  conc: matchers => star(matchers.term)
+  conc: star(ref('term'))
     .map(constructors.conc),
 
-  pattern: matchers => wplus(matchers.conc, fixed('|'))
+  pattern: plus(ref('conc'), fixed('|'))
     .map(constructors.pattern)
-})
+}))

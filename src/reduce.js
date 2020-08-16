@@ -3,7 +3,7 @@
 const constructors = require('./constructors')
 const arrayOps = require('./array-ops')
 const equals = require('./equals')
-const monoParsers = require('./mono-parsers')
+const matchers = require('./matchers')
 
 // Here's the hard rule: a reducer MUST return the same type of object.
 // E.g. a pattern reducer may NOT return a charclass. It must return
@@ -71,7 +71,7 @@ const reduce = thing => ({
     // /abc[]*def/ becomes /abcdef/
     const killDeads = conc.terms.filter(term =>
       term.inner.type === 'mult' && (
-        !equals(term.inner.multiplicand, monoParsers.multiplicand('[]')) ||
+        !equals(term.inner.multiplicand, matchers.multiplicand.parse1('[]')) ||
         term.inner.multiplier.lower !== 0
       )
     )
@@ -80,8 +80,8 @@ const reduce = thing => ({
     }
 
     // /abc[]def/ becomes /[]/
-    if (conc.terms.length > 1 && conc.terms.some(term => equals(term, monoParsers.term('[]')))) {
-      return reduce(constructors.conc([monoParsers.term('[]')]))
+    if (conc.terms.length > 1 && conc.terms.some(term => equals(term, matchers.term.parse1('[]')))) {
+      return reduce(constructors.conc([matchers.term.parse1('[]')]))
     }
 
     // /(((aby)))/ becomes /aby/
@@ -179,7 +179,7 @@ const reduce = thing => ({
 
     // /[]|abc|def/ becomes /abc|def/
     const killDeads = pattern.concs.filter(conc =>
-      !equals(conc, monoParsers.conc('[]'))
+      !equals(conc, matchers.conc.parse1('[]'))
     )
     if (killDeads.length < pattern.concs.length) {
       return reduce(constructors.pattern(killDeads))

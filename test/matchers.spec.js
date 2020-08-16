@@ -8,7 +8,7 @@ const matchers = require('../src/matchers.js')
 describe('matchers', function () {
   describe('charclass', function () {
     it('works', function () {
-      expect(matchers.charclass('a', 0).next().value).toEqual({
+      expect(matchers.charclass.match('a', 0).next().value).toEqual({
         j: 1,
         match: constructors.charclass(['a'], false)
       })
@@ -17,7 +17,7 @@ describe('matchers', function () {
 
   describe('mult', function () {
     it('works', function () {
-      const iterator = matchers.mult('abcde[^fg]*', 5)
+      const iterator = matchers.mult.match('abcde[^fg]*', 5)
       expect(iterator.next().value).toEqual({
         j: 10,
         match: constructors.mult(
@@ -35,7 +35,7 @@ describe('matchers', function () {
     })
 
     it('works too', () => {
-      const iterator = matchers.mult('abcde[^fg]*h{5}[a-z]+', 11)
+      const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+', 11)
       expect(iterator.next().value).toEqual({
         j: 12,
         match: constructors.mult(
@@ -53,7 +53,7 @@ describe('matchers', function () {
     })
 
     it('works three', () => {
-      const iterator = matchers.mult('abcde[^fg]*h{5}[a-z]+T{1,}', 15)
+      const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+T{1,}', 15)
       expect(iterator.next().value).toEqual({
         j: 20,
         match: constructors.mult(
@@ -83,7 +83,7 @@ describe('matchers', function () {
     })
 
     it('works four', () => {
-      const iterator = matchers.mult('abcde[^fg]*h{5}[a-z]+T{2,}', 21)
+      const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+T{2,}', 21)
       expect(iterator.next().value).toEqual({
         j: 22,
         match: constructors.mult(
