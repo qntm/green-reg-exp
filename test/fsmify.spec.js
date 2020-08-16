@@ -4,13 +4,13 @@
 
 const {anythingElse} = require('green-fsm')
 
-const monoParsers = require('../src/mono-parsers')
+const matchers = require('../src/matchers')
 const fsmify = require('../src/fsmify')
 
 describe('fsmify', function () {
   describe('charclass', function () {
     it('[^a]', function () {
-      var nota = fsmify(monoParsers.charclass('[^a]'), [anythingElse, 'a'])
+      var nota = fsmify(matchers.charclass.parse1('[^a]'), [anythingElse, 'a'])
 
       expect(nota.accepts([])).toBe(false)
       expect(nota.accepts(['a'])).toBe(false)
@@ -26,11 +26,11 @@ describe('fsmify', function () {
   describe('mult', function () {
     // Odd bug with ([bc]*c)?[ab]*
     it('odd bug', function () {
-      var bcStar = monoParsers.mult('[bc]*')
+      var bcStar = matchers.mult.parse1('[bc]*')
       var int5A = fsmify(bcStar, ['a', 'b', 'c', anythingElse])
       expect(int5A.accepts([])).toBe(true)
 
-      var c = monoParsers.mult('c')
+      var c = matchers.mult.parse1('c')
       var int5B = fsmify(c, ['a', 'b', 'c', anythingElse])
       expect(int5B.accepts(['c'])).toBe(true)
     })

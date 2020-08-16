@@ -2,13 +2,13 @@
 
 'use strict'
 
-const monoParsers = require('../src/mono-parsers.js')
+const matchers = require('../src/matchers.js')
 const getUsedChars = require('../src/get-used-chars.js')
 
 describe('getUsedChars', function () {
   describe('charclass', function () {
     it('[^abc]', function () {
-      expect(getUsedChars(monoParsers.charclass('[^abc]'))).toEqual({a: true, b: true, c: true})
+      expect(getUsedChars(matchers.charclass.parse1('[^abc]'))).toEqual({a: true, b: true, c: true})
     })
   })
 })
