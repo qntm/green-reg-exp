@@ -31,7 +31,7 @@
     "standard": "^14.3.4"
   },
   "dependencies": {
-    "green-fsm": "0.0.2",
+    "green-fsm": "0.0.3",
     "green-parse": "0.0.2"
   }
 }
