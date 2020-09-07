@@ -32,6 +32,6 @@
   },
   "dependencies": {
     "green-fsm": "0.0.3",
-    "green-parse": "2.0.5"
+    "green-parse": "^2.0.5"
   }
 }
