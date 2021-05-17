@@ -29,11 +29,11 @@
   },
   "devDependencies": {
     "jasmine": "^3.6.1",
-    "standard": "^14.3.4"
+    "standard": "^16.0.1"
   },
   "dependencies": {
     "green-fsm": "0.0.3",
-    "green-parse": "2.0.4"
+    "green-parse": "^2.0.5"
   },
   "files": [
     "src"
