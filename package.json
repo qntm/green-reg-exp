@@ -27,7 +27,7 @@
     "url": "https://github.com/qntm/green-reg-exp/issues"
   },
   "devDependencies": {
-    "jasmine": "^3.6.1",
+    "jasmine": "^4.0.2",
     "standard": "^16.0.1"
   },
   "dependencies": {
