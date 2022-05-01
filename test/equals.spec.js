@@ -2,6 +2,4 @@
 
 'use strict'
 
-describe('equals', () => {
-  // Who cares
-})
+// Who cares
