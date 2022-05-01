@@ -13,6 +13,7 @@
   },
   "scripts": {
     "jasmine": "jasmine",
+    "postpublish": "npm version patch && git push",
     "standard": "standard",
     "test": "npm run jasmine -- **/*.spec.js"
   },
@@ -33,5 +34,8 @@
   "dependencies": {
     "green-fsm": "0.0.3",
     "green-parse": "^2.0.5"
-  }
+  },
+  "files": [
+    "src"
+  ]
 }

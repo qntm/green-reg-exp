@@ -6,6 +6,4 @@
 
 'use strict'
 
-describe('constructors', () => {
-  // Looks like there were no constructor tests!
-})
+// Looks like there were no constructor tests!
