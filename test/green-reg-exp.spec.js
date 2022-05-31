@@ -2,7 +2,7 @@
 
 import assert from 'assert'
 
-import greenRegExp from '../src/green-reg-exp.js'
+import * as greenRegExp from '../src/green-reg-exp.js'
 
 describe('greenRegExp', () => {
   describe('parse', () => {

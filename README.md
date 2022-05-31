@@ -11,9 +11,9 @@ npm install green-reg-exp
 ## Example
 
 ```js
-const greenRegExp = require('green-reg-exp')
+import { intersection } from 'green-reg-exp'
 
-console.log(greenRegExp.intersection('abc...', '...def')) // 'abcdef'
+console.log(intersection('abc...', '...def')) // 'abcdef'
 ```
 
 ## API
@@ -39,7 +39,7 @@ All the regular expressions described so far are **implicitly anchored at the be
 If your regular expression is not implicitly anchored in this way, pass it to this function to see it de-anchored. This typically involves introducing `.*` at the beginning and end of the expression. If your string contains anchors for the **beginning of the input** (`^`) or the **end of the input** (`$`), these will be handled correctly. Anchors for the beginning and end of lines cannot be handled this way.
 
 ```js
-console.log(greenRegExp.deAnchor('abc|^def$')) // '.*abc.*|def'
+console.log(deAnchor('abc|^def$')) // '.*abc.*|def'
 ```
 
 The result can then be used by the rest of `green-reg-exp`.
