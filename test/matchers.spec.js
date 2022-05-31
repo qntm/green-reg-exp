@@ -13,6 +13,10 @@ describe('matchers', function () {
         match: constructors.charclass(['a'], false)
       })
     })
+
+    it('throws', () => {
+      assert.throws(() => matchers.charclass.match('[d-d]', 0).next(), Error("Range 'd-d' not allowed"))
+    })
   })
 
   describe('mult', function () {

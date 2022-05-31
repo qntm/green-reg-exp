@@ -14,5 +14,5 @@ export const matchesEmptyString = thing => ({
     terms.every(matchesEmptyString),
 
   pattern: ({ concs }) =>
-    concs.any(matchesEmptyString)
+    concs.some(matchesEmptyString)
 })[thing.type](thing)

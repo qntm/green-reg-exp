@@ -102,6 +102,7 @@ describe('reduce', function () {
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('[a]|[^ab]')), matchers.pattern.parse1('[^b]'))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('[^abc]|[bc]')), matchers.pattern.parse1('[^a]'))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('[^abc]|[abc]')), matchers.pattern.parse1('.'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[^ab]|[^bc]')), matchers.pattern.parse1('[^b]'))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('((a|c))')), matchers.pattern.parse1('[ac]'))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('[2-9]|0')), matchers.pattern.parse1('[2-90]'))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('[1-9]|0')), matchers.pattern.parse1('[1-90]'))
