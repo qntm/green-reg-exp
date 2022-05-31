@@ -1,6 +1,5 @@
 export const charclass = (chars, negated) => {
   if (!Array.isArray(chars)) {
-    console.error(chars)
     throw Error('`chars` must be an array')
   }
 
@@ -79,7 +78,6 @@ export const anchor = end => {
 
 export const term = inner => {
   if (inner.type !== 'mult' && inner.type !== 'anchor') {
-    console.error(inner)
     throw Error('Bad type ' + inner.type + ', expected mult or anchor')
   }
   return { type: 'term', inner }
@@ -89,10 +87,11 @@ export const term = inner => {
   To express the empty string, use an empty conc, conc().
 */
 export const conc = terms => {
-  if (terms.some(term => term.type !== 'term')) {
-    console.error(terms)
-    throw Error('Bad type ' + term.type + ', expected term')
-  }
+  terms.forEach(term => {
+    if (term.type !== 'term') {
+      throw Error('Bad type ' + term.type + ', expected term')
+    }
+  })
   return { type: 'conc', terms }
 }
 
@@ -113,7 +112,6 @@ export const conc = terms => {
 
 export const pattern = concs => {
   if (concs.some(conc => conc.type !== 'conc')) {
-    console.error(conc)
     throw Error('Bad type')
   }
   return { type: 'pattern', concs }
