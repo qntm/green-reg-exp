@@ -1,17 +1,14 @@
-'use strict'
-
-const equals = require('./equals')
-const constructors = require('./constructors')
-const serialise = require('./serialise')
-const arrayOps = require('./array-ops')
-const matchesEmptyString = require('./matches-empty-string')
+import { equals } from './equals.js'
+import * as constructors from './constructors.js'
+import { arrayOps } from './array-ops.js'
+import { matchesEmptyString } from './matches-empty-string.js'
 
 // A pattern will contain anchors at potentially
 // any level. We need to lift them up somehow.
 // E.g. /abc(^$|def|ghi)jkl|mno/ becomes /abc^$jkl|abc(def|ghi)jkl|mno/
 // This is NIGHTMARISHLY complex code, sorry
 // It has to handle cases like /(^|A)($|B)/ and nesting... but it DOES IT!!!
-const upliftAnchors = pattern => {
+export const upliftAnchors = pattern => {
   const newConcs = []
 
   pattern.concs.forEach(conc => {
@@ -20,8 +17,8 @@ const upliftAnchors = pattern => {
       const term = conc.terms[i]
       const termArrays = []
       if (
-        term.inner.type === 'mult'
-        && term.inner.multiplicand.inner.type === 'pattern'
+        term.inner.type === 'mult' &&
+        term.inner.multiplicand.inner.type === 'pattern'
       ) {
         const pattern2 = upliftAnchors(term.inner.multiplicand.inner)
         const concsWithNoAnchors = []
@@ -76,7 +73,7 @@ const nothing = constructors.conc([
 
 // It is assumed that the conc being passed in is from a pattern
 // which has already undergone the `upliftAnchors` processing.
-const deAnchorConc = conc => {
+export const deAnchorConc = conc => {
   // *cracks knuckles*
   let indexOfLastStartAnchor = -1
   for (let i = 0; i < conc.terms.length; i++) {
@@ -141,11 +138,9 @@ const deAnchorConc = conc => {
   return constructors.conc(terms)
 }
 
-const deAnchorPattern = pattern =>
+export const deAnchorPattern = pattern =>
   constructors.pattern(
     upliftAnchors(pattern).concs
       .map(deAnchorConc)
       .filter(conc => !equals(conc, nothing))
   )
-
-module.exports = {deAnchorPattern, deAnchorConc, upliftAnchors}

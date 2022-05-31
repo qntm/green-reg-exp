@@ -1,7 +1,7 @@
 // These are the characters carrying special meanings when they appear "outdoors"
 // within a regular expression. To be interpreted literally, they must be
 // escaped with a backslash.
-module.exports = {
+export default {
   '\u0000': '\\u0000',
   '\u0001': '\\u0001',
   '\u0002': '\\u0002',
@@ -47,6 +47,6 @@ module.exports = {
   '{': '\\{',
   '}': '\\}',
   '^': '\\^',
-  '$': '\\$',
+  $: '\\$',
   '\u007F': '\\u007F'
 }

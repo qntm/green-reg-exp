@@ -1,22 +1,18 @@
-'use strict'
-
-const matchesEmptyString = thing => ({
+export const matchesEmptyString = thing => ({
   charclass: () => false,
 
-  multiplicand: ({inner}) =>
+  multiplicand: ({ inner }) =>
     matchesEmptyString(inner),
 
-  mult: ({multiplicand, multiplier}) =>
+  mult: ({ multiplicand, multiplier }) =>
     matchesEmptyString(multiplicand) || multiplier.lower === 0,
 
-  term: ({inner}) =>
+  term: ({ inner }) =>
     matchesEmptyString(inner),
 
-  conc: ({terms}) =>
+  conc: ({ terms }) =>
     terms.every(matchesEmptyString),
 
-  pattern: ({concs}) =>
-    concs.any(matchesEmptyString)
+  pattern: ({ concs }) =>
+    concs.some(matchesEmptyString)
 })[thing.type](thing)
-
-module.exports = matchesEmptyString

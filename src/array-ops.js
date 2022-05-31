@@ -1,7 +1,5 @@
-'use strict'
-
 // Operates on ARRAYS.
-const arrayOps = {
+export const arrayOps = {
   and: (self, other) => self.filter(x => other.includes(x)),
   or: (self, other) => self.concat(other.filter(x => !self.includes(x))),
   minus: (self, other) => self.filter(x => !other.includes(x)),
@@ -21,5 +19,3 @@ const arrayOps = {
     return results
   }
 }
-
-module.exports = arrayOps

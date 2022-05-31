@@ -1,5 +1,16 @@
-/* eslint-env jasmine */
+/* eslint-env mocha */
 
-'use strict'
+import assert from 'assert'
 
-// Looks like there were no constructor tests!
+import { matchesEmptyString } from '../src/matches-empty-string.js'
+import * as constructors from '../src/constructors.js'
+
+describe('matchesEmptyString', () => {
+  it('works', () => {
+    assert.strictEqual(matchesEmptyString(constructors.conc([])), true)
+  })
+
+  it('works', () => {
+    assert.strictEqual(matchesEmptyString(constructors.pattern([])), false)
+  })
+})

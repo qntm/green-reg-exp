@@ -1,8 +1,4 @@
-'use strict'
-
-const arrayOps = require('./array-ops')
-
-const equals = (self, other) => ({
+export const equals = (self, other) => ({
   charclass: (self, other) =>
     self.type === other.type &&
     self.chars.length === other.chars.length &&
@@ -41,5 +37,3 @@ const equals = (self, other) => ({
     self.concs.length === other.concs.length &&
     self.concs.every((conc, i) => equals(conc, other.concs[i]))
 })[self.type](self, other)
-
-module.exports = equals

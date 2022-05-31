@@ -1,31 +1,35 @@
-/* eslint-env jasmine */
+/* eslint-env mocha */
 
-'use strict'
+import assert from 'assert'
 
-const constructors = require('../src/constructors.js')
-const matchers = require('../src/matchers.js')
+import * as constructors from '../src/constructors.js'
+import matchers from '../src/matchers.js'
 
-describe('matchers', function () {
-  describe('charclass', function () {
-    it('works', function () {
-      expect(matchers.charclass.match('a', 0).next().value).toEqual({
+describe('matchers', () => {
+  describe('charclass', () => {
+    it('works', () => {
+      assert.deepStrictEqual(matchers.charclass.match('a', 0).next().value, {
         j: 1,
         match: constructors.charclass(['a'], false)
       })
     })
+
+    it('throws', () => {
+      assert.throws(() => matchers.charclass.match('[d-d]', 0).next(), Error("Range 'd-d' not allowed"))
+    })
   })
 
-  describe('mult', function () {
-    it('works', function () {
+  describe('mult', () => {
+    it('works', () => {
       const iterator = matchers.mult.match('abcde[^fg]*', 5)
-      expect(iterator.next().value).toEqual({
+      assert.deepStrictEqual(iterator.next().value, {
         j: 10,
         match: constructors.mult(
           constructors.multiplicand(constructors.charclass(['f', 'g'], true)),
           constructors.multiplier(1, 1)
         )
       })
-      expect(iterator.next().value).toEqual({
+      assert.deepStrictEqual(iterator.next().value, {
         j: 11,
         match: constructors.mult(
           constructors.multiplicand(constructors.charclass(['f', 'g'], true)),
@@ -36,14 +40,14 @@ describe('matchers', function () {
 
     it('works too', () => {
       const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+', 11)
-      expect(iterator.next().value).toEqual({
+      assert.deepStrictEqual(iterator.next().value, {
         j: 12,
         match: constructors.mult(
           constructors.multiplicand(constructors.charclass(['h'], false)),
           constructors.multiplier(1, 1)
         )
       })
-      expect(iterator.next().value).toEqual({
+      assert.deepStrictEqual(iterator.next().value, {
         j: 15,
         match: constructors.mult(
           constructors.multiplicand(constructors.charclass(['h'], false)),
@@ -54,7 +58,7 @@ describe('matchers', function () {
 
     it('works three', () => {
       const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+T{1,}', 15)
-      expect(iterator.next().value).toEqual({
+      assert.deepStrictEqual(iterator.next().value, {
         j: 20,
         match: constructors.mult(
           constructors.multiplicand(
@@ -67,7 +71,7 @@ describe('matchers', function () {
           constructors.multiplier(1, 1)
         )
       })
-      expect(iterator.next().value).toEqual({
+      assert.deepStrictEqual(iterator.next().value, {
         j: 21,
         match: constructors.mult(
           constructors.multiplicand(
@@ -84,7 +88,7 @@ describe('matchers', function () {
 
     it('works four', () => {
       const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+T{2,}', 21)
-      expect(iterator.next().value).toEqual({
+      assert.deepStrictEqual(iterator.next().value, {
         j: 22,
         match: constructors.mult(
           constructors.multiplicand(
@@ -93,7 +97,7 @@ describe('matchers', function () {
           constructors.multiplier(1, 1)
         )
       })
-      expect(iterator.next().value).toEqual({
+      assert.deepStrictEqual(iterator.next().value, {
         j: 26,
         match: constructors.mult(
           constructors.multiplicand(

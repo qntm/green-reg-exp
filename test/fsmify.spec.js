@@ -1,38 +1,44 @@
-/* eslint-env jasmine */
+/* eslint-env mocha */
 
-'use strict'
+import assert from 'assert'
+import { anythingElse } from 'green-fsm'
 
-const {anythingElse} = require('green-fsm')
+import matchers from '../src/matchers.js'
+import { fsmify } from '../src/fsmify.js'
 
-const matchers = require('../src/matchers')
-const fsmify = require('../src/fsmify')
+describe('fsmify', () => {
+  describe('charclass', () => {
+    it('[^a]', () => {
+      const nota = fsmify(matchers.charclass.parse1('[^a]'), [anythingElse, 'a'])
 
-describe('fsmify', function () {
-  describe('charclass', function () {
-    it('[^a]', function () {
-      var nota = fsmify(matchers.charclass.parse1('[^a]'), [anythingElse, 'a'])
-
-      expect(nota.accepts([])).toBe(false)
-      expect(nota.accepts(['a'])).toBe(false)
-      expect(nota.accepts(['b'])).toBe(true)
-      expect(nota.accepts([anythingElse])).toBe(true)
-      expect(nota.accepts(['c'])).toBe(true)
-      expect(nota.accepts([{}])).toBe(true)
-      expect(nota.accepts([4358375923])).toBe(true)
-      expect(nota.accepts(['b', 'b'])).toBe(false)
+      assert.strictEqual(nota.accepts([]), false)
+      assert.strictEqual(nota.accepts(['a']), false)
+      assert.strictEqual(nota.accepts(['b']), true)
+      assert.strictEqual(nota.accepts([anythingElse]), true)
+      assert.strictEqual(nota.accepts(['c']), true)
+      assert.strictEqual(nota.accepts([{}]), true)
+      assert.strictEqual(nota.accepts([4358375923]), true)
+      assert.strictEqual(nota.accepts(['b', 'b']), false)
     })
   })
 
-  describe('mult', function () {
+  describe('mult', () => {
     // Odd bug with ([bc]*c)?[ab]*
-    it('odd bug', function () {
-      var bcStar = matchers.mult.parse1('[bc]*')
-      var int5A = fsmify(bcStar, ['a', 'b', 'c', anythingElse])
-      expect(int5A.accepts([])).toBe(true)
+    it('odd bug', () => {
+      const bcStar = matchers.mult.parse1('[bc]*')
+      const int5A = fsmify(bcStar, ['a', 'b', 'c', anythingElse])
+      assert.strictEqual(int5A.accepts([]), true)
 
-      var c = matchers.mult.parse1('c')
-      var int5B = fsmify(c, ['a', 'b', 'c', anythingElse])
-      expect(int5B.accepts(['c'])).toBe(true)
+      const c = matchers.mult.parse1('c')
+      const int5B = fsmify(c, ['a', 'b', 'c', anythingElse])
+      assert.strictEqual(int5B.accepts(['c']), true)
+    })
+  })
+
+  describe('anchor', () => {
+    it('throws', () => {
+      const anchor = matchers.anchor.parse1('^')
+      assert.throws(() => fsmify(anchor), Error('Cannot make an FSM out of an anchor.'))
     })
   })
 })

@@ -1,42 +1,35 @@
-'use strict'
+import { anythingElse, intersection } from 'green-fsm'
 
-const {anythingElse, intersection} = require('green-fsm')
-const matchers = require('./matchers')
-const getUsedChars = require('./get-used-chars')
-const fsmify = require('./fsmify')
-const serialise = require('./serialise')
-const constructors = require('./constructors')
-const reduce = require('./reduce')
-const {deAnchorPattern} = require('./de-anchor')
+import matchers from './matchers.js'
+import { getUsedChars } from './get-used-chars.js'
+import { fsmify } from './fsmify.js'
+import { serialise } from './serialise.js'
+import * as constructors from './constructors.js'
+import { reduce } from './reduce.js'
+import { deAnchorPattern } from './de-anchor.js'
 
-const toFsm = pattern =>
-  fsmify(pattern, Object.keys(getUsedChars(pattern)).concat([anythingElse]))
-
-const greenRegExp = {
+export default {
   parse: string => {
     const pattern = matchers.pattern.parse1(string)
+
     let fsm
+    const toFsm = () => {
+      if (!fsm) {
+        fsm = fsmify(pattern, Object.keys(getUsedChars(pattern)).concat([anythingElse]))
+      }
+      return fsm
+    }
+
     return {
-      pattern: pattern,
-      toFsm: () => {
-        if (!fsm) {
-          fsm = toFsm(pattern)
-        }
-        return fsm
-      },
+      pattern,
+      toFsm,
 
       accepts: input => {
-        if (!fsm) {
-          fsm = toFsm(pattern)
-        }
-        return fsm.accepts(input.split(''))
+        return toFsm().accepts(input.split(''))
       },
 
       strings: otherChar => {
-        if (!fsm) {
-          fsm = toFsm(pattern)
-        }
-        const iterator = fsm.strings()
+        const iterator = toFsm().strings()
         return {
           next: () => {
             const result = iterator.next()
@@ -86,6 +79,7 @@ const greenRegExp = {
     const states = [f.initial]
     for (let i = 0; i < states.length; i++) {
       const current = states[i]
+      /* c8 ignore next */
       Object.keys(f.map[current] || {}).forEach(symbol => {
         const next = f.map[current][symbol]
         if (states.indexOf(next) === -1) {
@@ -221,5 +215,3 @@ const greenRegExp = {
   deAnchor: string =>
     serialise(deAnchorPattern(matchers.pattern.parse1(string)))
 }
-
-module.exports = greenRegExp
