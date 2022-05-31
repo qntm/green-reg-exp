@@ -8,34 +8,28 @@ import * as constructors from './constructors.js'
 import { reduce } from './reduce.js'
 import { deAnchorPattern } from './de-anchor.js'
 
-const toFsm = pattern =>
-  fsmify(pattern, Object.keys(getUsedChars(pattern)).concat([anythingElse]))
-
 export default {
   parse: string => {
     const pattern = matchers.pattern.parse1(string)
+
     let fsm
+    const toFsm = () => {
+      if (!fsm) {
+        fsm = fsmify(pattern, Object.keys(getUsedChars(pattern)).concat([anythingElse]))
+      }
+      return fsm
+    }
+
     return {
       pattern,
-      toFsm: () => {
-        if (!fsm) {
-          fsm = toFsm(pattern)
-        }
-        return fsm
-      },
+      toFsm,
 
       accepts: input => {
-        if (!fsm) {
-          fsm = toFsm(pattern)
-        }
-        return fsm.accepts(input.split(''))
+        return toFsm().accepts(input.split(''))
       },
 
       strings: otherChar => {
-        if (!fsm) {
-          fsm = toFsm(pattern)
-        }
-        const iterator = fsm.strings()
+        const iterator = toFsm().strings()
         return {
           next: () => {
             const result = iterator.next()
@@ -85,6 +79,7 @@ export default {
     const states = [f.initial]
     for (let i = 0; i < states.length; i++) {
       const current = states[i]
+      /* c8 ignore next */
       Object.keys(f.map[current] || {}).forEach(symbol => {
         const next = f.map[current][symbol]
         if (states.indexOf(next) === -1) {

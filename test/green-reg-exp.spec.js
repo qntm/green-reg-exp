@@ -165,10 +165,10 @@ describe('greenRegExp', function () {
       assert.strictEqual(greenRegExp.intersection('\\W*', '[a-g0-8$%\\^]+', '[^d]{2,8}'), '[$%\\^]{2,8}')
     })
 
+    // need more reduction rules before this will work
     xit('complex stars', () => {
       const intersection = greenRegExp.intersection('[bc]*[ab]*', '[ab]*[bc]*')
-      // /([ab]*a|[bc]*c)?b*/ or similar
-      console.log(intersection) // closer
+      assert.strictEqual(intersection, '([ab]*a|[bc]*c)?b*')
     })
 
     it('epsilon intersection', () => {

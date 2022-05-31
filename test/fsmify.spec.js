@@ -34,4 +34,11 @@ describe('fsmify', function () {
       assert.strictEqual(int5B.accepts(['c']), true)
     })
   })
+
+  describe('anchor', () => {
+    it('throws', () => {
+      const anchor = matchers.anchor.parse1('^')
+      assert.throws(() => fsmify(anchor), Error('Cannot make an FSM out of an anchor.'))
+    })
+  })
 })

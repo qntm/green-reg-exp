@@ -41,7 +41,9 @@ describe('deAnchor', () => {
     it('works', () => {
       assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('aaa^'))), '[]')
       assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('$bbb'))), '[]')
+      assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('$a{0,4}^'))), '')
       assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('a{0,4}^bcd$e{0,5}'))), 'bcd')
+      assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('a{0,4}$bcd^e{0,5}'))), '[]')
       assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('abc'))), '.*abc.*')
     })
   })
