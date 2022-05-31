@@ -1,7 +1,5 @@
 'use strict'
 
-const arrayOps = require('./array-ops')
-
 const equals = (self, other) => ({
   charclass: (self, other) =>
     self.type === other.type &&

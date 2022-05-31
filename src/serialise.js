@@ -42,7 +42,7 @@ const bracketEscape = chars => {
 }
 
 const serialise = thing => ({
-  charclass: ({chars, negated}) =>
+  charclass: ({ chars, negated }) =>
     JSON.stringify(chars) === JSON.stringify([
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
       'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
@@ -50,53 +50,63 @@ const serialise = thing => ({
       'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
       'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
       's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-    ]) ? (negated ? '\\W' : '\\w')
+    ])
+      ? (negated ? '\\W' : '\\w')
+      : JSON.stringify(chars) === JSON.stringify([
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+      ])
+        ? (negated ? '\\D' : '\\d')
+        : JSON.stringify(chars) === JSON.stringify([
+          '\t', '\n', '\v', '\f', '\r', ' '
+        ])
+          ? (negated ? '\\S' : '\\s')
+          : (chars.length === 0 && negated)
+              ? '.'
 
-    : JSON.stringify(chars) === JSON.stringify([
-      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-    ]) ? (negated ? '\\D' : '\\d')
+              // e.g. [^a]
+              : negated
+                ? '[^' + bracketEscape(chars) + ']'
 
-    : JSON.stringify(chars) === JSON.stringify([
-      '\t', '\n', '\v', '\f', '\r', ' '
-    ]) ? (negated ? '\\S' : '\\s')
+                // single character, not contained inside square brackets.
+                : chars.length === 1
+                  ? escapesRegular[chars[0]] || chars[0]
 
-    : (chars.length === 0 && negated) ? '.'
+                  // multiple characters (or possibly 0 characters)
+                  : '[' + bracketEscape(chars) + ']',
 
-    // e.g. [^a]
-    : negated ? '[^' + bracketEscape(chars) + ']'
+  multiplier: ({ lower, upper }) =>
+    lower === 0 && upper === 1
+      ? '?'
+      : lower === 1 && upper === 1
+        ? ''
+        : lower === 0 && upper === Infinity
+          ? '*'
+          : lower === 1 && upper === Infinity
+            ? '+'
+            : lower === upper
+              ? '{' + String(lower) + '}'
+              : upper === Infinity
+                ? '{' + String(lower) + ',}'
+                : '{' + String(lower) + ',' + String(upper) + '}',
 
-    // single character, not contained inside square brackets.
-    : chars.length === 1 ? escapesRegular[chars[0]] || chars[0]
+  multiplicand: ({ inner }) =>
+    inner.type === 'pattern'
+      ? '(' + serialise(inner) + ')'
+      : serialise(inner),
 
-    // multiple characters (or possibly 0 characters)
-    : '[' + bracketEscape(chars) + ']',
-
-  multiplier: ({lower, upper}) =>
-    lower === 0 && upper === 1 ? '?'
-    : lower === 1 && upper === 1 ? ''
-    : lower === 0 && upper === Infinity ? '*'
-    : lower === 1 && upper === Infinity ? '+'
-    : lower === upper ? '{' + String(lower) + '}'
-    : upper === Infinity ? '{' + String(lower) + ',}'
-    : '{' + String(lower) + ',' + String(upper) + '}',
-
-  multiplicand: ({inner}) =>
-    inner.type === 'pattern' ? '(' + serialise(inner) + ')'
-    : serialise(inner),
-
-  anchor: ({end}) =>
+  anchor: ({ end }) =>
     end ? '$' : '^',
 
-  mult: ({multiplicand, multiplier}) =>
+  mult: ({ multiplicand, multiplier }) =>
     serialise(multiplicand) + serialise(multiplier),
 
-  term: ({inner}) =>
+  term: ({ inner }) =>
     serialise(inner),
 
-  conc: ({terms}) =>
+  conc: ({ terms }) =>
     terms.map(serialise).join(''),
 
-  pattern: ({concs}) => {
+  pattern: ({ concs }) => {
     if (concs.length === 0) {
       return '[]'
     }

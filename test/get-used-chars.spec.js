@@ -1,14 +1,18 @@
-/* eslint-env jasmine */
+/* eslint-env mocha */
 
-'use strict'
+import assert from 'assert'
 
-const matchers = require('../src/matchers.js')
-const getUsedChars = require('../src/get-used-chars.js')
+import matchers from '../src/matchers.js'
+import getUsedChars from '../src/get-used-chars.js'
 
 describe('getUsedChars', function () {
   describe('charclass', function () {
     it('[^abc]', function () {
-      expect(getUsedChars(matchers.charclass.parse1('[^abc]'))).toEqual({a: true, b: true, c: true})
+      assert.deepStrictequal(getUsedChars(matchers.charclass.parse1('[^abc]')), {
+        a: true,
+        b: true,
+        c: true
+      })
     })
   })
 })

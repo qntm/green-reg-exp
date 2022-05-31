@@ -1,81 +1,85 @@
-/* eslint-env jasmine */
+/* eslint-env mocha */
 
-'use strict'
+import assert from 'assert'
 
-const {upliftAnchors, deAnchorConc, deAnchorPattern} = require('../src/de-anchor')
-const matchers = require('../src/matchers')
-const serialise = require('../src/serialise')
+import { upliftAnchors, deAnchorConc, deAnchorPattern } from '../src/de-anchor.js'
+import matchers from '../src/matchers.js'
+import serialise from '../src/serialise.js'
 
 describe('deAnchor', () => {
   describe('upliftAnchors', () => {
     it('works', () => {
-      expect(serialise(upliftAnchors(matchers.pattern.parse1('abc(def|ghi)jkl|mno')))).toBe('abc(def|ghi)jkl|mno')
-      expect(serialise(upliftAnchors(matchers.pattern.parse1('abc(^$|def|ghi)jkl|mno')))).toBe('abc^$jkl|abc(def|ghi)jkl|mno')
+      assert.strictEqual(serialise(upliftAnchors(matchers.pattern.parse1('abc(def|ghi)jkl|mno'))), 'abc(def|ghi)jkl|mno')
+      assert.strictEqual(serialise(upliftAnchors(matchers.pattern.parse1('abc(^$|def|ghi)jkl|mno'))), 'abc^$jkl|abc(def|ghi)jkl|mno')
     })
 
     it('handles cross products!', () => {
-      expect(
+      assert.strictEqual(
         serialise(
           upliftAnchors(
             matchers.pattern.parse1('(^|B)($|C)|D')
           )
-        )
-      ).toBe('^$|^C|B$|BC|D')
-      expect(
+        ),
+        '^$|^C|B$|BC|D'
+      )
+      assert.strictEqual(
         serialise(
           upliftAnchors(
             matchers.pattern.parse1('abc(^def$|ghi)jkl(^mno$|pqr)stu|vwx')
           )
-        )
-      ).toBe('abc^def$jkl^mno$stu|abc^def$jklpqrstu|abcghijkl^mno$stu|abcghijklpqrstu|vwx')
+        ),
+        'abc^def$jkl^mno$stu|abc^def$jklpqrstu|abcghijkl^mno$stu|abcghijklpqrstu|vwx'
+      )
     })
 
     it('works recursively', () => {
-      expect(serialise(upliftAnchors(matchers.pattern.parse1('aaa(((^|b)))ccc')))).toBe('aaa^ccc|aaabccc')
+      assert.strictEqual(serialise(upliftAnchors(matchers.pattern.parse1('aaa(((^|b)))ccc'))), 'aaa^ccc|aaabccc')
     })
   })
 
   describe('deAnchorConc', () => {
     it('works', () => {
-      expect(serialise(deAnchorConc(matchers.conc.parse1('aaa^')))).toBe('[]')
-      expect(serialise(deAnchorConc(matchers.conc.parse1('$bbb')))).toBe('[]')
-      expect(serialise(deAnchorConc(matchers.conc.parse1('a{0,4}^bcd$e{0,5}')))).toBe('bcd')
-      expect(serialise(deAnchorConc(matchers.conc.parse1('abc')))).toBe('.*abc.*')
+      assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('aaa^'))), '[]')
+      assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('$bbb'))), '[]')
+      assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('a{0,4}^bcd$e{0,5}'))), 'bcd')
+      assert.strictEqual(serialise(deAnchorConc(matchers.conc.parse1('abc'))), '.*abc.*')
     })
   })
 
   describe('deAnchorPattern', () => {
     it('works on simple things', () => {
-      expect(serialise(deAnchorPattern(matchers.pattern.parse1('aaa^')))).toBe('[]')
-      expect(serialise(deAnchorPattern(matchers.pattern.parse1('$bbb')))).toBe('[]')
-      expect(serialise(deAnchorPattern(matchers.pattern.parse1('a{0,4}^bcd$e{0,5}')))).toBe('bcd')
-      expect(serialise(deAnchorPattern(matchers.pattern.parse1('abc')))).toBe('.*abc.*')
+      assert.strictEqual(serialise(deAnchorPattern(matchers.pattern.parse1('aaa^'))), '[]')
+      assert.strictEqual(serialise(deAnchorPattern(matchers.pattern.parse1('$bbb'))), '[]')
+      assert.strictEqual(serialise(deAnchorPattern(matchers.pattern.parse1('a{0,4}^bcd$e{0,5}'))), 'bcd')
+      assert.strictEqual(serialise(deAnchorPattern(matchers.pattern.parse1('abc'))), '.*abc.*')
     })
 
     it('works on nasty things', () => {
-      expect(serialise(deAnchorPattern(matchers.pattern.parse1('abc(def|ghi)jkl|mno')))).toBe('.*abc(def|ghi)jkl.*|.*mno.*')
-      expect(serialise(deAnchorPattern(matchers.pattern.parse1('abc(^$|def|ghi)jkl|mno')))).toBe('.*abc(def|ghi)jkl.*|.*mno.*')
+      assert.strictEqual(serialise(deAnchorPattern(matchers.pattern.parse1('abc(def|ghi)jkl|mno'))), '.*abc(def|ghi)jkl.*|.*mno.*')
+      assert.strictEqual(serialise(deAnchorPattern(matchers.pattern.parse1('abc(^$|def|ghi)jkl|mno'))), '.*abc(def|ghi)jkl.*|.*mno.*')
     })
 
     it('handles cross products!', () => {
-      expect(
+      assert.strictEqual(
         serialise(
           deAnchorPattern(
             matchers.pattern.parse1('(^|B)($|C)|D')
           )
-        )
-      ).toBe('|C.*|.*B|.*BC.*|.*D.*')
-      expect(
+        ),
+        '|C.*|.*B|.*BC.*|.*D.*'
+      )
+      assert.strictEqual(
         serialise(
           deAnchorPattern(
             matchers.pattern.parse1('abc(^def$|ghi)jkl(^mno$|pqr)stu|vwx')
           )
-        )
-      ).toBe('.*abcghijklpqrstu.*|.*vwx.*')
+        ),
+        '.*abcghijklpqrstu.*|.*vwx.*'
+      )
     })
 
     it('works recursively', () => {
-      expect(serialise(deAnchorPattern(matchers.pattern.parse1('aaa(((^|b)))ccc')))).toBe('.*aaabccc.*')
+      assert.strictEqual(serialise(deAnchorPattern(matchers.pattern.parse1('aaa(((^|b)))ccc'))), '.*aaabccc.*')
     })
   })
 })

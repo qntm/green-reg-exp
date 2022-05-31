@@ -1,105 +1,110 @@
-/* eslint-env jasmine */
+/* eslint-env mocha */
 
-'use strict'
+import assert from 'assert'
 
-const constructors = require('../src/constructors')
-const matchers = require('../src/matchers')
-const reduce = require('../src/reduce')
+import constructors from '../src/constructors.js'
+import matchers from '../src/matchers.js'
+import reduce from '../src/reduce.js'
 
 describe('reduce', function () {
   describe('charclass', function () {
     it('works', function () {
-      expect(reduce(matchers.charclass.parse1('\\w'))).toEqual(matchers.charclass.parse1('\\w'))
+      assert.deepStrictEqual(reduce(matchers.charclass.parse1('\\w')), matchers.charclass.parse1('\\w'))
     })
   })
 
   describe('multiplicand', () => {
     it('works', () => {
-      expect(reduce(
-        constructors.multiplicand(
-          constructors.pattern([])
-        )
-      )).toEqual(matchers.multiplicand.parse1('[]'))
+      assert.deepStrictEqual(
+        reduce(
+          constructors.multiplicand(
+            constructors.pattern([])
+          )
+        ),
+        matchers.multiplicand.parse1('[]')
+      )
 
-      expect(reduce(matchers.multiplicand.parse1('([ab])')))
-        .toEqual(matchers.multiplicand.parse1('[ab]'))
+      assert.deepStrictEqual(
+        reduce(matchers.multiplicand.parse1('([ab])')),
+        matchers.multiplicand.parse1('[ab]')
+      )
     })
   })
 
   describe('mult', function () {
     it('works', function () {
-      expect(reduce(matchers.mult.parse1('([ab])*'))).toEqual(matchers.mult.parse1('[ab]*'))
-      expect(reduce(matchers.mult.parse1('([ab]*)'))).not.toEqual(matchers.mult.parse1('[ab]*'))
+      assert.deepStrictEqual(reduce(matchers.mult.parse1('([ab])*')), matchers.mult.parse1('[ab]*'))
+      assert.notDeepStrictEqual(reduce(matchers.mult.parse1('([ab]*)')), matchers.mult.parse1('[ab]*'))
     })
   })
 
   describe('conc', () => {
     it('come on', () => {
-      expect(reduce(matchers.conc.parse1('(d())'))).toEqual(matchers.conc.parse1('d'))
-      expect(reduce(matchers.conc.parse1('((a))'))).toEqual(matchers.conc.parse1('a'))
-      expect(reduce(matchers.conc.parse1('(d(a))'))).toEqual(matchers.conc.parse1('da'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(d())')), matchers.conc.parse1('d'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('((a))')), matchers.conc.parse1('a'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(d(a))')), matchers.conc.parse1('da'))
     })
 
     it('this one', () => {
-      expect(reduce(matchers.conc.parse1('(|c)'))).toEqual(matchers.conc.parse1('(|c)'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(|c)')), matchers.conc.parse1('(|c)'))
     })
 
     it('what', () => {
-      expect(reduce(matchers.conc.parse1('(c)'))).toEqual(matchers.conc.parse1('c'))
-      expect(reduce(matchers.conc.parse1('((c))'))).not.toEqual(matchers.conc.parse1(''))
-      expect(reduce(matchers.conc.parse1('((c))'))).toEqual(matchers.conc.parse1('c'))
-      expect(reduce(matchers.conc.parse1('(|c)'))).toEqual(matchers.conc.parse1('(|c)'))
-      expect(reduce(matchers.conc.parse1('((|c))'))).toEqual(matchers.conc.parse1('(|c)'))
-      expect(reduce(matchers.conc.parse1('((a|c))'))).toEqual(matchers.conc.parse1('[ac]'))
-      expect(reduce(matchers.conc.parse1('(d(a|c))'))).toEqual(matchers.conc.parse1('d[ac]'))
-      expect(reduce(matchers.conc.parse1('(d(ab|c))'))).toEqual(matchers.conc.parse1('d(ab|c)'))
-      expect(reduce(matchers.conc.parse1('a(d(ab|c))'))).toEqual(matchers.conc.parse1('ad(ab|c)'))
-      expect(reduce(matchers.conc.parse1('a(d(ab|a*c))'))).toEqual(matchers.conc.parse1('ad(ab|a*c)'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(c)')), matchers.conc.parse1('c'))
+      assert.notDeepStrictEqual(reduce(matchers.conc.parse1('((c))')), matchers.conc.parse1(''))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('((c))')), matchers.conc.parse1('c'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(|c)')), matchers.conc.parse1('(|c)'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('((|c))')), matchers.conc.parse1('(|c)'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('((a|c))')), matchers.conc.parse1('[ac]'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(d(a|c))')), matchers.conc.parse1('d[ac]'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(d(ab|c))')), matchers.conc.parse1('d(ab|c)'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('a(d(ab|c))')), matchers.conc.parse1('ad(ab|c)'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('a(d(ab|a*c))')), matchers.conc.parse1('ad(ab|a*c)'))
     })
 
     it('works', () => {
-      expect(reduce(matchers.conc.parse1('abc[]*def'))).toEqual(matchers.conc.parse1('abcdef'))
-      expect(reduce(matchers.conc.parse1('abc[]{0}def'))).toEqual(matchers.conc.parse1('abcdef'))
-      expect(reduce(matchers.conc.parse1('[]?'))).toEqual(matchers.conc.parse1(''))
-      expect(reduce(matchers.conc.parse1('([ab])*'))).toEqual(matchers.conc.parse1('[ab]*'))
-      expect(reduce(matchers.conc.parse1('abc()d()ef'))).toEqual(matchers.conc.parse1('abcdef'))
-      expect(reduce(matchers.conc.parse1('a(d(abc))'))).toEqual(matchers.conc.parse1('adabc'))
-      expect(reduce(matchers.conc.parse1('abc(de)f'))).toEqual(matchers.conc.parse1('abcdef'))
-      expect(reduce(matchers.conc.parse1('abc[]def'))).toEqual(matchers.conc.parse1('[]'))
-      expect(reduce(matchers.conc.parse1('ab[]c[]'))).toEqual(matchers.conc.parse1('[]'))
-      expect(reduce(matchers.conc.parse1('[]'))).toEqual(matchers.conc.parse1('[]'))
-      expect(reduce(matchers.conc.parse1('(((aby)))'))).toEqual(matchers.conc.parse1('aby'))
-      expect(reduce(matchers.conc.parse1('(aaaa)'))).toEqual(matchers.conc.parse1('aaaa'))
-      expect(reduce(matchers.conc.parse1('()'))).toEqual(matchers.conc.parse1(''))
-      expect(reduce(matchers.conc.parse1('(()())'))).toEqual(matchers.conc.parse1(''))
-      expect(reduce(matchers.conc.parse1('((((()))))((())())'))).toEqual(matchers.conc.parse1(''))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('abc[]*def')), matchers.conc.parse1('abcdef'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('abc[]{0}def')), matchers.conc.parse1('abcdef'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('[]?')), matchers.conc.parse1(''))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('([ab])*')), matchers.conc.parse1('[ab]*'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('abc()d()ef')), matchers.conc.parse1('abcdef'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('a(d(abc))')), matchers.conc.parse1('adabc'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('abc(de)f')), matchers.conc.parse1('abcdef'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('abc[]def')), matchers.conc.parse1('[]'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('ab[]c[]')), matchers.conc.parse1('[]'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('[]')), matchers.conc.parse1('[]'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(((aby)))')), matchers.conc.parse1('aby'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(aaaa)')), matchers.conc.parse1('aaaa'))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('()')), matchers.conc.parse1(''))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('(()())')), matchers.conc.parse1(''))
+      assert.deepStrictEqual(reduce(matchers.conc.parse1('((((()))))((())())')), matchers.conc.parse1(''))
     })
   })
 
   describe('pattern', () => {
     it('works', () => {
-      expect(reduce(matchers.pattern.parse1('((a))'))).toEqual(matchers.pattern.parse1('a'))
-      expect(reduce(matchers.pattern.parse1('((ac))'))).toEqual(matchers.pattern.parse1('ac'))
-      expect(reduce(matchers.pattern.parse1('(abc|[]|def)'))).toEqual(matchers.pattern.parse1('(abc|def)'))
-      expect(reduce(matchers.pattern.parse1('(|[]|)'))).toEqual(matchers.pattern.parse1(''))
-      expect(reduce(matchers.pattern.parse1('[]'))).toEqual(constructors.pattern([]))
-      expect(reduce(matchers.pattern.parse1('([ab])*'))).toEqual(matchers.pattern.parse1('[ab]*'))
-      expect(reduce(matchers.pattern.parse1('abc|abc'))).toEqual(matchers.pattern.parse1('abc'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('((a))')), matchers.pattern.parse1('a'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('((ac))')), matchers.pattern.parse1('ac'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('(abc|[]|def)')), matchers.pattern.parse1('(abc|def)'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('(|[]|)')), matchers.pattern.parse1(''))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[]')), constructors.pattern([]))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('([ab])*')), matchers.pattern.parse1('[ab]*'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('abc|abc')), matchers.pattern.parse1('abc'))
     })
 
     it('combines charclasses', () => {
-      expect(reduce(matchers.pattern.parse1('a|b'))).toEqual(matchers.pattern.parse1('[ab]'))
-      expect(reduce(matchers.pattern.parse1('a|b*'))).toEqual(matchers.pattern.parse1('a|b*'))
-      expect(reduce(matchers.pattern.parse1('a|bc'))).toEqual(matchers.pattern.parse1('a|bc'))
-      expect(reduce(matchers.pattern.parse1('a|b|c'))).toEqual(matchers.pattern.parse1('[abc]'))
-      expect(reduce(matchers.pattern.parse1('[abc]|[cde]'))).toEqual(matchers.pattern.parse1('[a-e]'))
-      expect(reduce(matchers.pattern.parse1('[a]|[^ab]'))).toEqual(matchers.pattern.parse1('[^b]'))
-      expect(reduce(matchers.pattern.parse1('[a]|[^ab]'))).toEqual(matchers.pattern.parse1('[^b]'))
-      expect(reduce(matchers.pattern.parse1('[^abc]|[bc]'))).toEqual(matchers.pattern.parse1('[^a]'))
-      expect(reduce(matchers.pattern.parse1('[^abc]|[abc]'))).toEqual(matchers.pattern.parse1('.'))
-      expect(reduce(matchers.pattern.parse1('((a|c))'))).toEqual(matchers.pattern.parse1('[ac]'))
-      expect(reduce(matchers.pattern.parse1('[2-9]|0'))).toEqual(matchers.pattern.parse1('[2-90]'))
-      expect(reduce(matchers.pattern.parse1('[1-9]|0'))).toEqual(matchers.pattern.parse1('[1-90]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('a|b')), matchers.pattern.parse1('[ab]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('a|b*')), matchers.pattern.parse1('a|b*'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('a|bc')), matchers.pattern.parse1('a|bc'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('a|b|c')), matchers.pattern.parse1('[abc]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[abc]|[cde]')), matchers.pattern.parse1('[a-e]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[a]|[^ab]')), matchers.pattern.parse1('[^b]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[a]|[^ab]')), matchers.pattern.parse1('[^b]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[^abc]|[bc]')), matchers.pattern.parse1('[^a]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[^abc]|[abc]')), matchers.pattern.parse1('.'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('((a|c))')), matchers.pattern.parse1('[ac]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[2-9]|0')), matchers.pattern.parse1('[2-90]'))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[1-9]|0')), matchers.pattern.parse1('[1-90]'))
     })
   })
 })

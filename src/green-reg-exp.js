@@ -1,13 +1,13 @@
 'use strict'
 
-const {anythingElse, intersection} = require('green-fsm')
+const { anythingElse, intersection } = require('green-fsm')
 const matchers = require('./matchers')
 const getUsedChars = require('./get-used-chars')
 const fsmify = require('./fsmify')
 const serialise = require('./serialise')
 const constructors = require('./constructors')
 const reduce = require('./reduce')
-const {deAnchorPattern} = require('./de-anchor')
+const { deAnchorPattern } = require('./de-anchor')
 
 const toFsm = pattern =>
   fsmify(pattern, Object.keys(getUsedChars(pattern)).concat([anythingElse]))
@@ -17,7 +17,7 @@ const greenRegExp = {
     const pattern = matchers.pattern.parse1(string)
     let fsm
     return {
-      pattern: pattern,
+      pattern,
       toFsm: () => {
         if (!fsm) {
           fsm = toFsm(pattern)

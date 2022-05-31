@@ -127,11 +127,11 @@ const reduce = thing => ({
     const nonCharclassConcs = []
     pattern.concs.forEach(conc => {
       if (
-        conc.terms.length === 1
-        && conc.terms[0].inner.type === 'mult'
-        && conc.terms[0].inner.multiplicand.inner.type === 'charclass'
-        && conc.terms[0].inner.multiplier.lower === 1
-        && conc.terms[0].inner.multiplier.upper === 1
+        conc.terms.length === 1 &&
+        conc.terms[0].inner.type === 'mult' &&
+        conc.terms[0].inner.multiplicand.inner.type === 'charclass' &&
+        conc.terms[0].inner.multiplier.lower === 1 &&
+        conc.terms[0].inner.multiplier.upper === 1
       ) {
         charclassConcs.push(conc)
       } else {

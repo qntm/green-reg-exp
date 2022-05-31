@@ -1,5 +1,3 @@
-'use strict'
-
 const { UNICODE, or, fixed, seq, resolve, star, plus } = require('green-parse')
 const constructors = require('./constructors.js')
 const escapesBracket = require('./escapes-bracket.js')
@@ -14,7 +12,7 @@ const matchEscapedBracketedChar = or(Object
   .keys(escapesBracket)
   .map(before =>
     fixed(escapesBracket[before])
-    .map(() => before)
+      .map(() => before)
   )
 )
 
@@ -54,37 +52,41 @@ const matchRuns = matchRun.star()
 
 // "[^dsgsdg]"
 const matchBracketedNegated = seq([fixed('[^'), matchRuns, fixed(']')])
-  .map(([open, runs, closed]) => ({chars: runs, negated: true}))
+  .map(([open, runs, closed]) => ({ chars: runs, negated: true }))
 
 // "[sdfsf]"
 const matchBracketed = seq([fixed('['), matchRuns, fixed(']')])
-  .map(([open, runs, closed]) => ({chars: runs, negated: false}))
+  .map(([open, runs, closed]) => ({ chars: runs, negated: false }))
 
 // Textual representations of standard character classes
 const matchShorthand = or([
-  fixed('\\w').map(() => ({chars: [
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-    'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-    'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
-    'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-    's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-  ],
-    negated: false})),
-  fixed('\\W').map(() => ({chars: [
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-    'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-    'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
-    'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-    's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-  ],
-    negated: true})),
-  fixed('\\d').map(() => ({chars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], negated: false})),
-  fixed('\\D').map(() => ({chars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], negated: true})),
-  fixed('\\s').map(() => ({chars: ['\t', '\n', '\v', '\f', '\r', ' '], negated: false})),
-  fixed('\\S').map(() => ({chars: ['\t', '\n', '\v', '\f', '\r', ' '], negated: true})),
-  fixed('.').map(() => ({chars: [], negated: true}))
+  fixed('\\w').map(() => ({
+    chars: [
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+      'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+      'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+      'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+      'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+      's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+    ],
+    negated: false
+  })),
+  fixed('\\W').map(() => ({
+    chars: [
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+      'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+      'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+      'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+      'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+      's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+    ],
+    negated: true
+  })),
+  fixed('\\d').map(() => ({ chars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], negated: false })),
+  fixed('\\D').map(() => ({ chars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], negated: true })),
+  fixed('\\s').map(() => ({ chars: ['\t', '\n', '\v', '\f', '\r', ' '], negated: false })),
+  fixed('\\S').map(() => ({ chars: ['\t', '\n', '\v', '\f', '\r', ' '], negated: true })),
+  fixed('.').map(() => ({ chars: [], negated: true }))
 ])
 
 // single non-special character, not contained inside square brackets
@@ -104,42 +106,42 @@ const matchChar = or([
   matchNonEscapedCharacter,
   matchEscapedCharacter
 ])
-  .map(match => ({chars: [match], negated: false}))
+  .map(match => ({ chars: [match], negated: false }))
 
-var matchZero = fixed('0')
+const matchZero = fixed('0')
   .map(() => 0)
 
-var matchNonZeroDigit = or('123456789'.split('').map(fixed))
+const matchNonZeroDigit = or('123456789'.split('').map(fixed))
   .map(match => parseInt(match, 10))
 
-var matchDigit = or('0123456789'.split('').map(fixed))
+const matchDigit = or('0123456789'.split('').map(fixed))
   .map(match => parseInt(match, 10))
 
-var matchPositiveInteger = seq([matchNonZeroDigit, matchDigit.star()])
+const matchPositiveInteger = seq([matchNonZeroDigit, matchDigit.star()])
   .map(([nonZeroDigit, digits]) => digits.reduce((acc, digit) => acc * 10 + digit, nonZeroDigit))
 
 // "" empty string = infinite bound as in "{4,}"
-var matchUnbounded = fixed('')
+const matchUnbounded = fixed('')
   .map(() => Infinity)
 
 // In the new universe it shouldn't matter what order these appear in!
-var matchBound = or([matchZero, matchPositiveInteger, matchUnbounded])
+const matchBound = or([matchZero, matchPositiveInteger, matchUnbounded])
 
 // {2,3} or {2,}
-var matchTwoBounds = seq([fixed('{'), matchBound, fixed(','), matchBound, fixed('}')])
-  .map(([open, lower, comma, upper, closed]) => ({lower, upper}))
+const matchTwoBounds = seq([fixed('{'), matchBound, fixed(','), matchBound, fixed('}')])
+  .map(([open, lower, comma, upper, closed]) => ({ lower, upper }))
 
 // {2}
-var matchOneBound = seq([fixed('{'), matchBound, fixed('}')])
-  .map(([open, bound, lower]) => ({lower: bound, upper: bound}))
+const matchOneBound = seq([fixed('{'), matchBound, fixed('}')])
+  .map(([open, bound, lower]) => ({ lower: bound, upper: bound }))
 
 // "?"/"*"/"+"/""
 // Thanks to iterators these no longer need to be in any particular order?
-var matchSymbolicMultiplier = or([
-  fixed('').map(value => ({lower: 1, upper: 1})),
-  fixed('?').map(value => ({lower: 0, upper: 1})),
-  fixed('*').map(value => ({lower: 0, upper: Infinity})),
-  fixed('+').map(value => ({lower: 1, upper: Infinity}))
+const matchSymbolicMultiplier = or([
+  fixed('').map(value => ({ lower: 1, upper: 1 })),
+  fixed('?').map(value => ({ lower: 0, upper: 1 })),
+  fixed('*').map(value => ({ lower: 0, upper: Infinity })),
+  fixed('+').map(value => ({ lower: 1, upper: Infinity }))
 ])
 
 module.exports = resolve(ref => ({
@@ -149,14 +151,14 @@ module.exports = resolve(ref => ({
     matchBracketed,
     matchBracketedNegated
   ])
-    .map(({chars, negated}) => constructors.charclass(chars, negated)),
+    .map(({ chars, negated }) => constructors.charclass(chars, negated)),
 
   multiplier: or([
     matchSymbolicMultiplier,
     matchOneBound,
     matchTwoBounds
   ])
-    .map(({lower, upper}) => constructors.multiplier(lower, upper)),
+    .map(({ lower, upper }) => constructors.multiplier(lower, upper)),
 
   multiplicand: or([
     ref('charclass'),

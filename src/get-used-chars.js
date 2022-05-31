@@ -4,25 +4,25 @@
 // are used characters.
 
 const getUsedChars = thing => ({
-  charclass: ({chars}) =>
-    Object.assign.apply(Object, [{}].concat(chars.map(chr => ({[chr]: true})))),
+  charclass: ({ chars }) =>
+    Object.assign.apply(Object, [{}].concat(chars.map(chr => ({ [chr]: true })))),
 
-  multiplicand: ({inner}) =>
+  multiplicand: ({ inner }) =>
     getUsedChars(inner),
 
-  mult: ({multiplicand}) =>
+  mult: ({ multiplicand }) =>
     getUsedChars(multiplicand),
 
-  anchor: ({end}) =>
+  anchor: ({ end }) =>
     ({}),
 
-  term: ({inner}) =>
+  term: ({ inner }) =>
     getUsedChars(inner),
 
-  conc: ({terms}) =>
+  conc: ({ terms }) =>
     Object.assign.apply(Object, [{}].concat(terms.map(getUsedChars))),
 
-  pattern: ({concs}) =>
+  pattern: ({ concs }) =>
     Object.assign.apply(Object, [{}].concat(concs.map(getUsedChars)))
 })[thing.type](thing)
 

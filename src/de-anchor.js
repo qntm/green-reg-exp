@@ -2,7 +2,6 @@
 
 const equals = require('./equals')
 const constructors = require('./constructors')
-const serialise = require('./serialise')
 const arrayOps = require('./array-ops')
 const matchesEmptyString = require('./matches-empty-string')
 
@@ -20,8 +19,8 @@ const upliftAnchors = pattern => {
       const term = conc.terms[i]
       const termArrays = []
       if (
-        term.inner.type === 'mult'
-        && term.inner.multiplicand.inner.type === 'pattern'
+        term.inner.type === 'mult' &&
+        term.inner.multiplicand.inner.type === 'pattern'
       ) {
         const pattern2 = upliftAnchors(term.inner.multiplicand.inner)
         const concsWithNoAnchors = []
@@ -148,4 +147,4 @@ const deAnchorPattern = pattern =>
       .filter(conc => !equals(conc, nothing))
   )
 
-module.exports = {deAnchorPattern, deAnchorConc, upliftAnchors}
+module.exports = { deAnchorPattern, deAnchorConc, upliftAnchors }

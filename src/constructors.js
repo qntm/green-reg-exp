@@ -6,7 +6,7 @@ const charclass = (chars, negated) => {
     throw Error('`chars` must be an array')
   }
 
-  if (arguments.length < 2) {
+  if (negated === undefined) {
     throw Error('Must specify whether negated')
   }
 
@@ -24,7 +24,7 @@ const charclass = (chars, negated) => {
     seen[chr] = true
   })
 
-  return {type: 'charclass', chars, negated}
+  return { type: 'charclass', chars, negated }
 }
 
 /**
@@ -45,14 +45,14 @@ const multiplier = (lower, upper) => {
     throw Error('Invalid multiplier bounds: ' + String(lower) + ' and ' + String(upper))
   }
 
-  return {type: 'multiplier', lower, upper}
+  return { type: 'multiplier', lower, upper }
 }
 
 const multiplicand = inner => {
   if (inner.type !== 'charclass' && inner.type !== 'pattern') {
     throw Error(inner.type)
   }
-  return {type: 'multiplicand', inner}
+  return { type: 'multiplicand', inner }
 }
 
 /**
@@ -67,7 +67,7 @@ const mult = (multiplicand, multiplier) => {
   if (multiplier.type !== 'multiplier') {
     throw Error()
   }
-  return {type: 'mult', multiplicand, multiplier}
+  return { type: 'mult', multiplicand, multiplier }
 }
 
 /**
@@ -76,7 +76,7 @@ const mult = (multiplicand, multiplier) => {
   anchor(false) = "^", anchor(true) = "$"
 */
 const anchor = end => {
-  return {type: 'anchor', end}
+  return { type: 'anchor', end }
 }
 
 const term = inner => {
@@ -84,7 +84,7 @@ const term = inner => {
     console.error(inner)
     throw Error('Bad type ' + inner.type + ', expected mult or anchor')
   }
-  return {type: 'term', inner}
+  return { type: 'term', inner }
 }
 
 /**
@@ -95,7 +95,7 @@ const conc = terms => {
     console.error(terms)
     throw Error('Bad type ' + term.type + ', expected term')
   }
-  return {type: 'conc', terms}
+  return { type: 'conc', terms }
 }
 
 /**
@@ -118,7 +118,7 @@ const pattern = concs => {
     console.error(conc)
     throw Error('Bad type')
   }
-  return {type: 'pattern', concs}
+  return { type: 'pattern', concs }
 }
 
-module.exports = {charclass, multiplier, multiplicand, mult, conc, pattern, term, anchor}
+module.exports = { charclass, multiplier, multiplicand, mult, conc, pattern, term, anchor }

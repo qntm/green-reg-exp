@@ -1,4 +1,4 @@
-/* eslint-env jasmine */
+/* eslint-env mocha */
 
 'use strict'
 

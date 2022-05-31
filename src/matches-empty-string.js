@@ -3,19 +3,19 @@
 const matchesEmptyString = thing => ({
   charclass: () => false,
 
-  multiplicand: ({inner}) =>
+  multiplicand: ({ inner }) =>
     matchesEmptyString(inner),
 
-  mult: ({multiplicand, multiplier}) =>
+  mult: ({ multiplicand, multiplier }) =>
     matchesEmptyString(multiplicand) || multiplier.lower === 0,
 
-  term: ({inner}) =>
+  term: ({ inner }) =>
     matchesEmptyString(inner),
 
-  conc: ({terms}) =>
+  conc: ({ terms }) =>
     terms.every(matchesEmptyString),
 
-  pattern: ({concs}) =>
+  pattern: ({ concs }) =>
     concs.any(matchesEmptyString)
 })[thing.type](thing)
 

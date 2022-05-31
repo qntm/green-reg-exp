@@ -2,7 +2,7 @@
 // functionality which has already been unit-tested. If this isn't possible, then
 // additional tests are required!
 
-/* eslint-env jasmine */
+/* eslint-env mocha */
 
 'use strict'
 
