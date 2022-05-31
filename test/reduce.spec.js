@@ -6,9 +6,9 @@ import * as constructors from '../src/constructors.js'
 import matchers from '../src/matchers.js'
 import { reduce } from '../src/reduce.js'
 
-describe('reduce', function () {
-  describe('charclass', function () {
-    it('works', function () {
+describe('reduce', () => {
+  describe('charclass', () => {
+    it('works', () => {
       assert.deepStrictEqual(reduce(matchers.charclass.parse1('\\w')), matchers.charclass.parse1('\\w'))
     })
   })
@@ -31,8 +31,8 @@ describe('reduce', function () {
     })
   })
 
-  describe('mult', function () {
-    it('works', function () {
+  describe('mult', () => {
+    it('works', () => {
       assert.deepStrictEqual(reduce(matchers.mult.parse1('([ab])*')), matchers.mult.parse1('[ab]*'))
       assert.notDeepStrictEqual(reduce(matchers.mult.parse1('([ab]*)')), matchers.mult.parse1('[ab]*'))
     })

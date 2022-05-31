@@ -6,9 +6,9 @@ import { anythingElse } from 'green-fsm'
 import matchers from '../src/matchers.js'
 import { fsmify } from '../src/fsmify.js'
 
-describe('fsmify', function () {
-  describe('charclass', function () {
-    it('[^a]', function () {
+describe('fsmify', () => {
+  describe('charclass', () => {
+    it('[^a]', () => {
       const nota = fsmify(matchers.charclass.parse1('[^a]'), [anythingElse, 'a'])
 
       assert.strictEqual(nota.accepts([]), false)
@@ -22,9 +22,9 @@ describe('fsmify', function () {
     })
   })
 
-  describe('mult', function () {
+  describe('mult', () => {
     // Odd bug with ([bc]*c)?[ab]*
-    it('odd bug', function () {
+    it('odd bug', () => {
       const bcStar = matchers.mult.parse1('[bc]*')
       const int5A = fsmify(bcStar, ['a', 'b', 'c', anythingElse])
       assert.strictEqual(int5A.accepts([]), true)

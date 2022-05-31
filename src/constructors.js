@@ -7,7 +7,7 @@ export const charclass = (chars, negated) => {
     throw Error('Must specify whether negated')
   }
 
-  chars.forEach(function (chr) {
+  chars.forEach(chr => {
     if (typeof chr !== 'string' || chr.length !== 1) {
       throw Error('Unacceptable character ' + chr)
     }

@@ -4,10 +4,10 @@ import assert from 'assert'
 
 import greenRegExp from '../src/green-reg-exp.js'
 
-describe('greenRegExp', function () {
+describe('greenRegExp', () => {
   describe('parse', () => {
-    describe('accepts', function () {
-      it('works', function () {
+    describe('accepts', () => {
+      it('works', () => {
         assert.strictEqual(greenRegExp.parse('a.b').accepts('acb'), true)
 
         const bad = greenRegExp.parse('0{2}|1{2}')
@@ -16,7 +16,7 @@ describe('greenRegExp', function () {
         assert.strictEqual(bad.accepts('01'), false)
       })
 
-      it('bug #28', function () {
+      it('bug #28', () => {
         // Starification was broken in FSMs
         assert.strictEqual(greenRegExp.parse('ab*').accepts('a'), true)
         assert.strictEqual(greenRegExp.parse('ab*').accepts('b'), false)
@@ -24,7 +24,7 @@ describe('greenRegExp', function () {
         assert.strictEqual(greenRegExp.parse('(ab*)*').accepts('bb'), false)
       })
 
-      it('block comment', function () {
+      it('block comment', () => {
         // I went through several incorrect regexes for C block comments. Here we show
         // why the first few attempts were incorrect
         const a = greenRegExp.parse('/\\*(([^*]|\\*+[^*/])*)\\*/')
@@ -43,7 +43,7 @@ describe('greenRegExp', function () {
         assert.strictEqual(c.accepts('/****/'), true)
       })
 
-      it('pattern', function () {
+      it('pattern', () => {
         // "a[^a]"
         const anota = greenRegExp.parse('a[^a]')
         assert.strictEqual(anota.accepts('a'), false)
@@ -76,8 +76,8 @@ describe('greenRegExp', function () {
       })
     })
 
-    describe('strings', function () {
-      it('mult', function () {
+    describe('strings', () => {
+      it('mult', () => {
         // One term
         const gen1 = greenRegExp.parse('[ab]').strings('c')
         assert.strictEqual(gen1.next().value, 'a')
@@ -101,7 +101,7 @@ describe('greenRegExp', function () {
         assert.strictEqual(genStar.next().value, 'aaa')
       })
 
-      it('infinite generation', function () {
+      it('infinite generation', () => {
         // Infinite generator, flummoxes both depth-first and breadth-first searches
         const gen = greenRegExp.parse('a*b*').strings('c')
         assert.strictEqual(gen.next().value, '')
@@ -117,7 +117,7 @@ describe('greenRegExp', function () {
         assert.strictEqual(gen.next().value, 'aaaa')
       })
 
-      it('wildcards', function () {
+      it('wildcards', () => {
         // Generator needs to handle wildcards as well. Wildcards come last.
         const gen = greenRegExp.parse('a.b').strings('c')
         assert.strictEqual(gen.next().value, 'aab')
@@ -126,7 +126,7 @@ describe('greenRegExp', function () {
         assert.strictEqual(gen.next().done, true)
       })
 
-      it('pattern generators', function () {
+      it('pattern generators', () => {
         const genAbcde = greenRegExp.parse('[ab]|[cde]').strings('f')
         assert.strictEqual(genAbcde.next().value, 'a')
         assert.strictEqual(genAbcde.next().value, 'b')

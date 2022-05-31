@@ -5,9 +5,9 @@ import assert from 'assert'
 import * as constructors from '../src/constructors.js'
 import matchers from '../src/matchers.js'
 
-describe('matchers', function () {
-  describe('charclass', function () {
-    it('works', function () {
+describe('matchers', () => {
+  describe('charclass', () => {
+    it('works', () => {
       assert.deepStrictEqual(matchers.charclass.match('a', 0).next().value, {
         j: 1,
         match: constructors.charclass(['a'], false)
@@ -19,8 +19,8 @@ describe('matchers', function () {
     })
   })
 
-  describe('mult', function () {
-    it('works', function () {
+  describe('mult', () => {
+    it('works', () => {
       const iterator = matchers.mult.match('abcde[^fg]*', 5)
       assert.deepStrictEqual(iterator.next().value, {
         j: 10,
