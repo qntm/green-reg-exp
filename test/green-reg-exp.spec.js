@@ -155,10 +155,19 @@ describe('greenRegExp', () => {
       assert.strictEqual(greenRegExp.intersection('abc...', '...def'), 'abcdef')
     })
 
-    it('dates', () => {
-      assert.strictEqual(greenRegExp.intersection('[01][01]00', '00.*'), '0000')
-      assert.strictEqual(greenRegExp.intersection('[01][01]00-00-00', '00.*'), '0000-00-00')
-      assert.strictEqual(greenRegExp.intersection('\\d{4}-\\d{2}-\\d{2}', '19.*'), '19\\d\\d-\\d\\d-\\d\\d')
+    // These three collectively take too long!
+    describe('dates', () => {
+      it('dates 1', () => {
+        assert.strictEqual(greenRegExp.intersection('[01][01]00', '00.*'), '0000')
+      })
+
+      it('dates 2', () => {
+        assert.strictEqual(greenRegExp.intersection('[01][01]00-00-00', '00.*'), '0000-00-00')
+      })
+
+      it('dates 3', () => {
+        assert.strictEqual(greenRegExp.intersection('\\d{4}-\\d{2}-\\d{2}', '19.*'), '19\\d\\d-\\d\\d-\\d\\d')
+      })
     })
 
     xit('symbols', () => {
