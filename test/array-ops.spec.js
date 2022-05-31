@@ -2,7 +2,7 @@
 
 import assert from 'assert'
 
-import arrayOps from '../src/array-ops.js'
+import { arrayOps } from '../src/array-ops.js'
 
 describe('arrayOps', () => {
   describe('and', () => {

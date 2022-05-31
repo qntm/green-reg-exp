@@ -3,7 +3,7 @@
 import assert from 'assert'
 
 import matchers from '../src/matchers.js'
-import serialise from '../src/serialise.js'
+import { serialise } from '../src/serialise.js'
 
 describe('serialise', () => {
   describe('charclass', () => {

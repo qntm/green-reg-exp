@@ -1,9 +1,7 @@
-'use strict'
-
 // Note that used characters are returned as an OBJECT whose KEYS
 // are used characters.
 
-const getUsedChars = thing => ({
+export const getUsedChars = thing => ({
   charclass: ({ chars }) =>
     Object.assign.apply(Object, [{}].concat(chars.map(chr => ({ [chr]: true })))),
 
@@ -25,5 +23,3 @@ const getUsedChars = thing => ({
   pattern: ({ concs }) =>
     Object.assign.apply(Object, [{}].concat(concs.map(getUsedChars)))
 })[thing.type](thing)
-
-module.exports = getUsedChars

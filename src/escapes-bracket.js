@@ -3,7 +3,7 @@
 // To be interpreted literally, they must be escaped with a backslash.
 // Notice how much smaller this class is than the one above; note also that the
 // hyphen and caret do NOT appear above.
-module.exports = {
+export default {
   '\u0000': '\\u0000',
   '\u0001': '\\u0001',
   '\u0002': '\\u0002',

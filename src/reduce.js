@@ -1,16 +1,14 @@
-'use strict'
-
-const constructors = require('./constructors')
-const arrayOps = require('./array-ops')
-const equals = require('./equals')
-const matchers = require('./matchers')
+import * as constructors from './constructors.js'
+import { arrayOps } from './array-ops.js'
+import { equals } from './equals.js'
+import matchers from './matchers.js'
 
 // Here's the hard rule: a reducer MUST return the same type of object.
 // E.g. a pattern reducer may NOT return a charclass. It must return
 // a pattern. However, a multiplicand reducer MAY return a new multiplicand
 // object whose inner object is a charclass, not a pattern.
 
-const reduce = thing => ({
+export const reduce = thing => ({
   // charclasses can't be reduced.
   charclass: charclass =>
     charclass,
@@ -200,8 +198,6 @@ const reduce = thing => ({
     return pattern
   }
 })[thing.type](thing)
-
-module.exports = reduce
 
 /*
   conc

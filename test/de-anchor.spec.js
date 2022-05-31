@@ -4,7 +4,7 @@ import assert from 'assert'
 
 import { upliftAnchors, deAnchorConc, deAnchorPattern } from '../src/de-anchor.js'
 import matchers from '../src/matchers.js'
-import serialise from '../src/serialise.js'
+import { serialise } from '../src/serialise.js'
 
 describe('deAnchor', () => {
   describe('upliftAnchors', () => {

@@ -1,7 +1,5 @@
-'use strict'
-
-const escapesBracket = require('./escapes-bracket')
-const escapesRegular = require('./escapes-regular')
+import escapesBracket from './escapes-bracket.js'
+import escapesRegular from './escapes-regular.js'
 
 const bracketEscape = chars => {
   const runs = []
@@ -41,7 +39,7 @@ const bracketEscape = chars => {
     .join('')
 }
 
-const serialise = thing => ({
+export const serialise = thing => ({
   charclass: ({ chars, negated }) =>
     JSON.stringify(chars) === JSON.stringify([
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
@@ -113,5 +111,3 @@ const serialise = thing => ({
     return concs.map(serialise).join('|')
   }
 })[thing.type](thing)
-
-module.exports = serialise

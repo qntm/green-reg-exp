@@ -1,7 +1,9 @@
-const { UNICODE, or, fixed, seq, resolve, star, plus } = require('green-parse')
-const constructors = require('./constructors.js')
-const escapesBracket = require('./escapes-bracket.js')
-const escapesRegular = require('./escapes-regular.js')
+import Matcher from 'green-parse'
+import * as constructors from './constructors.js'
+import escapesBracket from './escapes-bracket.js'
+import escapesRegular from './escapes-regular.js'
+
+const { UNICODE, or, fixed, seq, resolve, star, plus } = Matcher
 
 // Non-special character, not escaped
 const matchNonEscapedBracketedChar = UNICODE
@@ -144,7 +146,7 @@ const matchSymbolicMultiplier = or([
   fixed('+').map(value => ({ lower: 1, upper: Infinity }))
 ])
 
-module.exports = resolve(ref => ({
+export default resolve(ref => ({
   charclass: or([
     matchChar,
     matchShorthand,

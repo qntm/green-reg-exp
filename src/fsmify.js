@@ -1,8 +1,6 @@
-'use strict'
+import { fsm, multiply, star, concatenate, epsilon, union } from 'green-fsm'
 
-const { fsm, multiply, star, concatenate, epsilon, union } = require('green-fsm')
-
-const fsmify = (thing, alphabet) => ({
+export const fsmify = (thing, alphabet) => ({
   charclass: ({ chars, negated }, alphabet) => {
     // "0" is initial, "1" is final
     const map = {
@@ -54,5 +52,3 @@ const fsmify = (thing, alphabet) => ({
   pattern: ({ concs }, alphabet) =>
     union(concs.map(conc => fsmify(conc, alphabet)))
 })[thing.type](thing, alphabet)
-
-module.exports = fsmify

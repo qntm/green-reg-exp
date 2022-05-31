@@ -4,7 +4,7 @@ import assert from 'assert'
 import { anythingElse } from 'green-fsm'
 
 import matchers from '../src/matchers.js'
-import fsmify from '../src/fsmify.js'
+import { fsmify } from '../src/fsmify.js'
 
 describe('fsmify', function () {
   describe('charclass', function () {

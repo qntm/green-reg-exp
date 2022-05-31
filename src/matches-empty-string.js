@@ -1,6 +1,4 @@
-'use strict'
-
-const matchesEmptyString = thing => ({
+export const matchesEmptyString = thing => ({
   charclass: () => false,
 
   multiplicand: ({ inner }) =>
@@ -18,5 +16,3 @@ const matchesEmptyString = thing => ({
   pattern: ({ concs }) =>
     concs.any(matchesEmptyString)
 })[thing.type](thing)
-
-module.exports = matchesEmptyString

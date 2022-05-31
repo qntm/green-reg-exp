@@ -1,6 +1,4 @@
-'use strict'
-
-const charclass = (chars, negated) => {
+export const charclass = (chars, negated) => {
   if (!Array.isArray(chars)) {
     console.error(chars)
     throw Error('`chars` must be an array')
@@ -36,7 +34,7 @@ const charclass = (chars, negated) => {
   also permit an upper bound of 0 (iff lower is 0 too). This allows the multiplier
   "zero" to exist, which actually is quite useful in its own special way.
 */
-const multiplier = (lower, upper) => {
+export const multiplier = (lower, upper) => {
   if (!Number.isInteger(lower) || lower < 0) {
     throw Error("Minimum bound of a multiplier can't be " + String(lower))
   }
@@ -48,7 +46,7 @@ const multiplier = (lower, upper) => {
   return { type: 'multiplier', lower, upper }
 }
 
-const multiplicand = inner => {
+export const multiplicand = inner => {
   if (inner.type !== 'charclass' && inner.type !== 'pattern') {
     throw Error(inner.type)
   }
@@ -60,7 +58,7 @@ const multiplicand = inner => {
   a multiplier.
   e.g. a, b{2}, c?, d*, [efg]{2,5}, f{2,}, (anysubpattern)+, .*, and so on
 */
-const mult = (multiplicand, multiplier) => {
+export const mult = (multiplicand, multiplier) => {
   if (multiplicand.type !== 'multiplicand') {
     throw Error('Expected multiplicand to have type multiplicand, not ' + multiplicand.type)
   }
@@ -75,11 +73,11 @@ const mult = (multiplicand, multiplier) => {
   These get FACTORED OUT.
   anchor(false) = "^", anchor(true) = "$"
 */
-const anchor = end => {
+export const anchor = end => {
   return { type: 'anchor', end }
 }
 
-const term = inner => {
+export const term = inner => {
   if (inner.type !== 'mult' && inner.type !== 'anchor') {
     console.error(inner)
     throw Error('Bad type ' + inner.type + ', expected mult or anchor')
@@ -90,7 +88,7 @@ const term = inner => {
 /**
   To express the empty string, use an empty conc, conc().
 */
-const conc = terms => {
+export const conc = terms => {
   if (terms.some(term => term.type !== 'term')) {
     console.error(terms)
     throw Error('Bad type ' + term.type + ', expected term')
@@ -113,12 +111,10 @@ const conc = terms => {
   This new subpattern again consists of two concs: "ghi" and "jkl".
 */
 
-const pattern = concs => {
+export const pattern = concs => {
   if (concs.some(conc => conc.type !== 'conc')) {
     console.error(conc)
     throw Error('Bad type')
   }
   return { type: 'pattern', concs }
 }
-
-module.exports = { charclass, multiplier, multiplicand, mult, conc, pattern, term, anchor }

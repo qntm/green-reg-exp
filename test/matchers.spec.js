@@ -2,7 +2,7 @@
 
 import assert from 'assert'
 
-import constructors from '../src/constructors.js'
+import * as constructors from '../src/constructors.js'
 import matchers from '../src/matchers.js'
 
 describe('matchers', function () {
