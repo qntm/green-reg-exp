@@ -15,4 +15,10 @@ describe('getUsedChars', function () {
       })
     })
   })
+
+  describe('anchor', () => {
+    it('works', () => {
+      assert.deepStrictEqual(getUsedChars(matchers.anchor.parse1('^')), {})
+    })
+  })
 })

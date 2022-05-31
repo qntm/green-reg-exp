@@ -7,6 +7,10 @@ import * as constructors from '../src/constructors.js'
 
 describe('matchesEmptyString', () => {
   it('works', () => {
+    assert.strictEqual(matchesEmptyString(constructors.conc([])), true)
+  })
+
+  it('works', () => {
     assert.strictEqual(matchesEmptyString(constructors.pattern([])), false)
   })
 })

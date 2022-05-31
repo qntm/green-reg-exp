@@ -202,4 +202,10 @@ describe('greenRegExp', function () {
       assert.strictEqual(greenRegExp.deAnchor('aaa(((^|b)))ccc'), '.*aaabccc.*')
     })
   })
+
+  describe('reduce', () => {
+    it('works', () => {
+      assert.strictEqual(greenRegExp.reduce('a|b|c|d'), '[a-d]')
+    })
+  })
 })
