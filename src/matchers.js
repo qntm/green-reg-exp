@@ -1,4 +1,4 @@
-import Matcher from 'green-parse'
+import { Matcher } from 'green-parse'
 import * as constructors from './constructors.js'
 import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
