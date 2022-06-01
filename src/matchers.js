@@ -1,9 +1,7 @@
-import { Matcher } from 'green-parse'
+import { UNICODE, or, fixed, seq, resolve, star, plus } from 'green-parse'
 import * as constructors from './constructors.js'
 import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
-
-const { UNICODE, or, fixed, seq, resolve, star, plus } = Matcher
 
 // Non-special character, not escaped
 const matchNonEscapedBracketedChar = UNICODE
