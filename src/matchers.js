@@ -1,4 +1,4 @@
-import { UNICODE, or, fixed, seq, resolve, star } from 'green-parse'
+import { UNICODE, or, fixed, seq, resolve } from 'green-parse'
 import * as constructors from './constructors.js'
 import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
@@ -181,7 +181,7 @@ export default resolve(ref => ({
   ])
     .map(constructors.term),
 
-  conc: star(ref('term'))
+  conc: ref('term').star()
     .map(constructors.conc),
 
   pattern: ref('conc').plus(fixed('|'))
