@@ -47,7 +47,7 @@ export const parse = string => {
 }
 
 export const intersection = (...strings) => {
-  const patterns = strings.map(matchers.pattern.parse1)
+  const patterns = strings.map(string => matchers.pattern.parse1(string))
 
   const charsUseds = patterns.map(getUsedChars)
 
