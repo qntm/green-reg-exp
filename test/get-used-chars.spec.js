@@ -3,12 +3,11 @@
 import assert from 'assert'
 
 import matchers from '../src/matchers.js'
-import { getUsedChars } from '../src/get-used-chars.js'
 
 describe('getUsedChars', () => {
   describe('charclass', () => {
     it('[^abc]', () => {
-      assert.deepStrictEqual(getUsedChars(matchers.charclass.parse1('[^abc]')), {
+      assert.deepStrictEqual(matchers.charclass.parse1('[^abc]').getUsedChars(), {
         a: true,
         b: true,
         c: true
@@ -18,7 +17,7 @@ describe('getUsedChars', () => {
 
   describe('anchor', () => {
     it('works', () => {
-      assert.deepStrictEqual(getUsedChars(matchers.anchor.parse1('^')), {})
+      assert.deepStrictEqual(matchers.anchor.parse1('^').getUsedChars(), {})
     })
   })
 })

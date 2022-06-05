@@ -5,7 +5,6 @@ import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
 import { equals } from './equals.js'
 import { fsmify } from './fsmify.js'
-import { getUsedChars } from './get-used-chars.js'
 import matchers from './matchers.js'
 
 const bracketEscape = chars => {
@@ -235,7 +234,7 @@ export class Multiplicand {
   }
 
   getUsedChars () {
-    return getUsedChars(this.inner)
+    return this.inner.getUsedChars()
   }
 
   matchesEmptyString () {
@@ -318,7 +317,7 @@ export class Mult {
   }
 
   getUsedChars () {
-    return getUsedChars(this.multiplicand)
+    return this.multiplicand.getUsedChars()
   }
 
   matchesEmptyString () {
@@ -390,7 +389,7 @@ export class Term {
   }
 
   getUsedChars () {
-    return getUsedChars(this.inner)
+    return this.inner.getUsedChars()
   }
 
   matchesEmptyString () {
@@ -432,7 +431,7 @@ export class Conc {
   }
 
   getUsedChars () {
-    return Object.assign.apply(Object, [{}].concat(this.terms.map(getUsedChars)))
+    return Object.assign.apply(Object, [{}].concat(this.terms.map(term => term.getUsedChars())))
   }
 
   matchesEmptyString () {
@@ -625,7 +624,7 @@ export class Pattern {
   }
 
   getUsedChars () {
-    return Object.assign.apply(Object, [{}].concat(this.concs.map(getUsedChars)))
+    return Object.assign.apply(Object, [{}].concat(this.concs.map(conc => conc.getUsedChars())))
   }
 
   matchesEmptyString () {
