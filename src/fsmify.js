@@ -1,5 +1,3 @@
-import { union } from 'green-fsm'
-
 import * as constructors from './constructors.js'
 
 export const fsmify = (thing, alphabet) => {
@@ -9,13 +7,12 @@ export const fsmify = (thing, alphabet) => {
     thing instanceof constructors.Mult ||
     thing instanceof constructors.Anchor ||
     thing instanceof constructors.Term ||
-    thing instanceof constructors.Conc
+    thing instanceof constructors.Conc ||
+    thing instanceof constructors.Pattern
   ) {
     return thing.fsmify(alphabet)
   }
 
   return {
-    pattern: ({ concs }, alphabet) =>
-      union(concs.map(conc => fsmify(conc, alphabet)))
   }[thing.type](thing, alphabet)
 }

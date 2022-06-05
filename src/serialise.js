@@ -8,17 +8,12 @@ export const serialise = thing => {
     thing instanceof constructors.Mult ||
     thing instanceof constructors.Anchor ||
     thing instanceof constructors.Term ||
-    thing instanceof constructors.Conc
+    thing instanceof constructors.Conc ||
+    thing instanceof constructors.Pattern
   ) {
     return thing.serialise()
   }
 
   return {
-    pattern: ({ concs }) => {
-      if (concs.length === 0) {
-        return '[]'
-      }
-      return concs.map(serialise).join('|')
-    }
   }[thing.type](thing)
 }

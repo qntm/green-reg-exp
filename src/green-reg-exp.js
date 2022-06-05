@@ -92,7 +92,7 @@ export const intersection = (...strings) => {
     ({
       [a]: Object.assign.apply(Object, [{}].concat([...f.states, outside].map(b =>
         ({
-          [b]: constructors.pattern([
+          [b]: new constructors.Pattern([
             new constructors.Conc([
               new constructors.Term(
                 new constructors.Mult(
@@ -115,7 +115,7 @@ export const intersection = (...strings) => {
     Reflect.ownKeys(f.map[a]).forEach(symbol => {
       if (symbol in f.map[a]) {
         const b = f.map[a][symbol]
-        brz[a][b] = ourReduce(constructors.pattern([
+        brz[a][b] = ourReduce(new constructors.Pattern([
           ...brz[a][b].concs,
           new constructors.Conc([
             new constructors.Term(
@@ -133,7 +133,7 @@ export const intersection = (...strings) => {
       }
     })
     if (f.finals.includes(a)) {
-      brz[a][outside] = ourReduce(constructors.pattern([
+      brz[a][outside] = ourReduce(new constructors.Pattern([
         ...brz[a][outside].concs,
         new constructors.Conc([])
       ]))
@@ -148,11 +148,11 @@ export const intersection = (...strings) => {
     // equations, we need to resolve the self-transition (if any).
     // e.g.    R_a = 0 R_a |   1 R_b |   2 R_c
     // becomes R_a =         0*1 R_b | 0*2 R_c
-    const loopFactor = brz[a][a] // pattern
+    const loopFactor = brz[a][a] // Pattern
     delete brz[a][a]
 
     Reflect.ownKeys(brz[a]).forEach(right => {
-      brz[a][right] = ourReduce(constructors.pattern([
+      brz[a][right] = ourReduce(new constructors.Pattern([
         new constructors.Conc([
           new constructors.Term(
             new constructors.Mult(
@@ -180,11 +180,11 @@ export const intersection = (...strings) => {
       // e.g. substituting R_a =  0*1 R_b |      0*2 R_c
       // into              R_b =    3 R_a |        4 R_c | 5 R_d
       // yields            R_b = 30*1 R_b | (30*2|4) R_c | 5 R_d
-      const univ = brz[b][a] // pattern, in this case "3"
+      const univ = brz[b][a] // Pattern, in this case "3"
       delete brz[b][a]
 
       Reflect.ownKeys(brz[a]).forEach(right => {
-        brz[b][right] = ourReduce(constructors.pattern([
+        brz[b][right] = ourReduce(new constructors.Pattern([
           ...brz[b][right].concs,
           new constructors.Conc([
             new constructors.Term(

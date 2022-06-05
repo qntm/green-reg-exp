@@ -10,13 +10,12 @@ export const getUsedChars = thing => {
     thing instanceof constructors.Mult ||
     thing instanceof constructors.Anchor ||
     thing instanceof constructors.Term ||
-    thing instanceof constructors.Conc
+    thing instanceof constructors.Conc ||
+    thing instanceof constructors.Pattern
   ) {
     return thing.getUsedChars()
   }
 
   return {
-    pattern: ({ concs }) =>
-      Object.assign.apply(Object, [{}].concat(concs.map(getUsedChars)))
   }[thing.type](thing)
 }

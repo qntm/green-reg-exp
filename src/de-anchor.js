@@ -18,7 +18,7 @@ export const upliftAnchors = pattern => {
       const termArrays = []
       if (
         term.inner instanceof constructors.Mult &&
-        term.inner.multiplicand.inner.type === 'pattern'
+        term.inner.multiplicand.inner instanceof constructors.Pattern
       ) {
         const pattern2 = upliftAnchors(term.inner.multiplicand.inner)
         const concsWithNoAnchors = []
@@ -36,7 +36,7 @@ export const upliftAnchors = pattern => {
             termArrays.push([new constructors.Term(
               new constructors.Mult(
                 new constructors.Multiplicand(
-                  constructors.pattern(concsWithNoAnchors)
+                  new constructors.Pattern(concsWithNoAnchors)
                 ),
                 new constructors.Multiplier(1, 1)
               )
@@ -57,7 +57,7 @@ export const upliftAnchors = pattern => {
     })
   })
 
-  return constructors.pattern(newConcs)
+  return new constructors.Pattern(newConcs)
 }
 
 const nothing = new constructors.Conc([
@@ -71,7 +71,7 @@ const nothing = new constructors.Conc([
   )
 ])
 
-// It is assumed that the Conc being passed in is from a pattern
+// It is assumed that the Conc being passed in is from a Pattern
 // which has already undergone the `upliftAnchors` processing.
 export const deAnchorConc = conc => {
   // *cracks knuckles*
@@ -139,7 +139,7 @@ export const deAnchorConc = conc => {
 }
 
 export const deAnchorPattern = pattern =>
-  constructors.pattern(
+  new constructors.Pattern(
     upliftAnchors(pattern).concs
       .map(deAnchorConc)
       .filter(conc => !equals(conc, nothing))

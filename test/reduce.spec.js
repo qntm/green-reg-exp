@@ -18,7 +18,7 @@ describe('reduce', () => {
       assert.deepStrictEqual(
         reduce(
           new constructors.Multiplicand(
-            constructors.pattern([])
+            new constructors.Pattern([])
           )
         ),
         matchers.multiplicand.parse1('[]')
@@ -87,7 +87,7 @@ describe('reduce', () => {
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('((ac))')), matchers.pattern.parse1('ac'))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('(abc|[]|def)')), matchers.pattern.parse1('(abc|def)'))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('(|[]|)')), matchers.pattern.parse1(''))
-      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[]')), constructors.pattern([]))
+      assert.deepStrictEqual(reduce(matchers.pattern.parse1('[]')), new constructors.Pattern([]))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('([ab])*')), matchers.pattern.parse1('[ab]*'))
       assert.deepStrictEqual(reduce(matchers.pattern.parse1('abc|abc')), matchers.pattern.parse1('abc'))
     })

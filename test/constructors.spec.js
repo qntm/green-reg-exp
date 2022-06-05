@@ -38,7 +38,7 @@ describe('constructors', () => {
     assert.throws(() => new constructors.Conc([{ type: 'juice' }]), Error('Bad type juice, expected term'))
   })
 
-  it('pattern', () => {
-    assert.throws(() => constructors.pattern(['not-a-conc']), Error('Bad type'))
+  it('Pattern', () => {
+    assert.throws(() => new constructors.Pattern(['not-a-conc']), Error('Bad type'))
   })
 })

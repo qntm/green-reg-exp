@@ -1,5 +1,6 @@
 import { fsm, multiply, star, union, epsilon, concatenate } from 'green-fsm'
 
+import { arrayOps } from './array-ops.js'
 import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
 import { equals } from './equals.js'
@@ -220,7 +221,7 @@ export class Multiplier {
 
 export class Multiplicand {
   constructor (inner) {
-    if (!(inner instanceof Charclass) && inner.type !== 'pattern') {
+    if (!(inner instanceof Charclass) && !(inner instanceof Pattern)) {
       throw Error(inner.type)
     }
 
@@ -246,7 +247,7 @@ export class Multiplicand {
 
   reduced () {
     // Empty pattern becomes /[]/ since the latter is serialisable
-    if (equals(this.inner, pattern([]))) {
+    if (equals(this.inner, new Pattern([]))) {
       return reduce(
         new Multiplicand(
           new Charclass([], false)
@@ -256,7 +257,7 @@ export class Multiplicand {
 
     // e.g. /([ab])/ to /[ab]/
     if (
-      this.inner.type === 'pattern' &&
+      this.inner instanceof Pattern &&
       this.inner.concs.length === 1 &&
       this.inner.concs[0].terms.length === 1 &&
       this.inner.concs[0].terms[0].inner instanceof Mult &&
@@ -274,7 +275,7 @@ export class Multiplicand {
   }
 
   serialise () {
-    return this.inner.type === 'pattern'
+    return this.inner instanceof Pattern
       ? '(' + serialise(this.inner) + ')'
       : serialise(this.inner)
   }
@@ -473,7 +474,7 @@ export class Conc {
     if (
       this.terms.length === 1 &&
       this.terms[0].inner instanceof Mult &&
-      this.terms[0].inner.multiplicand.inner.type === 'pattern' &&
+      this.terms[0].inner.multiplicand.inner instanceof Pattern &&
       this.terms[0].inner.multiplicand.inner.concs.length === 1 &&
       equals(this.terms[0].inner.multiplier, new Multiplier(1, 1))
     ) {
@@ -485,7 +486,7 @@ export class Conc {
     for (let i = 0; i < this.terms.length; i++) {
       if (
         this.terms[i].inner instanceof Mult &&
-        this.terms[i].inner.multiplicand.inner.type === 'pattern' &&
+        this.terms[i].inner.multiplicand.inner instanceof Pattern &&
         this.terms[i].inner.multiplicand.inner.concs.length === 1 &&
         this.terms[i].inner.multiplier.lower === 1 &&
         this.terms[i].inner.multiplier.upper === 1
@@ -508,9 +509,9 @@ export class Conc {
 }
 
 /**
-  A pattern (also known as an "alt", short for "alternation") is a
-  set of Concs. A pattern expresses multiple alternate possibilities.
-  When written out as a regex, these would separated by pipes. A pattern
+  A Pattern (also known as an "alt", short for "alternation") is a
+  set of Concs. A Pattern expresses multiple alternate possibilities.
+  When written out as a regex, these would separated by pipes. A Pattern
   containing no possibilities is possible and represents a regular expression
   matching no strings whatsoever (there is no conventional string form for
   this).
@@ -522,9 +523,117 @@ export class Conc {
   This new subpattern again consists of two Concs: "ghi" and "jkl".
 */
 
-export const pattern = concs => {
-  if (concs.some(conc => !(conc instanceof Conc))) {
-    throw Error('Bad type')
+export class Pattern {
+  constructor (concs) {
+    if (concs.some(conc => !(conc instanceof Conc))) {
+      throw Error('Bad type')
+    }
+
+    this.concs = concs
   }
-  return { type: 'pattern', concs }
+
+  fsmify (alphabet) {
+    return union(this.concs.map(conc => fsmify(conc, alphabet)))
+  }
+
+  reduced () {
+    // Unify charclasses e.g. /a|b|cde/ becomes /[ab]|cde/
+    const charclassConcs = []
+    const nonCharclassConcs = []
+    this.concs.forEach(conc => {
+      if (
+        conc.terms.length === 1 &&
+        conc.terms[0].inner instanceof Mult &&
+        conc.terms[0].inner.multiplicand.inner instanceof Charclass &&
+        conc.terms[0].inner.multiplier.lower === 1 &&
+        conc.terms[0].inner.multiplier.upper === 1
+      ) {
+        charclassConcs.push(conc)
+      } else {
+        nonCharclassConcs.push(conc)
+      }
+    })
+
+    if (charclassConcs.length >= 2) {
+      const charclasses = charclassConcs.map(charclassConc =>
+        charclassConc.terms[0].inner.multiplicand.inner
+      )
+
+      const combinedCharclass = charclasses.reduce((acc, next) => {
+        if (acc.negated) {
+          if (next.negated) {
+            return new Charclass(arrayOps.and(acc.chars, next.chars), true)
+          } else {
+            return new Charclass(arrayOps.minus(acc.chars, next.chars), true)
+          }
+        } else {
+          if (next.negated) {
+            return new Charclass(arrayOps.minus(next.chars, acc.chars), true)
+          } else {
+            return new Charclass(arrayOps.or(acc.chars, next.chars), false)
+          }
+        }
+      }, new Charclass([], false))
+
+      const combinedCharclassConc = new Conc([
+        new Term(
+          new Mult(
+            new Multiplicand(
+              combinedCharclass
+            ),
+            new Multiplier(1, 1)
+          )
+        )
+      ])
+
+      return reduce(new Pattern([
+        combinedCharclassConc,
+        ...nonCharclassConcs
+      ]))
+    }
+
+    // /[]|abc|def/ becomes /abc|def/
+    const killDeads = this.concs.filter(conc =>
+      !equals(conc, matchers.conc.parse1('[]'))
+    )
+    if (killDeads.length < this.concs.length) {
+      return reduce(new Pattern(killDeads))
+    }
+
+    // /abc|abc/ becomes /abc/
+    const removeDuplicates = this.concs.filter((conc, i) =>
+      !this.concs.slice(0, i).some(otherConc => equals(conc, otherConc))
+    )
+    if (removeDuplicates.length < this.concs.length) {
+      return reduce(new Pattern(removeDuplicates))
+    }
+
+    const shrunk = new Pattern(this.concs.map(reduce))
+    if (!equals(shrunk, this)) {
+      return reduce(shrunk)
+    }
+
+    return this
+  }
+
+  serialise () {
+    if (this.concs.length === 0) {
+      return '[]'
+    }
+    return this.concs.map(serialise).join('|')
+  }
+
+  equals (other) {
+    return other instanceof Pattern &&
+      this.concs.length === other.concs.length &&
+      this.concs.every((conc, i) => equals(conc, other.concs[i]))
+  }
+
+  getUsedChars () {
+    return Object.assign.apply(Object, [{}].concat(this.concs.map(getUsedChars)))
+  }
+
+  matchesEmptyString () {
+    return this.concs.some(matchesEmptyString)
+  }
 }

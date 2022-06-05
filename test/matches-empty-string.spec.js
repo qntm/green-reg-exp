@@ -11,6 +11,6 @@ describe('matchesEmptyString', () => {
   })
 
   it('works', () => {
-    assert.strictEqual(matchesEmptyString(constructors.pattern([])), false)
+    assert.strictEqual(matchesEmptyString(new constructors.Pattern([])), false)
   })
 })

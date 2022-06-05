@@ -6,13 +6,12 @@ export const matchesEmptyString = thing => {
     thing instanceof constructors.Multiplicand ||
     thing instanceof constructors.Mult ||
     thing instanceof constructors.Term ||
-    thing instanceof constructors.Conc
+    thing instanceof constructors.Conc ||
+    thing instanceof constructors.Pattern
   ) {
     return thing.matchesEmptyString()
   }
 
   return {
-    pattern: ({ concs }) =>
-      concs.some(matchesEmptyString)
   }[thing.type](thing)
 }

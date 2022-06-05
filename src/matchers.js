@@ -185,5 +185,5 @@ export default resolve(ref => ({
     .map(terms => new constructors.Conc(terms)),
 
   pattern: ref('conc').plus(fixed('|'))
-    .map(concs => constructors.pattern(concs))
+    .map(concs => new constructors.Pattern(concs))
 }))
