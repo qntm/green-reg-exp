@@ -10,7 +10,12 @@ export const parse = string => {
   let fsm
   const toFsm = () => {
     if (!fsm) {
-      fsm = pattern.fsmify(Object.keys(pattern.getUsedChars()).concat([anythingElse]))
+      const usedChars = new Set()
+      pattern.gatherUsedChars(usedChars)
+      const alphabet = [...usedChars]
+      alphabet.sort()
+      alphabet.push(anythingElse)
+      fsm = pattern.fsmify(alphabet)
     }
     return fsm
   }
@@ -45,11 +50,12 @@ export const parse = string => {
 export const intersection = (...strings) => {
   const patterns = strings.map(string => matchers.pattern.parse1(string))
 
-  const charsUseds = patterns.map(pattern => pattern.getUsedChars())
-
-  const charsUsed = Object.assign({}, ...charsUseds)
-
-  const alphabet = Object.keys(charsUsed)
+  const usedChars = new Set()
+  patterns.forEach(pattern => {
+    pattern.gatherUsedChars(usedChars)
+  })
+  const alphabet = [...usedChars]
+  alphabet.sort()
 
   const fsms = patterns.map(pattern => pattern.fsmify([...alphabet, anythingElse]))
 

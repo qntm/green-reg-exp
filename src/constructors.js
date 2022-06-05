@@ -137,12 +137,10 @@ export class Charclass {
     return fsm(alphabet, ['0', '1'], '0', ['1'], map)
   }
 
-  getUsedChars () {
-    const usedChars = {}
+  gatherUsedChars (usedChars) {
     this.chars.forEach(chr => {
-      usedChars[chr] = true
+      usedChars.add(chr)
     })
-    return usedChars
   }
 
   matchesEmptyString () {
@@ -231,8 +229,8 @@ export class Multiplicand {
     return this.inner.fsmify(alphabet)
   }
 
-  getUsedChars () {
-    return this.inner.getUsedChars()
+  gatherUsedChars (usedChars) {
+    this.inner.gatherUsedChars(usedChars)
   }
 
   matchesEmptyString () {
@@ -314,8 +312,8 @@ export class Mult {
     return concatenate([mandatory, optional])
   }
 
-  getUsedChars () {
-    return this.multiplicand.getUsedChars()
+  gatherUsedChars (usedChars) {
+    this.multiplicand.gatherUsedChars(usedChars)
   }
 
   matchesEmptyString () {
@@ -355,9 +353,7 @@ export class Anchor {
       this.end === other.end
   }
 
-  getUsedChars () {
-    return {}
-  }
+  gatherUsedChars (usedChars) {}
 
   serialise () {
     return this.end ? '$' : '^'
@@ -386,8 +382,8 @@ export class Term {
     return this.inner.fsmify(alphabet)
   }
 
-  getUsedChars () {
-    return this.inner.getUsedChars()
+  gatherUsedChars (usedChars) {
+    this.inner.gatherUsedChars(usedChars)
   }
 
   matchesEmptyString () {
@@ -428,8 +424,10 @@ export class Conc {
     return concatenate(this.terms.map(term => term.fsmify(alphabet)))
   }
 
-  getUsedChars () {
-    return Object.assign({}, ...this.terms.map(term => term.getUsedChars()))
+  gatherUsedChars (usedChars) {
+    this.terms.forEach(term => {
+      term.gatherUsedChars(usedChars)
+    })
   }
 
   matchesEmptyString () {
@@ -621,8 +619,10 @@ export class Pattern {
       this.concs.every((conc, i) => conc.equals(other.concs[i]))
   }
 
-  getUsedChars () {
-    return Object.assign({}, ...this.concs.map(conc => conc.getUsedChars()))
+  gatherUsedChars (usedChars) {
+    this.concs.forEach(conc => {
+      conc.gatherUsedChars(usedChars)
+    })
   }
 
   matchesEmptyString () {
