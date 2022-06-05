@@ -9,40 +9,14 @@ import matchers from './matchers.js'
 // object whose inner object is a charclass, not a pattern.
 
 export const reduce = thing => {
-  if (thing instanceof constructors.Charclass) {
+  if (
+    thing instanceof constructors.Charclass ||
+    thing instanceof constructors.Multiplicand
+  ) {
     return thing.reduced()
   }
 
   return {
-    multiplicand: multiplicand => {
-      // Empty pattern becomes /[]/ since the latter is serialisable
-      if (equals(multiplicand.inner, constructors.pattern([]))) {
-        return reduce(
-          constructors.multiplicand(
-            new constructors.Charclass([], false)
-          )
-        )
-      }
-
-      // e.g. /([ab])/ to /[ab]/
-      if (
-        multiplicand.inner.type === 'pattern' &&
-        multiplicand.inner.concs.length === 1 &&
-        multiplicand.inner.concs[0].terms.length === 1 &&
-        multiplicand.inner.concs[0].terms[0].inner.type === 'mult' &&
-        equals(multiplicand.inner.concs[0].terms[0].inner.multiplier, new constructors.Multiplier(1, 1))
-      ) {
-        return reduce(multiplicand.inner.concs[0].terms[0].inner.multiplicand)
-      }
-
-      const shrunk = constructors.multiplicand(reduce(multiplicand.inner))
-      if (!equals(shrunk, multiplicand)) {
-        return reduce(shrunk)
-      }
-
-      return multiplicand
-    },
-
     mult: mult => {
       const shrunk = constructors.mult(reduce(mult.multiplicand), mult.multiplier)
       if (!equals(shrunk, mult)) {
@@ -162,7 +136,7 @@ export const reduce = thing => {
         const combinedCharclassConc = constructors.conc([
           constructors.term(
             constructors.mult(
-              constructors.multiplicand(
+              new constructors.Multiplicand(
                 combinedCharclass
               ),
               new constructors.Multiplier(1, 1)

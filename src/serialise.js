@@ -3,17 +3,13 @@ import * as constructors from './constructors.js'
 export const serialise = thing => {
   if (
     thing instanceof constructors.Charclass ||
-    thing instanceof constructors.Multiplier
+    thing instanceof constructors.Multiplier ||
+    thing instanceof constructors.Multiplicand
   ) {
     return thing.serialise()
   }
 
   return {
-    multiplicand: ({ inner }) =>
-      inner.type === 'pattern'
-        ? '(' + serialise(inner) + ')'
-        : serialise(inner),
-
     anchor: ({ end }) =>
       end ? '$' : '^',
 

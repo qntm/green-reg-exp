@@ -4,14 +4,14 @@ import * as constructors from './constructors.js'
 // are used characters.
 
 export const getUsedChars = thing => {
-  if (thing instanceof constructors.Charclass) {
+  if (
+    thing instanceof constructors.Charclass ||
+    thing instanceof constructors.Multiplicand
+  ) {
     return thing.getUsedChars()
   }
 
   return {
-    multiplicand: ({ inner }) =>
-      getUsedChars(inner),
-
     mult: ({ multiplicand }) =>
       getUsedChars(multiplicand),
 

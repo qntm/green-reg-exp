@@ -165,7 +165,7 @@ export default resolve(ref => ({
     seq([fixed('('), ref('pattern'), fixed(')')])
       .map(([open, pattern, closed]) => pattern)
   ])
-    .map(inner => constructors.multiplicand(inner)),
+    .map(inner => new constructors.Multiplicand(inner)),
 
   mult: seq([ref('multiplicand'), ref('multiplier')])
     .map(([multiplicand, multiplier]) => constructors.mult(multiplicand, multiplier)),
@@ -179,11 +179,11 @@ export default resolve(ref => ({
     ref('mult'),
     ref('anchor')
   ])
-    .map(constructors.term),
+    .map(inner => constructors.term(inner)),
 
   conc: ref('term').star()
-    .map(constructors.conc),
+    .map(terms => constructors.conc(terms)),
 
   pattern: ref('conc').plus(fixed('|'))
-    .map(constructors.pattern)
+    .map(concs => constructors.pattern(concs))
 }))

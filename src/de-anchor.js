@@ -35,7 +35,7 @@ export const upliftAnchors = pattern => {
           } else {
             termArrays.push([constructors.term(
               constructors.mult(
-                constructors.multiplicand(
+                new constructors.Multiplicand(
                   constructors.pattern(concsWithNoAnchors)
                 ),
                 new constructors.Multiplier(1, 1)
@@ -63,7 +63,7 @@ export const upliftAnchors = pattern => {
 const nothing = constructors.conc([
   constructors.term(
     constructors.mult(
-      constructors.multiplicand(
+      new constructors.Multiplicand(
         new constructors.Charclass([], false)
       ),
       new constructors.Multiplier(1, 1)
@@ -120,7 +120,7 @@ export const deAnchorConc = conc => {
 
   const dotStarTerm = constructors.term(
     constructors.mult(
-      constructors.multiplicand(
+      new constructors.Multiplicand(
         new constructors.Charclass([], true)
       ),
       new constructors.Multiplier(0, Infinity)

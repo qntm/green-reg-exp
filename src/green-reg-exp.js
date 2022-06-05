@@ -96,7 +96,7 @@ export const intersection = (...strings) => {
             constructors.conc([
               constructors.term(
                 constructors.mult(
-                  constructors.multiplicand(
+                  new constructors.Multiplicand(
                     new constructors.Charclass([], false)
                   ),
                   new constructors.Multiplier(1, 1)
@@ -120,7 +120,7 @@ export const intersection = (...strings) => {
           constructors.conc([
             constructors.term(
               constructors.mult(
-                constructors.multiplicand(
+                new constructors.Multiplicand(
                   symbol === anythingElse
                     ? new constructors.Charclass(alphabet, true)
                     : new constructors.Charclass([symbol], false)
@@ -156,13 +156,13 @@ export const intersection = (...strings) => {
         constructors.conc([
           constructors.term(
             constructors.mult(
-              constructors.multiplicand(loopFactor),
+              new constructors.Multiplicand(loopFactor),
               new constructors.Multiplier(0, Infinity)
             )
           ),
           constructors.term(
             constructors.mult(
-              constructors.multiplicand(brz[a][right]),
+              new constructors.Multiplicand(brz[a][right]),
               new constructors.Multiplier(1, 1)
             )
           )
@@ -189,13 +189,13 @@ export const intersection = (...strings) => {
           constructors.conc([
             constructors.term(
               constructors.mult(
-                constructors.multiplicand(univ),
+                new constructors.Multiplicand(univ),
                 new constructors.Multiplier(1, 1)
               )
             ),
             constructors.term(
               constructors.mult(
-                constructors.multiplicand(brz[a][right]),
+                new constructors.Multiplicand(brz[a][right]),
                 new constructors.Multiplier(1, 1)
               )
             )

@@ -3,14 +3,14 @@ import { multiply, star, concatenate, epsilon, union } from 'green-fsm'
 import * as constructors from './constructors.js'
 
 export const fsmify = (thing, alphabet) => {
-  if (thing instanceof constructors.Charclass) {
+  if (
+    thing instanceof constructors.Charclass ||
+    thing instanceof constructors.Multiplicand
+  ) {
     return thing.fsmify(alphabet)
   }
 
   return {
-    multiplicand: ({ inner }, alphabet) =>
-      fsmify(inner, alphabet),
-
     mult: ({ multiplicand, multiplier }, alphabet) => {
       // worked example: (min, max) = (5, 7) or (5, inf)
       // (mandatory, optional) = (5, 2) or (5, inf)

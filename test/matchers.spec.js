@@ -25,14 +25,14 @@ describe('matchers', () => {
       assert.deepStrictEqual(iterator.next().value, {
         j: 10,
         match: constructors.mult(
-          constructors.multiplicand(new constructors.Charclass(['f', 'g'], true)),
+          new constructors.Multiplicand(new constructors.Charclass(['f', 'g'], true)),
           new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 11,
         match: constructors.mult(
-          constructors.multiplicand(new constructors.Charclass(['f', 'g'], true)),
+          new constructors.Multiplicand(new constructors.Charclass(['f', 'g'], true)),
           new constructors.Multiplier(0, Infinity)
         )
       })
@@ -43,14 +43,14 @@ describe('matchers', () => {
       assert.deepStrictEqual(iterator.next().value, {
         j: 12,
         match: constructors.mult(
-          constructors.multiplicand(new constructors.Charclass(['h'], false)),
+          new constructors.Multiplicand(new constructors.Charclass(['h'], false)),
           new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 15,
         match: constructors.mult(
-          constructors.multiplicand(new constructors.Charclass(['h'], false)),
+          new constructors.Multiplicand(new constructors.Charclass(['h'], false)),
           new constructors.Multiplier(5, 5)
         )
       })
@@ -61,7 +61,7 @@ describe('matchers', () => {
       assert.deepStrictEqual(iterator.next().value, {
         j: 20,
         match: constructors.mult(
-          constructors.multiplicand(
+          new constructors.Multiplicand(
             new constructors.Charclass([
               'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
               'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -74,7 +74,7 @@ describe('matchers', () => {
       assert.deepStrictEqual(iterator.next().value, {
         j: 21,
         match: constructors.mult(
-          constructors.multiplicand(
+          new constructors.Multiplicand(
             new constructors.Charclass([
               'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
               'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -91,7 +91,7 @@ describe('matchers', () => {
       assert.deepStrictEqual(iterator.next().value, {
         j: 22,
         match: constructors.mult(
-          constructors.multiplicand(
+          new constructors.Multiplicand(
             new constructors.Charclass(['T'], false)
           ),
           new constructors.Multiplier(1, 1)
@@ -100,7 +100,7 @@ describe('matchers', () => {
       assert.deepStrictEqual(iterator.next().value, {
         j: 26,
         match: constructors.mult(
-          constructors.multiplicand(
+          new constructors.Multiplicand(
             new constructors.Charclass(['T'], false)
           ),
           new constructors.Multiplier(2, Infinity)

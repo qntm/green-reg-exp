@@ -17,7 +17,7 @@ describe('reduce', () => {
     it('works', () => {
       assert.deepStrictEqual(
         reduce(
-          constructors.multiplicand(
+          new constructors.Multiplicand(
             constructors.pattern([])
           )
         ),

@@ -2,6 +2,12 @@ import { fsm } from 'green-fsm'
 
 import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
+import { equals } from './equals.js'
+import { fsmify } from './fsmify.js'
+import { getUsedChars } from './get-used-chars.js'
+import { matchesEmptyString } from './matches-empty-string.js'
+import { serialise } from './serialise.js'
+import { reduce } from './reduce.js'
 
 const bracketEscape = chars => {
   const runs = []
@@ -211,11 +217,66 @@ export class Multiplier {
   }
 }
 
-export const multiplicand = inner => {
-  if (!(inner instanceof Charclass) && inner.type !== 'pattern') {
-    throw Error(inner.type)
+export class Multiplicand {
+  constructor (inner) {
+    if (!(inner instanceof Charclass) && inner.type !== 'pattern') {
+      throw Error(inner.type)
+    }
+
+    this.inner = inner
   }
-  return { type: 'multiplicand', inner }
+
+  equals (other) {
+    return other instanceof Multiplicand &&
+      equals(this.inner, other.inner)
+  }
+
+  fsmify (alphabet) {
+    return fsmify(this.inner, alphabet)
+  }
+
+  getUsedChars () {
+    return getUsedChars(this.inner)
+  }
+
+  matchesEmptyString () {
+    return matchesEmptyString(this.inner)
+  }
+
+  reduced () {
+    // Empty pattern becomes /[]/ since the latter is serialisable
+    if (equals(this.inner, pattern([]))) {
+      return reduce(
+        new Multiplicand(
+          new Charclass([], false)
+        )
+      )
+    }
+
+    // e.g. /([ab])/ to /[ab]/
+    if (
+      this.inner.type === 'pattern' &&
+      this.inner.concs.length === 1 &&
+      this.inner.concs[0].terms.length === 1 &&
+      this.inner.concs[0].terms[0].inner.type === 'mult' &&
+      equals(this.inner.concs[0].terms[0].inner.multiplier, new Multiplier(1, 1))
+    ) {
+      return reduce(this.inner.concs[0].terms[0].inner.multiplicand)
+    }
+
+    const shrunk = new Multiplicand(reduce(this.inner))
+    if (!equals(shrunk, this)) {
+      return reduce(shrunk)
+    }
+
+    return this
+  }
+
+  serialise () {
+    return this.inner.type === 'pattern'
+      ? '(' + serialise(this.inner) + ')'
+      : serialise(this.inner)
+  }
 }
 
 /**
@@ -224,7 +285,7 @@ export const multiplicand = inner => {
   e.g. a, b{2}, c?, d*, [efg]{2,5}, f{2,}, (anysubpattern)+, .*, and so on
 */
 export const mult = (multiplicand, multiplier) => {
-  if (multiplicand.type !== 'multiplicand') {
+  if (!(multiplicand instanceof Multiplicand)) {
     throw Error('Expected multiplicand to have type multiplicand, not ' + multiplicand.type)
   }
   if (!(multiplier instanceof Multiplier)) {

@@ -3,16 +3,13 @@ import * as constructors from './constructors.js'
 export const equals = (self, other) => {
   if (
     self instanceof constructors.Charclass ||
-    self instanceof constructors.Multiplier
+    self instanceof constructors.Multiplier ||
+    self instanceof constructors.Multiplicand
   ) {
     return self.equals(other)
   }
 
   return {
-    multiplicand: (self, other) =>
-      self.type === other.type &&
-      equals(self.inner, other.inner),
-
     mult: (self, other) =>
       self.type === other.type &&
       equals(self.multiplicand, other.multiplicand) &&

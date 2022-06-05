@@ -22,12 +22,12 @@ describe('constructors', () => {
   })
 
   it('multiplicand', () => {
-    assert.throws(() => constructors.multiplicand({ type: 'fish' }), Error('fish'))
+    assert.throws(() => new constructors.Multiplicand({ type: 'fish' }), Error('fish'))
   })
 
   it('mult', () => {
     assert.throws(() => constructors.mult({ type: 'sheep' }), Error('Expected multiplicand to have type multiplicand, not sheep'))
-    assert.throws(() => constructors.mult({ type: 'multiplicand' }, { type: 'wolf' }), Error())
+    assert.throws(() => constructors.mult(new constructors.Multiplicand(new constructors.Charclass(['a'], false)), { type: 'wolf' }), Error())
   })
 
   it('term', () => {
