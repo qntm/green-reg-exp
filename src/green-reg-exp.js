@@ -97,7 +97,7 @@ export const intersection = (...strings) => {
               constructors.term(
                 constructors.mult(
                   constructors.multiplicand(
-                    constructors.charclass([], false)
+                    new constructors.Charclass([], false)
                   ),
                   constructors.multiplier(1, 1)
                 )
@@ -122,8 +122,8 @@ export const intersection = (...strings) => {
               constructors.mult(
                 constructors.multiplicand(
                   symbol === anythingElse
-                    ? constructors.charclass(alphabet, true)
-                    : constructors.charclass([symbol], false)
+                    ? new constructors.Charclass(alphabet, true)
+                    : new constructors.Charclass([symbol], false)
                 ),
                 constructors.multiplier(1, 1)
               )

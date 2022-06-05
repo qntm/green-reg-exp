@@ -1,18 +1,24 @@
-export const matchesEmptyString = thing => ({
-  charclass: () => false,
+import * as constructors from './constructors.js'
 
-  multiplicand: ({ inner }) =>
-    matchesEmptyString(inner),
+export const matchesEmptyString = thing => {
+  if (thing instanceof constructors.Charclass) {
+    return thing.matchesEmptyString()
+  }
 
-  mult: ({ multiplicand, multiplier }) =>
-    matchesEmptyString(multiplicand) || multiplier.lower === 0,
+  return {
+    multiplicand: ({ inner }) =>
+      matchesEmptyString(inner),
 
-  term: ({ inner }) =>
-    matchesEmptyString(inner),
+    mult: ({ multiplicand, multiplier }) =>
+      matchesEmptyString(multiplicand) || multiplier.lower === 0,
 
-  conc: ({ terms }) =>
-    terms.every(matchesEmptyString),
+    term: ({ inner }) =>
+      matchesEmptyString(inner),
 
-  pattern: ({ concs }) =>
-    concs.some(matchesEmptyString)
-})[thing.type](thing)
+    conc: ({ terms }) =>
+      terms.every(matchesEmptyString),
+
+    pattern: ({ concs }) =>
+      concs.some(matchesEmptyString)
+  }[thing.type](thing)
+}

@@ -1,25 +1,30 @@
+import * as constructors from './constructors.js'
+
 // Note that used characters are returned as an OBJECT whose KEYS
 // are used characters.
 
-export const getUsedChars = thing => ({
-  charclass: ({ chars }) =>
-    Object.assign.apply(Object, [{}].concat(chars.map(chr => ({ [chr]: true })))),
+export const getUsedChars = thing => {
+  if (thing instanceof constructors.Charclass) {
+    return thing.getUsedChars()
+  }
 
-  multiplicand: ({ inner }) =>
-    getUsedChars(inner),
+  return {
+    multiplicand: ({ inner }) =>
+      getUsedChars(inner),
 
-  mult: ({ multiplicand }) =>
-    getUsedChars(multiplicand),
+    mult: ({ multiplicand }) =>
+      getUsedChars(multiplicand),
 
-  anchor: ({ end }) =>
-    ({}),
+    anchor: ({ end }) =>
+      ({}),
 
-  term: ({ inner }) =>
-    getUsedChars(inner),
+    term: ({ inner }) =>
+      getUsedChars(inner),
 
-  conc: ({ terms }) =>
-    Object.assign.apply(Object, [{}].concat(terms.map(getUsedChars))),
+    conc: ({ terms }) =>
+      Object.assign.apply(Object, [{}].concat(terms.map(getUsedChars))),
 
-  pattern: ({ concs }) =>
-    Object.assign.apply(Object, [{}].concat(concs.map(getUsedChars)))
-})[thing.type](thing)
+    pattern: ({ concs }) =>
+      Object.assign.apply(Object, [{}].concat(concs.map(getUsedChars)))
+  }[thing.type](thing)
+}

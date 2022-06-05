@@ -10,7 +10,7 @@ describe('matchers', () => {
     it('works', () => {
       assert.deepStrictEqual(matchers.charclass.match('a', 0).next().value, {
         j: 1,
-        match: constructors.charclass(['a'], false)
+        match: new constructors.Charclass(['a'], false)
       })
     })
 
@@ -25,14 +25,14 @@ describe('matchers', () => {
       assert.deepStrictEqual(iterator.next().value, {
         j: 10,
         match: constructors.mult(
-          constructors.multiplicand(constructors.charclass(['f', 'g'], true)),
+          constructors.multiplicand(new constructors.Charclass(['f', 'g'], true)),
           constructors.multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 11,
         match: constructors.mult(
-          constructors.multiplicand(constructors.charclass(['f', 'g'], true)),
+          constructors.multiplicand(new constructors.Charclass(['f', 'g'], true)),
           constructors.multiplier(0, Infinity)
         )
       })
@@ -43,14 +43,14 @@ describe('matchers', () => {
       assert.deepStrictEqual(iterator.next().value, {
         j: 12,
         match: constructors.mult(
-          constructors.multiplicand(constructors.charclass(['h'], false)),
+          constructors.multiplicand(new constructors.Charclass(['h'], false)),
           constructors.multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 15,
         match: constructors.mult(
-          constructors.multiplicand(constructors.charclass(['h'], false)),
+          constructors.multiplicand(new constructors.Charclass(['h'], false)),
           constructors.multiplier(5, 5)
         )
       })
@@ -62,7 +62,7 @@ describe('matchers', () => {
         j: 20,
         match: constructors.mult(
           constructors.multiplicand(
-            constructors.charclass([
+            new constructors.Charclass([
               'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
               'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
               'u', 'v', 'w', 'x', 'y', 'z'
@@ -75,7 +75,7 @@ describe('matchers', () => {
         j: 21,
         match: constructors.mult(
           constructors.multiplicand(
-            constructors.charclass([
+            new constructors.Charclass([
               'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
               'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
               'u', 'v', 'w', 'x', 'y', 'z'
@@ -92,7 +92,7 @@ describe('matchers', () => {
         j: 22,
         match: constructors.mult(
           constructors.multiplicand(
-            constructors.charclass(['T'], false)
+            new constructors.Charclass(['T'], false)
           ),
           constructors.multiplier(1, 1)
         )
@@ -101,7 +101,7 @@ describe('matchers', () => {
         j: 26,
         match: constructors.mult(
           constructors.multiplicand(
-            constructors.charclass(['T'], false)
+            new constructors.Charclass(['T'], false)
           ),
           constructors.multiplier(2, Infinity)
         )

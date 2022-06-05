@@ -151,7 +151,7 @@ export default resolve(ref => ({
     matchBracketed,
     matchBracketedNegated
   ])
-    .map(({ chars, negated }) => constructors.charclass(chars, negated)),
+    .map(({ chars, negated }) => new constructors.Charclass(chars, negated)),
 
   multiplier: or([
     matchSymbolicMultiplier,

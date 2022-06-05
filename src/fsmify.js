@@ -1,54 +1,45 @@
-import { fsm, multiply, star, concatenate, epsilon, union } from 'green-fsm'
+import { multiply, star, concatenate, epsilon, union } from 'green-fsm'
 
-export const fsmify = (thing, alphabet) => ({
-  charclass: ({ chars, negated }, alphabet) => {
-    // "0" is initial, "1" is final
-    const map = {
-      0: {}
-    }
+import * as constructors from './constructors.js'
 
-    // If normal, make a singular FSM accepting only these characters
-    // If negated, make a singular FSM accepting any other characters
-    alphabet
-      .filter(chr => chars.includes(chr) !== negated)
-      .forEach(chr => {
-        map['0'][chr] = '1'
-      })
+export const fsmify = (thing, alphabet) => {
+  if (thing instanceof constructors.Charclass) {
+    return thing.fsmify(alphabet)
+  }
 
-    return fsm(alphabet, ['0', '1'], '0', ['1'], map)
-  },
+  return {
+    multiplicand: ({ inner }, alphabet) =>
+      fsmify(inner, alphabet),
 
-  multiplicand: ({ inner }, alphabet) =>
-    fsmify(inner, alphabet),
+    mult: ({ multiplicand, multiplier }, alphabet) => {
+      // worked example: (min, max) = (5, 7) or (5, inf)
+      // (mandatory, optional) = (5, 2) or (5, inf)
 
-  mult: ({ multiplicand, multiplier }, alphabet) => {
-    // worked example: (min, max) = (5, 7) or (5, inf)
-    // (mandatory, optional) = (5, 2) or (5, inf)
+      const unit = fsmify(multiplicand, alphabet)
+      // accepts e.g. "ab"
 
-    const unit = fsmify(multiplicand, alphabet)
-    // accepts e.g. "ab"
+      // accepts "ababababab"
+      const mandatory = multiply(unit, multiplier.lower)
 
-    // accepts "ababababab"
-    const mandatory = multiply(unit, multiplier.lower)
+      // unlimited additional copies
+      const optional = multiplier.upper === Infinity
+        ? star(unit)
+        : multiply(union([epsilon(alphabet), unit]), multiplier.upper - multiplier.lower)
 
-    // unlimited additional copies
-    const optional = multiplier.upper === Infinity
-      ? star(unit)
-      : multiply(union([epsilon(alphabet), unit]), multiplier.upper - multiplier.lower)
+      return concatenate([mandatory, optional])
+    },
 
-    return concatenate([mandatory, optional])
-  },
+    anchor: ({ end }, alphabet) => {
+      throw Error('Cannot make an FSM out of an anchor.')
+    },
 
-  anchor: ({ end }, alphabet) => {
-    throw Error('Cannot make an FSM out of an anchor.')
-  },
+    term: ({ inner }, alphabet) =>
+      fsmify(inner, alphabet),
 
-  term: ({ inner }, alphabet) =>
-    fsmify(inner, alphabet),
+    conc: ({ terms }, alphabet) =>
+      concatenate(terms.map(term => fsmify(term, alphabet))),
 
-  conc: ({ terms }, alphabet) =>
-    concatenate(terms.map(term => fsmify(term, alphabet))),
-
-  pattern: ({ concs }, alphabet) =>
-    union(concs.map(conc => fsmify(conc, alphabet)))
-})[thing.type](thing, alphabet)
+    pattern: ({ concs }, alphabet) =>
+      union(concs.map(conc => fsmify(conc, alphabet)))
+  }[thing.type](thing, alphabet)
+}

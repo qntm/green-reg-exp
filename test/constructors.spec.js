@@ -10,10 +10,10 @@ import * as constructors from '../src/constructors.js'
 
 describe('constructors', () => {
   it('charclass', () => {
-    assert.throws(() => constructors.charclass('a'), Error('`chars` must be an array'))
-    assert.throws(() => constructors.charclass(['a']), Error('Must specify whether negated'))
-    assert.throws(() => constructors.charclass(['aa'], false), Error('Unacceptable character aa'))
-    assert.throws(() => constructors.charclass(['a', 'a'], false), Error('Duplicate character in charclass, a'))
+    assert.throws(() => new constructors.Charclass('a'), Error('`chars` must be an array'))
+    assert.throws(() => new constructors.Charclass(['a']), Error('Must specify whether negated'))
+    assert.throws(() => new constructors.Charclass(['aa'], false), Error('Unacceptable character aa'))
+    assert.throws(() => new constructors.Charclass(['a', 'a'], false), Error('Duplicate character in charclass, a'))
   })
 
   it('multiplier', () => {

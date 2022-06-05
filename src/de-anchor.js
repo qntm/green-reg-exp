@@ -64,7 +64,7 @@ const nothing = constructors.conc([
   constructors.term(
     constructors.mult(
       constructors.multiplicand(
-        constructors.charclass([], false)
+        new constructors.Charclass([], false)
       ),
       constructors.multiplier(1, 1)
     )
@@ -121,7 +121,7 @@ export const deAnchorConc = conc => {
   const dotStarTerm = constructors.term(
     constructors.mult(
       constructors.multiplicand(
-        constructors.charclass([], true)
+        new constructors.Charclass([], true)
       ),
       constructors.multiplier(0, Infinity)
     )
