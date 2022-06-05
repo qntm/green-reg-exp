@@ -1,11 +1,7 @@
 import { anythingElse, intersection as fsmIntersection } from 'green-fsm'
 
 import matchers from './matchers.js'
-import { getUsedChars } from './get-used-chars.js'
-import { fsmify } from './fsmify.js'
-import { serialise } from './serialise.js'
 import * as constructors from './constructors.js'
-import { reduce as ourReduce } from './reduce.js'
 import { deAnchorPattern } from './de-anchor.js'
 
 export const parse = string => {
@@ -14,7 +10,12 @@ export const parse = string => {
   let fsm
   const toFsm = () => {
     if (!fsm) {
-      fsm = fsmify(pattern, Object.keys(getUsedChars(pattern)).concat([anythingElse]))
+      const usedChars = new Set()
+      pattern.gatherUsedChars(usedChars)
+      const alphabet = [...usedChars]
+      alphabet.sort()
+      alphabet.push(anythingElse)
+      fsm = pattern.fsmify(alphabet)
     }
     return fsm
   }
@@ -49,13 +50,14 @@ export const parse = string => {
 export const intersection = (...strings) => {
   const patterns = strings.map(string => matchers.pattern.parse1(string))
 
-  const charsUseds = patterns.map(getUsedChars)
+  const usedChars = new Set()
+  patterns.forEach(pattern => {
+    pattern.gatherUsedChars(usedChars)
+  })
+  const alphabet = [...usedChars]
+  alphabet.sort()
 
-  const charsUsed = Object.assign.apply(Object, [{}].concat(charsUseds))
-
-  const alphabet = Object.keys(charsUsed)
-
-  const fsms = patterns.map(pattern => fsmify(pattern, [...alphabet, anythingElse]))
+  const fsms = patterns.map(pattern => pattern.fsmify([...alphabet, anythingElse]))
 
   const f = fsmIntersection(fsms)
 
@@ -88,26 +90,26 @@ export const intersection = (...strings) => {
   }
 
   // Our system of equations is represented like so:
-  const brz = Object.assign.apply(Object, [{}].concat(f.states.map(a =>
+  const brz = Object.assign({}, ...f.states.map(a =>
     ({
-      [a]: Object.assign.apply(Object, [{}].concat([...f.states, outside].map(b =>
+      [a]: Object.assign({}, ...[...f.states, outside].map(b =>
         ({
-          [b]: constructors.pattern([
-            constructors.conc([
-              constructors.term(
-                constructors.mult(
-                  constructors.multiplicand(
-                    constructors.charclass([], false)
+          [b]: new constructors.Pattern([
+            new constructors.Conc([
+              new constructors.Term(
+                new constructors.Mult(
+                  new constructors.Multiplicand(
+                    new constructors.Charclass([], false)
                   ),
-                  constructors.multiplier(1, 1)
+                  new constructors.Multiplier(1, 1)
                 )
               )
             ])
           ])
         })
-      )))
+      ))
     })
-  )))
+  ))
   // Note that every single thing in the system is a PATTERN.
 
   // Populate it with some initial data.
@@ -115,28 +117,28 @@ export const intersection = (...strings) => {
     Reflect.ownKeys(f.map[a]).forEach(symbol => {
       if (symbol in f.map[a]) {
         const b = f.map[a][symbol]
-        brz[a][b] = ourReduce(constructors.pattern([
+        brz[a][b] = new constructors.Pattern([
           ...brz[a][b].concs,
-          constructors.conc([
-            constructors.term(
-              constructors.mult(
-                constructors.multiplicand(
+          new constructors.Conc([
+            new constructors.Term(
+              new constructors.Mult(
+                new constructors.Multiplicand(
                   symbol === anythingElse
-                    ? constructors.charclass(alphabet, true)
-                    : constructors.charclass([symbol], false)
+                    ? new constructors.Charclass(alphabet, true)
+                    : new constructors.Charclass([symbol], false)
                 ),
-                constructors.multiplier(1, 1)
+                new constructors.Multiplier(1, 1)
               )
             )
           ])
-        ]))
+        ]).reduced()
       }
     })
     if (f.finals.includes(a)) {
-      brz[a][outside] = ourReduce(constructors.pattern([
+      brz[a][outside] = new constructors.Pattern([
         ...brz[a][outside].concs,
-        constructors.conc([])
-      ]))
+        new constructors.Conc([])
+      ]).reduced()
     }
   })
 
@@ -148,26 +150,26 @@ export const intersection = (...strings) => {
     // equations, we need to resolve the self-transition (if any).
     // e.g.    R_a = 0 R_a |   1 R_b |   2 R_c
     // becomes R_a =         0*1 R_b | 0*2 R_c
-    const loopFactor = brz[a][a] // pattern
+    const loopFactor = brz[a][a] // Pattern
     delete brz[a][a]
 
     Reflect.ownKeys(brz[a]).forEach(right => {
-      brz[a][right] = ourReduce(constructors.pattern([
-        constructors.conc([
-          constructors.term(
-            constructors.mult(
-              constructors.multiplicand(loopFactor),
-              constructors.multiplier(0, Infinity)
+      brz[a][right] = new constructors.Pattern([
+        new constructors.Conc([
+          new constructors.Term(
+            new constructors.Mult(
+              new constructors.Multiplicand(loopFactor),
+              new constructors.Multiplier(0, Infinity)
             )
           ),
-          constructors.term(
-            constructors.mult(
-              constructors.multiplicand(brz[a][right]),
-              constructors.multiplier(1, 1)
+          new constructors.Term(
+            new constructors.Mult(
+              new constructors.Multiplicand(brz[a][right]),
+              new constructors.Multiplier(1, 1)
             )
           )
         ])
-      ]))
+      ]).reduced()
     })
 
     // Note: even if we're down to our final equation, the above step still
@@ -180,36 +182,36 @@ export const intersection = (...strings) => {
       // e.g. substituting R_a =  0*1 R_b |      0*2 R_c
       // into              R_b =    3 R_a |        4 R_c | 5 R_d
       // yields            R_b = 30*1 R_b | (30*2|4) R_c | 5 R_d
-      const univ = brz[b][a] // pattern, in this case "3"
+      const univ = brz[b][a] // Pattern, in this case "3"
       delete brz[b][a]
 
       Reflect.ownKeys(brz[a]).forEach(right => {
-        brz[b][right] = ourReduce(constructors.pattern([
+        brz[b][right] = new constructors.Pattern([
           ...brz[b][right].concs,
-          constructors.conc([
-            constructors.term(
-              constructors.mult(
-                constructors.multiplicand(univ),
-                constructors.multiplier(1, 1)
+          new constructors.Conc([
+            new constructors.Term(
+              new constructors.Mult(
+                new constructors.Multiplicand(univ),
+                new constructors.Multiplier(1, 1)
               )
             ),
-            constructors.term(
-              constructors.mult(
-                constructors.multiplicand(brz[a][right]),
-                constructors.multiplier(1, 1)
+            new constructors.Term(
+              new constructors.Mult(
+                new constructors.Multiplicand(brz[a][right]),
+                new constructors.Multiplier(1, 1)
               )
             )
           ])
-        ]))
+        ]).reduced()
       })
     }
   }
 
-  return serialise(brz[f.initial][outside])
+  return brz[f.initial][outside].serialise()
 }
 
 export const reduce = string =>
-  serialise(ourReduce(matchers.pattern.parse1(string)))
+  matchers.pattern.parse1(string).reduced().serialise()
 
 export const deAnchor = string =>
-  serialise(deAnchorPattern(matchers.pattern.parse1(string)))
+  deAnchorPattern(matchers.pattern.parse1(string)).serialise()

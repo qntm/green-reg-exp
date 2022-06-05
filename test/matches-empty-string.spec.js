@@ -2,15 +2,14 @@
 
 import assert from 'assert'
 
-import { matchesEmptyString } from '../src/matches-empty-string.js'
 import * as constructors from '../src/constructors.js'
 
 describe('matchesEmptyString', () => {
   it('works', () => {
-    assert.strictEqual(matchesEmptyString(constructors.conc([])), true)
+    assert.strictEqual(new constructors.Conc([]).matchesEmptyString(), true)
   })
 
   it('works', () => {
-    assert.strictEqual(matchesEmptyString(constructors.pattern([])), false)
+    assert.strictEqual(new constructors.Pattern([]).matchesEmptyString(), false)
   })
 })

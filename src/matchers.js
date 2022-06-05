@@ -48,7 +48,7 @@ const matchRun = or([
 ])
 
 const matchRuns = matchRun.star()
-  .map(match => Array.prototype.concat.apply([], match))
+  .map(match => match.flat())
 
 // "[^dsgsdg]"
 const matchBracketedNegated = seq([fixed('[^'), matchRuns, fixed(']')])
@@ -151,39 +151,39 @@ export default resolve(ref => ({
     matchBracketed,
     matchBracketedNegated
   ])
-    .map(({ chars, negated }) => constructors.charclass(chars, negated)),
+    .map(({ chars, negated }) => new constructors.Charclass(chars, negated)),
 
   multiplier: or([
     matchSymbolicMultiplier,
     matchOneBound,
     matchTwoBounds
   ])
-    .map(({ lower, upper }) => constructors.multiplier(lower, upper)),
+    .map(({ lower, upper }) => new constructors.Multiplier(lower, upper)),
 
   multiplicand: or([
     ref('charclass'),
     seq([fixed('('), ref('pattern'), fixed(')')])
       .map(([open, pattern, closed]) => pattern)
   ])
-    .map(inner => constructors.multiplicand(inner)),
+    .map(inner => new constructors.Multiplicand(inner)),
 
   mult: seq([ref('multiplicand'), ref('multiplier')])
-    .map(([multiplicand, multiplier]) => constructors.mult(multiplicand, multiplier)),
+    .map(([multiplicand, multiplier]) => new constructors.Mult(multiplicand, multiplier)),
 
   anchor: or([
-    fixed('^').map(() => constructors.anchor(false)),
-    fixed('$').map(() => constructors.anchor(true))
+    fixed('^').map(() => new constructors.Anchor(false)),
+    fixed('$').map(() => new constructors.Anchor(true))
   ]),
 
   term: or([
     ref('mult'),
     ref('anchor')
   ])
-    .map(constructors.term),
+    .map(inner => new constructors.Term(inner)),
 
   conc: ref('term').star()
-    .map(constructors.conc),
+    .map(terms => new constructors.Conc(terms)),
 
   pattern: ref('conc').plus(fixed('|'))
-    .map(constructors.pattern)
+    .map(concs => new constructors.Pattern(concs))
 }))

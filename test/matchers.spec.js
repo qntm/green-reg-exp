@@ -10,7 +10,7 @@ describe('matchers', () => {
     it('works', () => {
       assert.deepStrictEqual(matchers.charclass.match('a', 0).next().value, {
         j: 1,
-        match: constructors.charclass(['a'], false)
+        match: new constructors.Charclass(['a'], false)
       })
     })
 
@@ -24,16 +24,16 @@ describe('matchers', () => {
       const iterator = matchers.mult.match('abcde[^fg]*', 5)
       assert.deepStrictEqual(iterator.next().value, {
         j: 10,
-        match: constructors.mult(
-          constructors.multiplicand(constructors.charclass(['f', 'g'], true)),
-          constructors.multiplier(1, 1)
+        match: new constructors.Mult(
+          new constructors.Multiplicand(new constructors.Charclass(['f', 'g'], true)),
+          new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 11,
-        match: constructors.mult(
-          constructors.multiplicand(constructors.charclass(['f', 'g'], true)),
-          constructors.multiplier(0, Infinity)
+        match: new constructors.Mult(
+          new constructors.Multiplicand(new constructors.Charclass(['f', 'g'], true)),
+          new constructors.Multiplier(0, Infinity)
         )
       })
     })
@@ -42,16 +42,16 @@ describe('matchers', () => {
       const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+', 11)
       assert.deepStrictEqual(iterator.next().value, {
         j: 12,
-        match: constructors.mult(
-          constructors.multiplicand(constructors.charclass(['h'], false)),
-          constructors.multiplier(1, 1)
+        match: new constructors.Mult(
+          new constructors.Multiplicand(new constructors.Charclass(['h'], false)),
+          new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 15,
-        match: constructors.mult(
-          constructors.multiplicand(constructors.charclass(['h'], false)),
-          constructors.multiplier(5, 5)
+        match: new constructors.Mult(
+          new constructors.Multiplicand(new constructors.Charclass(['h'], false)),
+          new constructors.Multiplier(5, 5)
         )
       })
     })
@@ -60,28 +60,28 @@ describe('matchers', () => {
       const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+T{1,}', 15)
       assert.deepStrictEqual(iterator.next().value, {
         j: 20,
-        match: constructors.mult(
-          constructors.multiplicand(
-            constructors.charclass([
+        match: new constructors.Mult(
+          new constructors.Multiplicand(
+            new constructors.Charclass([
               'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
               'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
               'u', 'v', 'w', 'x', 'y', 'z'
             ], false)
           ),
-          constructors.multiplier(1, 1)
+          new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 21,
-        match: constructors.mult(
-          constructors.multiplicand(
-            constructors.charclass([
+        match: new constructors.Mult(
+          new constructors.Multiplicand(
+            new constructors.Charclass([
               'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
               'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
               'u', 'v', 'w', 'x', 'y', 'z'
             ], false)
           ),
-          constructors.multiplier(1, Infinity)
+          new constructors.Multiplier(1, Infinity)
         )
       })
     })
@@ -90,20 +90,20 @@ describe('matchers', () => {
       const iterator = matchers.mult.match('abcde[^fg]*h{5}[a-z]+T{2,}', 21)
       assert.deepStrictEqual(iterator.next().value, {
         j: 22,
-        match: constructors.mult(
-          constructors.multiplicand(
-            constructors.charclass(['T'], false)
+        match: new constructors.Mult(
+          new constructors.Multiplicand(
+            new constructors.Charclass(['T'], false)
           ),
-          constructors.multiplier(1, 1)
+          new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 26,
-        match: constructors.mult(
-          constructors.multiplicand(
-            constructors.charclass(['T'], false)
+        match: new constructors.Mult(
+          new constructors.Multiplicand(
+            new constructors.Charclass(['T'], false)
           ),
-          constructors.multiplier(2, Infinity)
+          new constructors.Multiplier(2, Infinity)
         )
       })
     })
