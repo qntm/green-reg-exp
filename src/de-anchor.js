@@ -50,7 +50,7 @@ export const upliftAnchors = pattern => {
     // Now each possible combination of choices of terms from
     // `termArrayses` needs to be turned into a `Conc`.
     arrayOps.product(...termArrayses).forEach(termArrays => {
-      const terms = Array.prototype.concat.apply([], termArrays)
+      const terms = termArrays.flat()
       newConcs.push(new constructors.Conc(terms))
     })
   })

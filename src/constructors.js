@@ -429,7 +429,7 @@ export class Conc {
   }
 
   getUsedChars () {
-    return Object.assign.apply(Object, [{}].concat(this.terms.map(term => term.getUsedChars())))
+    return Object.assign({}, ...this.terms.map(term => term.getUsedChars()))
   }
 
   matchesEmptyString () {
@@ -622,7 +622,7 @@ export class Pattern {
   }
 
   getUsedChars () {
-    return Object.assign.apply(Object, [{}].concat(this.concs.map(conc => conc.getUsedChars())))
+    return Object.assign({}, ...this.concs.map(conc => conc.getUsedChars()))
   }
 
   matchesEmptyString () {

@@ -47,7 +47,7 @@ export const intersection = (...strings) => {
 
   const charsUseds = patterns.map(pattern => pattern.getUsedChars())
 
-  const charsUsed = Object.assign.apply(Object, [{}].concat(charsUseds))
+  const charsUsed = Object.assign({}, ...charsUseds)
 
   const alphabet = Object.keys(charsUsed)
 
@@ -84,9 +84,9 @@ export const intersection = (...strings) => {
   }
 
   // Our system of equations is represented like so:
-  const brz = Object.assign.apply(Object, [{}].concat(f.states.map(a =>
+  const brz = Object.assign({}, ...f.states.map(a =>
     ({
-      [a]: Object.assign.apply(Object, [{}].concat([...f.states, outside].map(b =>
+      [a]: Object.assign({}, ...[...f.states, outside].map(b =>
         ({
           [b]: new constructors.Pattern([
             new constructors.Conc([
@@ -101,9 +101,9 @@ export const intersection = (...strings) => {
             ])
           ])
         })
-      )))
+      ))
     })
-  )))
+  ))
   // Note that every single thing in the system is a PATTERN.
 
   // Populate it with some initial data.

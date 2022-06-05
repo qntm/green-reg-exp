@@ -48,7 +48,7 @@ const matchRun = or([
 ])
 
 const matchRuns = matchRun.star()
-  .map(match => Array.prototype.concat.apply([], match))
+  .map(match => match.flat())
 
 // "[^dsgsdg]"
 const matchBracketedNegated = seq([fixed('[^'), matchRuns, fixed(']')])
