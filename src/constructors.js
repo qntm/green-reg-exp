@@ -7,7 +7,6 @@ import { equals } from './equals.js'
 import { fsmify } from './fsmify.js'
 import { getUsedChars } from './get-used-chars.js'
 import matchers from './matchers.js'
-import { matchesEmptyString } from './matches-empty-string.js'
 
 const bracketEscape = chars => {
   const runs = []
@@ -240,7 +239,7 @@ export class Multiplicand {
   }
 
   matchesEmptyString () {
-    return matchesEmptyString(this.inner)
+    return this.inner.matchesEmptyString()
   }
 
   reduced () {
@@ -323,7 +322,7 @@ export class Mult {
   }
 
   matchesEmptyString () {
-    return matchesEmptyString(this.multiplicand) || this.multiplier.lower === 0
+    return this.multiplicand.matchesEmptyString() || this.multiplier.lower === 0
   }
 
   reduced () {
@@ -395,7 +394,7 @@ export class Term {
   }
 
   matchesEmptyString () {
-    return matchesEmptyString(this.inner)
+    return this.inner.matchesEmptyString()
   }
 
   reduced () {
@@ -437,7 +436,7 @@ export class Conc {
   }
 
   matchesEmptyString () {
-    return this.terms.every(matchesEmptyString)
+    return this.terms.every(term => term.matchesEmptyString())
   }
 
   serialise () {
@@ -630,6 +629,6 @@ export class Pattern {
   }
 
   matchesEmptyString () {
-    return this.concs.some(matchesEmptyString)
+    return this.concs.some(conc => conc.matchesEmptyString())
   }
 }

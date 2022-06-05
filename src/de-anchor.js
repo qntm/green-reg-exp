@@ -1,7 +1,6 @@
 import { equals } from './equals.js'
 import * as constructors from './constructors.js'
 import { arrayOps } from './array-ops.js'
-import { matchesEmptyString } from './matches-empty-string.js'
 
 // A pattern will contain anchors at potentially
 // any level. We need to lift them up somehow.
@@ -95,7 +94,7 @@ export const deAnchorConc = conc => {
   if (
     !conc.terms.slice(0, indexOfLastStartAnchor + 1)
       .filter(term => !(term.inner instanceof constructors.Anchor))
-      .every(matchesEmptyString)
+      .every(term => term.matchesEmptyString())
   ) {
     return nothing
   }
@@ -106,7 +105,7 @@ export const deAnchorConc = conc => {
   if (
     !conc.terms.slice(indexOfFirstEndAnchor, conc.terms.length)
       .filter(term => !(term.inner instanceof constructors.Anchor))
-      .every(matchesEmptyString)
+      .every(term => term.matchesEmptyString())
   ) {
     return nothing
   }
