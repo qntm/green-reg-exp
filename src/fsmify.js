@@ -1,34 +1,17 @@
-import { multiply, star, concatenate, epsilon, union } from 'green-fsm'
+import { concatenate, union } from 'green-fsm'
 
 import * as constructors from './constructors.js'
 
 export const fsmify = (thing, alphabet) => {
   if (
     thing instanceof constructors.Charclass ||
-    thing instanceof constructors.Multiplicand
+    thing instanceof constructors.Multiplicand ||
+    thing instanceof constructors.Mult
   ) {
     return thing.fsmify(alphabet)
   }
 
   return {
-    mult: ({ multiplicand, multiplier }, alphabet) => {
-      // worked example: (min, max) = (5, 7) or (5, inf)
-      // (mandatory, optional) = (5, 2) or (5, inf)
-
-      const unit = fsmify(multiplicand, alphabet)
-      // accepts e.g. "ab"
-
-      // accepts "ababababab"
-      const mandatory = multiply(unit, multiplier.lower)
-
-      // unlimited additional copies
-      const optional = multiplier.upper === Infinity
-        ? star(unit)
-        : multiply(union([epsilon(alphabet), unit]), multiplier.upper - multiplier.lower)
-
-      return concatenate([mandatory, optional])
-    },
-
     anchor: ({ end }, alphabet) => {
       throw Error('Cannot make an FSM out of an anchor.')
     },

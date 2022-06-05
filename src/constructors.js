@@ -1,4 +1,4 @@
-import { fsm } from 'green-fsm'
+import { fsm, multiply, star, union, epsilon, concatenate } from 'green-fsm'
 
 import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
@@ -258,7 +258,7 @@ export class Multiplicand {
       this.inner.type === 'pattern' &&
       this.inner.concs.length === 1 &&
       this.inner.concs[0].terms.length === 1 &&
-      this.inner.concs[0].terms[0].inner.type === 'mult' &&
+      this.inner.concs[0].terms[0].inner instanceof Mult &&
       equals(this.inner.concs[0].terms[0].inner.multiplier, new Multiplier(1, 1))
     ) {
       return reduce(this.inner.concs[0].terms[0].inner.multiplicand)
@@ -280,18 +280,66 @@ export class Multiplicand {
 }
 
 /**
-  A mult is a combination of a multiplicand with
+  A Mult is a combination of a multiplicand with
   a multiplier.
   e.g. a, b{2}, c?, d*, [efg]{2,5}, f{2,}, (anysubpattern)+, .*, and so on
 */
-export const mult = (multiplicand, multiplier) => {
-  if (!(multiplicand instanceof Multiplicand)) {
-    throw Error('Expected multiplicand to have type multiplicand, not ' + multiplicand.type)
+export class Mult {
+  constructor (multiplicand, multiplier) {
+    if (!(multiplicand instanceof Multiplicand)) {
+      throw Error('Expected multiplicand to have type multiplicand, not ' + multiplicand.type)
+    }
+    if (!(multiplier instanceof Multiplier)) {
+      throw Error()
+    }
+    this.multiplicand = multiplicand
+    this.multiplier = multiplier
   }
-  if (!(multiplier instanceof Multiplier)) {
-    throw Error()
+
+  equals (other) {
+    return other instanceof Mult &&
+      equals(this.multiplicand, other.multiplicand) &&
+      equals(this.multiplier, other.multiplier)
   }
-  return { type: 'mult', multiplicand, multiplier }
+
+  fsmify (alphabet) {
+    // worked example: (min, max) = (5, 7) or (5, inf)
+    // (mandatory, optional) = (5, 2) or (5, inf)
+
+    const unit = fsmify(this.multiplicand, alphabet)
+    // accepts e.g. "ab"
+
+    // accepts "ababababab"
+    const mandatory = multiply(unit, this.multiplier.lower)
+
+    // unlimited additional copies
+    const optional = this.multiplier.upper === Infinity
+      ? star(unit)
+      : multiply(union([epsilon(alphabet), unit]), this.multiplier.upper - this.multiplier.lower)
+
+    return concatenate([mandatory, optional])
+  }
+
+  getUsedChars () {
+    return getUsedChars(this.multiplicand)
+  }
+
+  matchesEmptyString () {
+    return matchesEmptyString(this.multiplicand) || this.multiplier.lower === 0
+  }
+
+  reduced () {
+    const shrunk = new Mult(reduce(this.multiplicand), this.multiplier)
+    if (!equals(shrunk, this)) {
+      return reduce(shrunk)
+    }
+
+    return this
+  }
+
+  serialise () {
+    return serialise(this.multiplicand) + serialise(this.multiplier)
+  }
 }
 
 /**
@@ -304,8 +352,8 @@ export const anchor = end => {
 }
 
 export const term = inner => {
-  if (inner.type !== 'mult' && inner.type !== 'anchor') {
-    throw Error('Bad type ' + inner.type + ', expected mult or anchor')
+  if (!(inner instanceof Mult) && inner.type !== 'anchor') {
+    throw Error('Bad type ' + inner.type + ', expected Mult or anchor')
   }
   return { type: 'term', inner }
 }
@@ -332,7 +380,7 @@ export const conc = terms => {
 
   e.g. "abc|def(ghi|jkl)" is an alt containing two concs: "abc" and
   "def(ghi|jkl)". The latter is a conc containing four terms: "d", "e", "f"
-  and "(ghi|jkl)". The latter in turn is a mult consisting of an upper bound
+  and "(ghi|jkl)". The latter in turn is a Mult consisting of an upper bound
   1, a lower bound 1, and a multiplicand which is a new subpattern, "ghi|jkl".
   This new subpattern again consists of two concs: "ghi" and "jkl".
 */

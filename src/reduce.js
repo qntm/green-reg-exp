@@ -11,21 +11,13 @@ import matchers from './matchers.js'
 export const reduce = thing => {
   if (
     thing instanceof constructors.Charclass ||
-    thing instanceof constructors.Multiplicand
+    thing instanceof constructors.Multiplicand ||
+    thing instanceof constructors.Mult
   ) {
     return thing.reduced()
   }
 
   return {
-    mult: mult => {
-      const shrunk = constructors.mult(reduce(mult.multiplicand), mult.multiplier)
-      if (!equals(shrunk, mult)) {
-        return reduce(shrunk)
-      }
-
-      return mult
-    },
-
     term: term => {
       const shrunk = constructors.term(reduce(term.inner))
       if (!equals(shrunk, term)) {
@@ -43,7 +35,7 @@ export const reduce = thing => {
       // Strip out []*, []{0}, etc. from the listing
       // /abc[]*def/ becomes /abcdef/
       const killDeads = conc.terms.filter(term =>
-        term.inner.type === 'mult' && (
+        term.inner instanceof constructors.Mult && (
           !equals(term.inner.multiplicand, matchers.multiplicand.parse1('[]')) ||
           term.inner.multiplier.lower !== 0
         )
@@ -60,7 +52,7 @@ export const reduce = thing => {
       // /(((aby)))/ becomes /aby/
       if (
         conc.terms.length === 1 &&
-        conc.terms[0].inner.type === 'mult' &&
+        conc.terms[0].inner instanceof constructors.Mult &&
         conc.terms[0].inner.multiplicand.inner.type === 'pattern' &&
         conc.terms[0].inner.multiplicand.inner.concs.length === 1 &&
         equals(conc.terms[0].inner.multiplier, new constructors.Multiplier(1, 1))
@@ -72,7 +64,7 @@ export const reduce = thing => {
       // /ab(cd)ef/ to /abcdef/
       for (let i = 0; i < conc.terms.length; i++) {
         if (
-          conc.terms[i].inner.type === 'mult' &&
+          conc.terms[i].inner instanceof constructors.Mult &&
           conc.terms[i].inner.multiplicand.inner.type === 'pattern' &&
           conc.terms[i].inner.multiplicand.inner.concs.length === 1 &&
           conc.terms[i].inner.multiplier.lower === 1 &&
@@ -101,7 +93,7 @@ export const reduce = thing => {
       pattern.concs.forEach(conc => {
         if (
           conc.terms.length === 1 &&
-          conc.terms[0].inner.type === 'mult' &&
+          conc.terms[0].inner instanceof constructors.Mult &&
           conc.terms[0].inner.multiplicand.inner instanceof constructors.Charclass &&
           conc.terms[0].inner.multiplier.lower === 1 &&
           conc.terms[0].inner.multiplier.upper === 1
@@ -135,7 +127,7 @@ export const reduce = thing => {
 
         const combinedCharclassConc = constructors.conc([
           constructors.term(
-            constructors.mult(
+            new constructors.Mult(
               new constructors.Multiplicand(
                 combinedCharclass
               ),

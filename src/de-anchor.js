@@ -17,7 +17,7 @@ export const upliftAnchors = pattern => {
       const term = conc.terms[i]
       const termArrays = []
       if (
-        term.inner.type === 'mult' &&
+        term.inner instanceof constructors.Mult &&
         term.inner.multiplicand.inner.type === 'pattern'
       ) {
         const pattern2 = upliftAnchors(term.inner.multiplicand.inner)
@@ -34,7 +34,7 @@ export const upliftAnchors = pattern => {
             termArrays.push(concsWithNoAnchors[0].terms)
           } else {
             termArrays.push([constructors.term(
-              constructors.mult(
+              new constructors.Mult(
                 new constructors.Multiplicand(
                   constructors.pattern(concsWithNoAnchors)
                 ),
@@ -62,7 +62,7 @@ export const upliftAnchors = pattern => {
 
 const nothing = constructors.conc([
   constructors.term(
-    constructors.mult(
+    new constructors.Mult(
       new constructors.Multiplicand(
         new constructors.Charclass([], false)
       ),
@@ -119,7 +119,7 @@ export const deAnchorConc = conc => {
   const terms = conc.terms.slice(indexOfLastStartAnchor + 1, indexOfFirstEndAnchor)
 
   const dotStarTerm = constructors.term(
-    constructors.mult(
+    new constructors.Mult(
       new constructors.Multiplicand(
         new constructors.Charclass([], true)
       ),

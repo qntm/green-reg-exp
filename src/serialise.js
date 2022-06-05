@@ -4,7 +4,8 @@ export const serialise = thing => {
   if (
     thing instanceof constructors.Charclass ||
     thing instanceof constructors.Multiplier ||
-    thing instanceof constructors.Multiplicand
+    thing instanceof constructors.Multiplicand ||
+    thing instanceof constructors.Mult
   ) {
     return thing.serialise()
   }
@@ -12,9 +13,6 @@ export const serialise = thing => {
   return {
     anchor: ({ end }) =>
       end ? '$' : '^',
-
-    mult: ({ multiplicand, multiplier }) =>
-      serialise(multiplicand) + serialise(multiplier),
 
     term: ({ inner }) =>
       serialise(inner),

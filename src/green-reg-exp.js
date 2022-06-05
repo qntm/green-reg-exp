@@ -95,7 +95,7 @@ export const intersection = (...strings) => {
           [b]: constructors.pattern([
             constructors.conc([
               constructors.term(
-                constructors.mult(
+                new constructors.Mult(
                   new constructors.Multiplicand(
                     new constructors.Charclass([], false)
                   ),
@@ -119,7 +119,7 @@ export const intersection = (...strings) => {
           ...brz[a][b].concs,
           constructors.conc([
             constructors.term(
-              constructors.mult(
+              new constructors.Mult(
                 new constructors.Multiplicand(
                   symbol === anythingElse
                     ? new constructors.Charclass(alphabet, true)
@@ -155,13 +155,13 @@ export const intersection = (...strings) => {
       brz[a][right] = ourReduce(constructors.pattern([
         constructors.conc([
           constructors.term(
-            constructors.mult(
+            new constructors.Mult(
               new constructors.Multiplicand(loopFactor),
               new constructors.Multiplier(0, Infinity)
             )
           ),
           constructors.term(
-            constructors.mult(
+            new constructors.Mult(
               new constructors.Multiplicand(brz[a][right]),
               new constructors.Multiplier(1, 1)
             )
@@ -188,13 +188,13 @@ export const intersection = (...strings) => {
           ...brz[b][right].concs,
           constructors.conc([
             constructors.term(
-              constructors.mult(
+              new constructors.Mult(
                 new constructors.Multiplicand(univ),
                 new constructors.Multiplier(1, 1)
               )
             ),
             constructors.term(
-              constructors.mult(
+              new constructors.Mult(
                 new constructors.Multiplicand(brz[a][right]),
                 new constructors.Multiplier(1, 1)
               )

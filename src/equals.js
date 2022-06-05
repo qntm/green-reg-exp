@@ -4,17 +4,13 @@ export const equals = (self, other) => {
   if (
     self instanceof constructors.Charclass ||
     self instanceof constructors.Multiplier ||
-    self instanceof constructors.Multiplicand
+    self instanceof constructors.Multiplicand ||
+    self instanceof constructors.Mult
   ) {
     return self.equals(other)
   }
 
   return {
-    mult: (self, other) =>
-      self.type === other.type &&
-      equals(self.multiplicand, other.multiplicand) &&
-      equals(self.multiplier, other.multiplier),
-
     anchor: (self, other) =>
       self.type === other.type &&
       self.end === other.end,

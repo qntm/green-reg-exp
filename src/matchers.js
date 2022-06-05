@@ -168,7 +168,7 @@ export default resolve(ref => ({
     .map(inner => new constructors.Multiplicand(inner)),
 
   mult: seq([ref('multiplicand'), ref('multiplier')])
-    .map(([multiplicand, multiplier]) => constructors.mult(multiplicand, multiplier)),
+    .map(([multiplicand, multiplier]) => new constructors.Mult(multiplicand, multiplier)),
 
   anchor: or([
     fixed('^').map(() => constructors.anchor(false)),

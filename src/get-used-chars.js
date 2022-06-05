@@ -6,15 +6,13 @@ import * as constructors from './constructors.js'
 export const getUsedChars = thing => {
   if (
     thing instanceof constructors.Charclass ||
-    thing instanceof constructors.Multiplicand
+    thing instanceof constructors.Multiplicand ||
+    thing instanceof constructors.Mult
   ) {
     return thing.getUsedChars()
   }
 
   return {
-    mult: ({ multiplicand }) =>
-      getUsedChars(multiplicand),
-
     anchor: ({ end }) =>
       ({}),
 
