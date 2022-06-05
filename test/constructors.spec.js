@@ -30,8 +30,8 @@ describe('constructors', () => {
     assert.throws(() => new constructors.Mult(new constructors.Multiplicand(new constructors.Charclass(['a'], false)), { type: 'wolf' }), Error())
   })
 
-  it('term', () => {
-    assert.throws(() => constructors.term({ type: 'juice' }), Error('Bad type juice, expected Mult or Anchor'))
+  it('Term', () => {
+    assert.throws(() => new constructors.Term({ type: 'juice' }), Error('Bad type juice, expected Mult or Anchor'))
   })
 
   it('conc', () => {

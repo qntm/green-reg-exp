@@ -370,11 +370,44 @@ export class Anchor {
   }
 }
 
-export const term = inner => {
-  if (!(inner instanceof Mult) && !(inner instanceof Anchor)) {
-    throw Error('Bad type ' + inner.type + ', expected Mult or Anchor')
+export class Term {
+  constructor (inner) {
+    if (!(inner instanceof Mult) && !(inner instanceof Anchor)) {
+      throw Error('Bad type ' + inner.type + ', expected Mult or Anchor')
+    }
+
+    this.inner = inner
   }
-  return { type: 'term', inner }
+
+  serialise () {
+    return serialise(this.inner)
+  }
+
+  equals (other) {
+    return other instanceof Term &&
+      equals(this.inner, other.inner)
+  }
+
+  fsmify (alphabet) {
+    return fsmify(this.inner, alphabet)
+  }
+
+  getUsedChars () {
+    return getUsedChars(this.inner)
+  }
+
+  matchesEmptyString () {
+    return matchesEmptyString(this.inner)
+  }
+
+  reduced () {
+    const shrunk = new Term(reduce(this.inner))
+    if (!equals(shrunk, this)) {
+      return reduce(shrunk)
+    }
+
+    return this
+  }
 }
 
 /**
@@ -382,7 +415,7 @@ export const term = inner => {
 */
 export const conc = terms => {
   terms.forEach(term => {
-    if (term.type !== 'term') {
+    if (!(term instanceof Term)) {
       throw Error('Bad type ' + term.type + ', expected term')
     }
   })

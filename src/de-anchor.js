@@ -33,7 +33,7 @@ export const upliftAnchors = pattern => {
           if (concsWithNoAnchors.length === 1) {
             termArrays.push(concsWithNoAnchors[0].terms)
           } else {
-            termArrays.push([constructors.term(
+            termArrays.push([new constructors.Term(
               new constructors.Mult(
                 new constructors.Multiplicand(
                   constructors.pattern(concsWithNoAnchors)
@@ -61,7 +61,7 @@ export const upliftAnchors = pattern => {
 }
 
 const nothing = constructors.conc([
-  constructors.term(
+  new constructors.Term(
     new constructors.Mult(
       new constructors.Multiplicand(
         new constructors.Charclass([], false)
@@ -118,7 +118,7 @@ export const deAnchorConc = conc => {
 
   const terms = conc.terms.slice(indexOfLastStartAnchor + 1, indexOfFirstEndAnchor)
 
-  const dotStarTerm = constructors.term(
+  const dotStarTerm = new constructors.Term(
     new constructors.Mult(
       new constructors.Multiplicand(
         new constructors.Charclass([], true)

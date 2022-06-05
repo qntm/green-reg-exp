@@ -179,7 +179,7 @@ export default resolve(ref => ({
     ref('mult'),
     ref('anchor')
   ])
-    .map(inner => constructors.term(inner)),
+    .map(inner => new constructors.Term(inner)),
 
   conc: ref('term').star()
     .map(terms => constructors.conc(terms)),

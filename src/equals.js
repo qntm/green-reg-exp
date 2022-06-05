@@ -6,16 +6,13 @@ export const equals = (self, other) => {
     self instanceof constructors.Multiplier ||
     self instanceof constructors.Multiplicand ||
     self instanceof constructors.Mult ||
-    self instanceof constructors.Anchor
+    self instanceof constructors.Anchor ||
+    self instanceof constructors.Term
   ) {
     return self.equals(other)
   }
 
   return {
-    term: (self, other) =>
-      self.type === other.type &&
-      equals(self.inner, other.inner),
-
     conc: (self, other) =>
       self.type === other.type &&
       self.terms.length === other.terms.length &&

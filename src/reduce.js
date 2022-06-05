@@ -12,21 +12,13 @@ export const reduce = thing => {
   if (
     thing instanceof constructors.Charclass ||
     thing instanceof constructors.Multiplicand ||
-    thing instanceof constructors.Mult
+    thing instanceof constructors.Mult ||
+    thing instanceof constructors.Term
   ) {
     return thing.reduced()
   }
 
   return {
-    term: term => {
-      const shrunk = constructors.term(reduce(term.inner))
-      if (!equals(shrunk, term)) {
-        return reduce(shrunk)
-      }
-
-      return term
-    },
-
     conc: conc => {
       // First things first, ANCHORS.
       // /a?^/ becomes /^/
@@ -126,7 +118,7 @@ export const reduce = thing => {
         }, new constructors.Charclass([], false))
 
         const combinedCharclassConc = constructors.conc([
-          constructors.term(
+          new constructors.Term(
             new constructors.Mult(
               new constructors.Multiplicand(
                 combinedCharclass

@@ -94,7 +94,7 @@ export const intersection = (...strings) => {
         ({
           [b]: constructors.pattern([
             constructors.conc([
-              constructors.term(
+              new constructors.Term(
                 new constructors.Mult(
                   new constructors.Multiplicand(
                     new constructors.Charclass([], false)
@@ -118,7 +118,7 @@ export const intersection = (...strings) => {
         brz[a][b] = ourReduce(constructors.pattern([
           ...brz[a][b].concs,
           constructors.conc([
-            constructors.term(
+            new constructors.Term(
               new constructors.Mult(
                 new constructors.Multiplicand(
                   symbol === anythingElse
@@ -154,13 +154,13 @@ export const intersection = (...strings) => {
     Reflect.ownKeys(brz[a]).forEach(right => {
       brz[a][right] = ourReduce(constructors.pattern([
         constructors.conc([
-          constructors.term(
+          new constructors.Term(
             new constructors.Mult(
               new constructors.Multiplicand(loopFactor),
               new constructors.Multiplier(0, Infinity)
             )
           ),
-          constructors.term(
+          new constructors.Term(
             new constructors.Mult(
               new constructors.Multiplicand(brz[a][right]),
               new constructors.Multiplier(1, 1)
@@ -187,13 +187,13 @@ export const intersection = (...strings) => {
         brz[b][right] = ourReduce(constructors.pattern([
           ...brz[b][right].concs,
           constructors.conc([
-            constructors.term(
+            new constructors.Term(
               new constructors.Mult(
                 new constructors.Multiplicand(univ),
                 new constructors.Multiplier(1, 1)
               )
             ),
-            constructors.term(
+            new constructors.Term(
               new constructors.Mult(
                 new constructors.Multiplicand(brz[a][right]),
                 new constructors.Multiplier(1, 1)

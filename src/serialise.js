@@ -6,15 +6,13 @@ export const serialise = thing => {
     thing instanceof constructors.Multiplier ||
     thing instanceof constructors.Multiplicand ||
     thing instanceof constructors.Mult ||
-    thing instanceof constructors.Anchor
+    thing instanceof constructors.Anchor ||
+    thing instanceof constructors.Term
   ) {
     return thing.serialise()
   }
 
   return {
-    term: ({ inner }) =>
-      serialise(inner),
-
     conc: ({ terms }) =>
       terms.map(serialise).join(''),
 
