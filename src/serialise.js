@@ -1,26 +1,14 @@
 import * as constructors from './constructors.js'
 
 export const serialise = thing => {
-  if (thing instanceof constructors.Charclass) {
+  if (
+    thing instanceof constructors.Charclass ||
+    thing instanceof constructors.Multiplier
+  ) {
     return thing.serialise()
   }
 
   return {
-    multiplier: ({ lower, upper }) =>
-      lower === 0 && upper === 1
-        ? '?'
-        : lower === 1 && upper === 1
-          ? ''
-          : lower === 0 && upper === Infinity
-            ? '*'
-            : lower === 1 && upper === Infinity
-              ? '+'
-              : lower === upper
-                ? '{' + String(lower) + '}'
-                : upper === Infinity
-                  ? '{' + String(lower) + ',}'
-                  : '{' + String(lower) + ',' + String(upper) + '}',
-
     multiplicand: ({ inner }) =>
       inner.type === 'pattern'
         ? '(' + serialise(inner) + ')'

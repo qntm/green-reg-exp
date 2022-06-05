@@ -30,7 +30,7 @@ export const reduce = thing => {
         multiplicand.inner.concs.length === 1 &&
         multiplicand.inner.concs[0].terms.length === 1 &&
         multiplicand.inner.concs[0].terms[0].inner.type === 'mult' &&
-        equals(multiplicand.inner.concs[0].terms[0].inner.multiplier, constructors.multiplier(1, 1))
+        equals(multiplicand.inner.concs[0].terms[0].inner.multiplier, new constructors.Multiplier(1, 1))
       ) {
         return reduce(multiplicand.inner.concs[0].terms[0].inner.multiplicand)
       }
@@ -89,7 +89,7 @@ export const reduce = thing => {
         conc.terms[0].inner.type === 'mult' &&
         conc.terms[0].inner.multiplicand.inner.type === 'pattern' &&
         conc.terms[0].inner.multiplicand.inner.concs.length === 1 &&
-        equals(conc.terms[0].inner.multiplier, constructors.multiplier(1, 1))
+        equals(conc.terms[0].inner.multiplier, new constructors.Multiplier(1, 1))
       ) {
         return reduce(conc.terms[0].inner.multiplicand.inner.concs[0])
       }
@@ -165,7 +165,7 @@ export const reduce = thing => {
               constructors.multiplicand(
                 combinedCharclass
               ),
-              constructors.multiplier(1, 1)
+              new constructors.Multiplier(1, 1)
             )
           )
         ])

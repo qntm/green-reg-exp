@@ -162,16 +162,53 @@ export class Charclass {
   also permit an upper bound of 0 (iff lower is 0 too). This allows the multiplier
   "zero" to exist, which actually is quite useful in its own special way.
 */
-export const multiplier = (lower, upper) => {
-  if (!Number.isInteger(lower) || lower < 0) {
-    throw Error("Minimum bound of a multiplier can't be " + String(lower))
+export class Multiplier {
+  constructor (lower, upper) {
+    if (!Number.isInteger(lower) || lower < 0) {
+      throw Error("Minimum bound of a multiplier can't be " + String(lower))
+    }
+
+    if (lower > upper) {
+      throw Error('Invalid multiplier bounds: ' + String(lower) + ' and ' + String(upper))
+    }
+
+    this.lower = lower
+    this.upper = upper
   }
 
-  if (lower > upper) {
-    throw Error('Invalid multiplier bounds: ' + String(lower) + ' and ' + String(upper))
+  equals (other) {
+    return other instanceof Multiplier &&
+      this.lower === other.lower &&
+      this.upper === other.upper
   }
 
-  return { type: 'multiplier', lower, upper }
+  serialise () {
+    if (this.lower === 0 && this.upper === 1) {
+      return '?'
+    }
+
+    if (this.lower === 1 && this.upper === 1) {
+      return ''
+    }
+
+    if (this.lower === 0 && this.upper === Infinity) {
+      return '*'
+    }
+
+    if (this.lower === 1 && this.upper === Infinity) {
+      return '+'
+    }
+
+    if (this.lower === this.upper) {
+      return '{' + String(this.lower) + '}'
+    }
+
+    if (this.upper === Infinity) {
+      return '{' + String(this.lower) + ',}'
+    }
+
+    return '{' + String(this.lower) + ',' + String(this.upper) + '}'
+  }
 }
 
 export const multiplicand = inner => {
@@ -190,7 +227,7 @@ export const mult = (multiplicand, multiplier) => {
   if (multiplicand.type !== 'multiplicand') {
     throw Error('Expected multiplicand to have type multiplicand, not ' + multiplicand.type)
   }
-  if (multiplier.type !== 'multiplier') {
+  if (!(multiplier instanceof Multiplier)) {
     throw Error()
   }
   return { type: 'mult', multiplicand, multiplier }

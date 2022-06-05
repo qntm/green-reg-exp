@@ -99,7 +99,7 @@ export const intersection = (...strings) => {
                   constructors.multiplicand(
                     new constructors.Charclass([], false)
                   ),
-                  constructors.multiplier(1, 1)
+                  new constructors.Multiplier(1, 1)
                 )
               )
             ])
@@ -125,7 +125,7 @@ export const intersection = (...strings) => {
                     ? new constructors.Charclass(alphabet, true)
                     : new constructors.Charclass([symbol], false)
                 ),
-                constructors.multiplier(1, 1)
+                new constructors.Multiplier(1, 1)
               )
             )
           ])
@@ -157,13 +157,13 @@ export const intersection = (...strings) => {
           constructors.term(
             constructors.mult(
               constructors.multiplicand(loopFactor),
-              constructors.multiplier(0, Infinity)
+              new constructors.Multiplier(0, Infinity)
             )
           ),
           constructors.term(
             constructors.mult(
               constructors.multiplicand(brz[a][right]),
-              constructors.multiplier(1, 1)
+              new constructors.Multiplier(1, 1)
             )
           )
         ])
@@ -190,13 +190,13 @@ export const intersection = (...strings) => {
             constructors.term(
               constructors.mult(
                 constructors.multiplicand(univ),
-                constructors.multiplier(1, 1)
+                new constructors.Multiplier(1, 1)
               )
             ),
             constructors.term(
               constructors.mult(
                 constructors.multiplicand(brz[a][right]),
-                constructors.multiplier(1, 1)
+                new constructors.Multiplier(1, 1)
               )
             )
           ])

@@ -26,14 +26,14 @@ describe('matchers', () => {
         j: 10,
         match: constructors.mult(
           constructors.multiplicand(new constructors.Charclass(['f', 'g'], true)),
-          constructors.multiplier(1, 1)
+          new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 11,
         match: constructors.mult(
           constructors.multiplicand(new constructors.Charclass(['f', 'g'], true)),
-          constructors.multiplier(0, Infinity)
+          new constructors.Multiplier(0, Infinity)
         )
       })
     })
@@ -44,14 +44,14 @@ describe('matchers', () => {
         j: 12,
         match: constructors.mult(
           constructors.multiplicand(new constructors.Charclass(['h'], false)),
-          constructors.multiplier(1, 1)
+          new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
         j: 15,
         match: constructors.mult(
           constructors.multiplicand(new constructors.Charclass(['h'], false)),
-          constructors.multiplier(5, 5)
+          new constructors.Multiplier(5, 5)
         )
       })
     })
@@ -68,7 +68,7 @@ describe('matchers', () => {
               'u', 'v', 'w', 'x', 'y', 'z'
             ], false)
           ),
-          constructors.multiplier(1, 1)
+          new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
@@ -81,7 +81,7 @@ describe('matchers', () => {
               'u', 'v', 'w', 'x', 'y', 'z'
             ], false)
           ),
-          constructors.multiplier(1, Infinity)
+          new constructors.Multiplier(1, Infinity)
         )
       })
     })
@@ -94,7 +94,7 @@ describe('matchers', () => {
           constructors.multiplicand(
             new constructors.Charclass(['T'], false)
           ),
-          constructors.multiplier(1, 1)
+          new constructors.Multiplier(1, 1)
         )
       })
       assert.deepStrictEqual(iterator.next().value, {
@@ -103,7 +103,7 @@ describe('matchers', () => {
           constructors.multiplicand(
             new constructors.Charclass(['T'], false)
           ),
-          constructors.multiplier(2, Infinity)
+          new constructors.Multiplier(2, Infinity)
         )
       })
     })

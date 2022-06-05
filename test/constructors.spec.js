@@ -17,8 +17,8 @@ describe('constructors', () => {
   })
 
   it('multiplier', () => {
-    assert.throws(() => constructors.multiplier(-1, 1), Error('Minimum bound of a multiplier can\'t be -1'))
-    assert.throws(() => constructors.multiplier(5, 3), Error('Invalid multiplier bounds: 5 and 3'))
+    assert.throws(() => new constructors.Multiplier(-1, 1), Error('Minimum bound of a multiplier can\'t be -1'))
+    assert.throws(() => new constructors.Multiplier(5, 3), Error('Invalid multiplier bounds: 5 and 3'))
   })
 
   it('multiplicand', () => {

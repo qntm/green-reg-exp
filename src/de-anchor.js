@@ -38,7 +38,7 @@ export const upliftAnchors = pattern => {
                 constructors.multiplicand(
                   constructors.pattern(concsWithNoAnchors)
                 ),
-                constructors.multiplier(1, 1)
+                new constructors.Multiplier(1, 1)
               )
             )])
           }
@@ -66,7 +66,7 @@ const nothing = constructors.conc([
       constructors.multiplicand(
         new constructors.Charclass([], false)
       ),
-      constructors.multiplier(1, 1)
+      new constructors.Multiplier(1, 1)
     )
   )
 ])
@@ -123,7 +123,7 @@ export const deAnchorConc = conc => {
       constructors.multiplicand(
         new constructors.Charclass([], true)
       ),
-      constructors.multiplier(0, Infinity)
+      new constructors.Multiplier(0, Infinity)
     )
   )
 

@@ -158,7 +158,7 @@ export default resolve(ref => ({
     matchOneBound,
     matchTwoBounds
   ])
-    .map(({ lower, upper }) => constructors.multiplier(lower, upper)),
+    .map(({ lower, upper }) => new constructors.Multiplier(lower, upper)),
 
   multiplicand: or([
     ref('charclass'),

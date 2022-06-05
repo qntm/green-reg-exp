@@ -1,16 +1,14 @@
 import * as constructors from './constructors.js'
 
 export const equals = (self, other) => {
-  if (self instanceof constructors.Charclass) {
+  if (
+    self instanceof constructors.Charclass ||
+    self instanceof constructors.Multiplier
+  ) {
     return self.equals(other)
   }
 
   return {
-    multiplier: (self, other) =>
-      self.type === other.type &&
-      self.lower === other.lower &&
-      self.upper === other.upper,
-
     multiplicand: (self, other) =>
       self.type === other.type &&
       equals(self.inner, other.inner),
