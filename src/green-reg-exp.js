@@ -4,7 +4,6 @@ import matchers from './matchers.js'
 import { getUsedChars } from './get-used-chars.js'
 import { fsmify } from './fsmify.js'
 import * as constructors from './constructors.js'
-import { reduce as ourReduce } from './reduce.js'
 import { deAnchorPattern } from './de-anchor.js'
 
 export const parse = string => {
@@ -114,7 +113,7 @@ export const intersection = (...strings) => {
     Reflect.ownKeys(f.map[a]).forEach(symbol => {
       if (symbol in f.map[a]) {
         const b = f.map[a][symbol]
-        brz[a][b] = ourReduce(new constructors.Pattern([
+        brz[a][b] = new constructors.Pattern([
           ...brz[a][b].concs,
           new constructors.Conc([
             new constructors.Term(
@@ -128,14 +127,14 @@ export const intersection = (...strings) => {
               )
             )
           ])
-        ]))
+        ]).reduced()
       }
     })
     if (f.finals.includes(a)) {
-      brz[a][outside] = ourReduce(new constructors.Pattern([
+      brz[a][outside] = new constructors.Pattern([
         ...brz[a][outside].concs,
         new constructors.Conc([])
-      ]))
+      ]).reduced()
     }
   })
 
@@ -151,7 +150,7 @@ export const intersection = (...strings) => {
     delete brz[a][a]
 
     Reflect.ownKeys(brz[a]).forEach(right => {
-      brz[a][right] = ourReduce(new constructors.Pattern([
+      brz[a][right] = new constructors.Pattern([
         new constructors.Conc([
           new constructors.Term(
             new constructors.Mult(
@@ -166,7 +165,7 @@ export const intersection = (...strings) => {
             )
           )
         ])
-      ]))
+      ]).reduced()
     })
 
     // Note: even if we're down to our final equation, the above step still
@@ -183,7 +182,7 @@ export const intersection = (...strings) => {
       delete brz[b][a]
 
       Reflect.ownKeys(brz[a]).forEach(right => {
-        brz[b][right] = ourReduce(new constructors.Pattern([
+        brz[b][right] = new constructors.Pattern([
           ...brz[b][right].concs,
           new constructors.Conc([
             new constructors.Term(
@@ -199,7 +198,7 @@ export const intersection = (...strings) => {
               )
             )
           ])
-        ]))
+        ]).reduced()
       })
     }
   }
@@ -208,7 +207,7 @@ export const intersection = (...strings) => {
 }
 
 export const reduce = string =>
-  ourReduce(matchers.pattern.parse1(string)).serialise()
+  matchers.pattern.parse1(string).reduced().serialise()
 
 export const deAnchor = string =>
   deAnchorPattern(matchers.pattern.parse1(string)).serialise()

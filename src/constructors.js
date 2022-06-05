@@ -8,7 +8,6 @@ import { fsmify } from './fsmify.js'
 import { getUsedChars } from './get-used-chars.js'
 import matchers from './matchers.js'
 import { matchesEmptyString } from './matches-empty-string.js'
-import { reduce } from './reduce.js'
 
 const bracketEscape = chars => {
   const runs = []
@@ -247,11 +246,9 @@ export class Multiplicand {
   reduced () {
     // Empty pattern becomes /[]/ since the latter is serialisable
     if (equals(this.inner, new Pattern([]))) {
-      return reduce(
-        new Multiplicand(
-          new Charclass([], false)
-        )
-      )
+      return new Multiplicand(
+        new Charclass([], false)
+      ).reduced()
     }
 
     // e.g. /([ab])/ to /[ab]/
@@ -262,12 +259,12 @@ export class Multiplicand {
       this.inner.concs[0].terms[0].inner instanceof Mult &&
       equals(this.inner.concs[0].terms[0].inner.multiplier, new Multiplier(1, 1))
     ) {
-      return reduce(this.inner.concs[0].terms[0].inner.multiplicand)
+      return this.inner.concs[0].terms[0].inner.multiplicand.reduced()
     }
 
-    const shrunk = new Multiplicand(reduce(this.inner))
+    const shrunk = new Multiplicand(this.inner.reduced())
     if (!equals(shrunk, this)) {
-      return reduce(shrunk)
+      return shrunk.reduced()
     }
 
     return this
@@ -330,9 +327,9 @@ export class Mult {
   }
 
   reduced () {
-    const shrunk = new Mult(reduce(this.multiplicand), this.multiplier)
+    const shrunk = new Mult(this.multiplicand.reduced(), this.multiplier)
     if (!equals(shrunk, this)) {
-      return reduce(shrunk)
+      return shrunk.reduced()
     }
 
     return this
@@ -402,9 +399,9 @@ export class Term {
   }
 
   reduced () {
-    const shrunk = new Term(reduce(this.inner))
+    const shrunk = new Term(this.inner.reduced())
     if (!equals(shrunk, this)) {
-      return reduce(shrunk)
+      return shrunk.reduced()
     }
 
     return this
@@ -461,12 +458,12 @@ export class Conc {
       )
     )
     if (killDeads.length < this.terms.length) {
-      return reduce(new Conc(killDeads))
+      return new Conc(killDeads).reduced()
     }
 
     // /abc[]def/ becomes /[]/
     if (this.terms.length > 1 && this.terms.some(term => equals(term, matchers.term.parse1('[]')))) {
-      return reduce(new Conc([matchers.term.parse1('[]')]))
+      return new Conc([matchers.term.parse1('[]')]).reduced()
     }
 
     // /(((aby)))/ becomes /aby/
@@ -477,7 +474,7 @@ export class Conc {
       this.terms[0].inner.multiplicand.inner.concs.length === 1 &&
       equals(this.terms[0].inner.multiplier, new Multiplier(1, 1))
     ) {
-      return reduce(this.terms[0].inner.multiplicand.inner.concs[0])
+      return this.terms[0].inner.multiplicand.inner.concs[0].reduced()
     }
 
     // /a(d(ab|a*c))/ to /ad(ab|a*c)/
@@ -490,17 +487,17 @@ export class Conc {
         this.terms[i].inner.multiplier.lower === 1 &&
         this.terms[i].inner.multiplier.upper === 1
       ) {
-        return reduce(new Conc(
+        return new Conc(
           this.terms.slice(0, i)
             .concat(this.terms[i].inner.multiplicand.inner.concs[0].terms)
             .concat(this.terms.slice(i + 1))
-        ))
+        ).reduced()
       }
     }
 
-    const shrunk = new Conc(this.terms.map(reduce))
+    const shrunk = new Conc(this.terms.map(term => term.reduced()))
     if (!equals(shrunk, this)) {
-      return reduce(shrunk)
+      return shrunk.reduced()
     }
 
     return this
@@ -585,10 +582,10 @@ export class Pattern {
         )
       ])
 
-      return reduce(new Pattern([
+      return new Pattern([
         combinedCharclassConc,
         ...nonCharclassConcs
-      ]))
+      ]).reduced()
     }
 
     // /[]|abc|def/ becomes /abc|def/
@@ -596,7 +593,7 @@ export class Pattern {
       !equals(conc, matchers.conc.parse1('[]'))
     )
     if (killDeads.length < this.concs.length) {
-      return reduce(new Pattern(killDeads))
+      return new Pattern(killDeads).reduced()
     }
 
     // /abc|abc/ becomes /abc/
@@ -604,12 +601,12 @@ export class Pattern {
       !this.concs.slice(0, i).some(otherConc => equals(conc, otherConc))
     )
     if (removeDuplicates.length < this.concs.length) {
-      return reduce(new Pattern(removeDuplicates))
+      return new Pattern(removeDuplicates).reduced()
     }
 
-    const shrunk = new Pattern(this.concs.map(reduce))
+    const shrunk = new Pattern(this.concs.map(conc => conc.reduced()))
     if (!equals(shrunk, this)) {
-      return reduce(shrunk)
+      return shrunk.reduced()
     }
 
     return this
