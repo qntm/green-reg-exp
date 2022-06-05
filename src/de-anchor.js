@@ -1,4 +1,3 @@
-import { equals } from './equals.js'
 import * as constructors from './constructors.js'
 import { arrayOps } from './array-ops.js'
 
@@ -141,5 +140,5 @@ export const deAnchorPattern = pattern =>
   new constructors.Pattern(
     upliftAnchors(pattern).concs
       .map(deAnchorConc)
-      .filter(conc => !equals(conc, nothing))
+      .filter(conc => !conc.equals(nothing))
   )

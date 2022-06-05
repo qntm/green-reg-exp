@@ -3,7 +3,6 @@ import { fsm, multiply, star, union, epsilon, concatenate } from 'green-fsm'
 import { arrayOps } from './array-ops.js'
 import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
-import { equals } from './equals.js'
 import matchers from './matchers.js'
 
 const bracketEscape = chars => {
@@ -225,7 +224,7 @@ export class Multiplicand {
 
   equals (other) {
     return other instanceof Multiplicand &&
-      equals(this.inner, other.inner)
+      this.inner.equals(other.inner)
   }
 
   fsmify (alphabet) {
@@ -242,7 +241,7 @@ export class Multiplicand {
 
   reduced () {
     // Empty pattern becomes /[]/ since the latter is serialisable
-    if (equals(this.inner, new Pattern([]))) {
+    if (this.inner.equals(new Pattern([]))) {
       return new Multiplicand(
         new Charclass([], false)
       ).reduced()
@@ -254,13 +253,13 @@ export class Multiplicand {
       this.inner.concs.length === 1 &&
       this.inner.concs[0].terms.length === 1 &&
       this.inner.concs[0].terms[0].inner instanceof Mult &&
-      equals(this.inner.concs[0].terms[0].inner.multiplier, new Multiplier(1, 1))
+      this.inner.concs[0].terms[0].inner.multiplier.equals(new Multiplier(1, 1))
     ) {
       return this.inner.concs[0].terms[0].inner.multiplicand.reduced()
     }
 
     const shrunk = new Multiplicand(this.inner.reduced())
-    if (!equals(shrunk, this)) {
+    if (!shrunk.equals(this)) {
       return shrunk.reduced()
     }
 
@@ -293,8 +292,8 @@ export class Mult {
 
   equals (other) {
     return other instanceof Mult &&
-      equals(this.multiplicand, other.multiplicand) &&
-      equals(this.multiplier, other.multiplier)
+      this.multiplicand.equals(other.multiplicand) &&
+      this.multiplier.equals(other.multiplier)
   }
 
   fsmify (alphabet) {
@@ -325,7 +324,7 @@ export class Mult {
 
   reduced () {
     const shrunk = new Mult(this.multiplicand.reduced(), this.multiplier)
-    if (!equals(shrunk, this)) {
+    if (!shrunk.equals(this)) {
       return shrunk.reduced()
     }
 
@@ -380,7 +379,7 @@ export class Term {
 
   equals (other) {
     return other instanceof Term &&
-      equals(this.inner, other.inner)
+      this.inner.equals(other.inner)
   }
 
   fsmify (alphabet) {
@@ -397,7 +396,7 @@ export class Term {
 
   reduced () {
     const shrunk = new Term(this.inner.reduced())
-    if (!equals(shrunk, this)) {
+    if (!shrunk.equals(this)) {
       return shrunk.reduced()
     }
 
@@ -422,7 +421,7 @@ export class Conc {
   equals (other) {
     return other instanceof Conc &&
       this.terms.length === other.terms.length &&
-      this.terms.every((term, i) => equals(term, other.terms[i]))
+      this.terms.every((term, i) => term.equals(other.terms[i]))
   }
 
   fsmify (alphabet) {
@@ -450,7 +449,7 @@ export class Conc {
     // /abc[]*def/ becomes /abcdef/
     const killDeads = this.terms.filter(term =>
       term.inner instanceof Mult && (
-        !equals(term.inner.multiplicand, matchers.multiplicand.parse1('[]')) ||
+        !term.inner.multiplicand.equals(matchers.multiplicand.parse1('[]')) ||
         term.inner.multiplier.lower !== 0
       )
     )
@@ -459,7 +458,7 @@ export class Conc {
     }
 
     // /abc[]def/ becomes /[]/
-    if (this.terms.length > 1 && this.terms.some(term => equals(term, matchers.term.parse1('[]')))) {
+    if (this.terms.length > 1 && this.terms.some(term => term.equals(matchers.term.parse1('[]')))) {
       return new Conc([matchers.term.parse1('[]')]).reduced()
     }
 
@@ -469,7 +468,7 @@ export class Conc {
       this.terms[0].inner instanceof Mult &&
       this.terms[0].inner.multiplicand.inner instanceof Pattern &&
       this.terms[0].inner.multiplicand.inner.concs.length === 1 &&
-      equals(this.terms[0].inner.multiplier, new Multiplier(1, 1))
+      this.terms[0].inner.multiplier.equals(new Multiplier(1, 1))
     ) {
       return this.terms[0].inner.multiplicand.inner.concs[0].reduced()
     }
@@ -493,7 +492,7 @@ export class Conc {
     }
 
     const shrunk = new Conc(this.terms.map(term => term.reduced()))
-    if (!equals(shrunk, this)) {
+    if (!shrunk.equals(this)) {
       return shrunk.reduced()
     }
 
@@ -587,7 +586,7 @@ export class Pattern {
 
     // /[]|abc|def/ becomes /abc|def/
     const killDeads = this.concs.filter(conc =>
-      !equals(conc, matchers.conc.parse1('[]'))
+      !conc.equals(matchers.conc.parse1('[]'))
     )
     if (killDeads.length < this.concs.length) {
       return new Pattern(killDeads).reduced()
@@ -595,14 +594,14 @@ export class Pattern {
 
     // /abc|abc/ becomes /abc/
     const removeDuplicates = this.concs.filter((conc, i) =>
-      !this.concs.slice(0, i).some(otherConc => equals(conc, otherConc))
+      !this.concs.slice(0, i).some(otherConc => conc.equals(otherConc))
     )
     if (removeDuplicates.length < this.concs.length) {
       return new Pattern(removeDuplicates).reduced()
     }
 
     const shrunk = new Pattern(this.concs.map(conc => conc.reduced()))
-    if (!equals(shrunk, this)) {
+    if (!shrunk.equals(this)) {
       return shrunk.reduced()
     }
 
@@ -619,7 +618,7 @@ export class Pattern {
   equals (other) {
     return other instanceof Pattern &&
       this.concs.length === other.concs.length &&
-      this.concs.every((conc, i) => equals(conc, other.concs[i]))
+      this.concs.every((conc, i) => conc.equals(other.concs[i]))
   }
 
   getUsedChars () {
