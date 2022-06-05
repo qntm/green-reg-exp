@@ -5,16 +5,13 @@ export const equals = (self, other) => {
     self instanceof constructors.Charclass ||
     self instanceof constructors.Multiplier ||
     self instanceof constructors.Multiplicand ||
-    self instanceof constructors.Mult
+    self instanceof constructors.Mult ||
+    self instanceof constructors.Anchor
   ) {
     return self.equals(other)
   }
 
   return {
-    anchor: (self, other) =>
-      self.type === other.type &&
-      self.end === other.end,
-
     term: (self, other) =>
       self.type === other.type &&
       equals(self.inner, other.inner),

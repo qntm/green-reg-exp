@@ -23,7 +23,7 @@ export const upliftAnchors = pattern => {
         const pattern2 = upliftAnchors(term.inner.multiplicand.inner)
         const concsWithNoAnchors = []
         pattern2.concs.forEach(conc => {
-          if (conc.terms.some(term => term.inner.type === 'anchor')) {
+          if (conc.terms.some(term => term.inner instanceof constructors.Anchor)) {
             termArrays.push(conc.terms)
           } else {
             concsWithNoAnchors.push(conc)
@@ -77,14 +77,14 @@ export const deAnchorConc = conc => {
   // *cracks knuckles*
   let indexOfLastStartAnchor = -1
   for (let i = 0; i < conc.terms.length; i++) {
-    if (conc.terms[i].inner.type === 'anchor' && conc.terms[i].inner.end === false) {
+    if (conc.terms[i].inner instanceof constructors.Anchor && conc.terms[i].inner.end === false) {
       indexOfLastStartAnchor = i
     }
   }
 
   let indexOfFirstEndAnchor = conc.terms.length
   for (let i = conc.terms.length - 1; i >= 0; i--) {
-    if (conc.terms[i].inner.type === 'anchor' && conc.terms[i].inner.end === true) {
+    if (conc.terms[i].inner instanceof constructors.Anchor && conc.terms[i].inner.end === true) {
       indexOfFirstEndAnchor = i
     }
   }
@@ -94,7 +94,7 @@ export const deAnchorConc = conc => {
   // e.g. input is /aaa^/
   if (
     !conc.terms.slice(0, indexOfLastStartAnchor + 1)
-      .filter(term => term.inner.type !== 'anchor')
+      .filter(term => !(term.inner instanceof constructors.Anchor))
       .every(matchesEmptyString)
   ) {
     return nothing
@@ -105,7 +105,7 @@ export const deAnchorConc = conc => {
   // e.g. input is /$bbb/
   if (
     !conc.terms.slice(indexOfFirstEndAnchor, conc.terms.length)
-      .filter(term => term.inner.type !== 'anchor')
+      .filter(term => !(term.inner instanceof constructors.Anchor))
       .every(matchesEmptyString)
   ) {
     return nothing

@@ -6,16 +6,13 @@ export const fsmify = (thing, alphabet) => {
   if (
     thing instanceof constructors.Charclass ||
     thing instanceof constructors.Multiplicand ||
-    thing instanceof constructors.Mult
+    thing instanceof constructors.Mult ||
+    thing instanceof constructors.Anchor
   ) {
     return thing.fsmify(alphabet)
   }
 
   return {
-    anchor: ({ end }, alphabet) => {
-      throw Error('Cannot make an FSM out of an anchor.')
-    },
-
     term: ({ inner }, alphabet) =>
       fsmify(inner, alphabet),
 

@@ -171,8 +171,8 @@ export default resolve(ref => ({
     .map(([multiplicand, multiplier]) => new constructors.Mult(multiplicand, multiplier)),
 
   anchor: or([
-    fixed('^').map(() => constructors.anchor(false)),
-    fixed('$').map(() => constructors.anchor(true))
+    fixed('^').map(() => new constructors.Anchor(false)),
+    fixed('$').map(() => new constructors.Anchor(true))
   ]),
 
   term: or([

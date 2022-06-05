@@ -345,15 +345,34 @@ export class Mult {
 /**
   "^" means "start of input", "$" means "end of input".
   These get FACTORED OUT.
-  anchor(false) = "^", anchor(true) = "$"
+  new Anchor(false) = "^", new Anchor(true) = "$"
 */
-export const anchor = end => {
-  return { type: 'anchor', end }
+export class Anchor {
+  constructor (end) {
+    this.end = end
+  }
+
+  fsmify () {
+    throw Error('Cannot make an FSM out of an anchor.')
+  }
+
+  equals (other) {
+    return other instanceof Anchor &&
+      this.end === other.end
+  }
+
+  getUsedChars () {
+    return {}
+  }
+
+  serialise () {
+    return this.end ? '$' : '^'
+  }
 }
 
 export const term = inner => {
-  if (!(inner instanceof Mult) && inner.type !== 'anchor') {
-    throw Error('Bad type ' + inner.type + ', expected Mult or anchor')
+  if (!(inner instanceof Mult) && !(inner instanceof Anchor)) {
+    throw Error('Bad type ' + inner.type + ', expected Mult or Anchor')
   }
   return { type: 'term', inner }
 }

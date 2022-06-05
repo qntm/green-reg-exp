@@ -31,7 +31,7 @@ describe('constructors', () => {
   })
 
   it('term', () => {
-    assert.throws(() => constructors.term({ type: 'juice' }), Error('Bad type juice, expected Mult or anchor'))
+    assert.throws(() => constructors.term({ type: 'juice' }), Error('Bad type juice, expected Mult or Anchor'))
   })
 
   it('conc', () => {

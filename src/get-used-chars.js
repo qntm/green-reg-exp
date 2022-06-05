@@ -7,15 +7,13 @@ export const getUsedChars = thing => {
   if (
     thing instanceof constructors.Charclass ||
     thing instanceof constructors.Multiplicand ||
-    thing instanceof constructors.Mult
+    thing instanceof constructors.Mult ||
+    thing instanceof constructors.Anchor
   ) {
     return thing.getUsedChars()
   }
 
   return {
-    anchor: ({ end }) =>
-      ({}),
-
     term: ({ inner }) =>
       getUsedChars(inner),
 

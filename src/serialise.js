@@ -5,15 +5,13 @@ export const serialise = thing => {
     thing instanceof constructors.Charclass ||
     thing instanceof constructors.Multiplier ||
     thing instanceof constructors.Multiplicand ||
-    thing instanceof constructors.Mult
+    thing instanceof constructors.Mult ||
+    thing instanceof constructors.Anchor
   ) {
     return thing.serialise()
   }
 
   return {
-    anchor: ({ end }) =>
-      end ? '$' : '^',
-
     term: ({ inner }) =>
       serialise(inner),
 
