@@ -34,8 +34,8 @@ describe('constructors', () => {
     assert.throws(() => new constructors.Term({ type: 'juice' }), Error('Bad type juice, expected Mult or Anchor'))
   })
 
-  it('conc', () => {
-    assert.throws(() => constructors.conc([{ type: 'juice' }]), Error('Bad type juice, expected term'))
+  it('Conc', () => {
+    assert.throws(() => new constructors.Conc([{ type: 'juice' }]), Error('Bad type juice, expected term'))
   })
 
   it('pattern', () => {

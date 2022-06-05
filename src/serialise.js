@@ -7,15 +7,13 @@ export const serialise = thing => {
     thing instanceof constructors.Multiplicand ||
     thing instanceof constructors.Mult ||
     thing instanceof constructors.Anchor ||
-    thing instanceof constructors.Term
+    thing instanceof constructors.Term ||
+    thing instanceof constructors.Conc
   ) {
     return thing.serialise()
   }
 
   return {
-    conc: ({ terms }) =>
-      terms.map(serialise).join(''),
-
     pattern: ({ concs }) => {
       if (concs.length === 0) {
         return '[]'

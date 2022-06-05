@@ -7,17 +7,13 @@ export const equals = (self, other) => {
     self instanceof constructors.Multiplicand ||
     self instanceof constructors.Mult ||
     self instanceof constructors.Anchor ||
-    self instanceof constructors.Term
+    self instanceof constructors.Term ||
+    self instanceof constructors.Conc
   ) {
     return self.equals(other)
   }
 
   return {
-    conc: (self, other) =>
-      self.type === other.type &&
-      self.terms.length === other.terms.length &&
-      self.terms.every((term, i) => equals(term, other.terms[i])),
-
     pattern: (self, other) =>
       self.type === other.type &&
       self.concs.length === other.concs.length &&

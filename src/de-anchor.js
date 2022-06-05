@@ -50,17 +50,17 @@ export const upliftAnchors = pattern => {
     }
 
     // Now each possible combination of choices of terms from
-    // `termArrayses` needs to be turned into a `conc`.
+    // `termArrayses` needs to be turned into a `Conc`.
     arrayOps.product(...termArrayses).forEach(termArrays => {
       const terms = Array.prototype.concat.apply([], termArrays)
-      newConcs.push(constructors.conc(terms))
+      newConcs.push(new constructors.Conc(terms))
     })
   })
 
   return constructors.pattern(newConcs)
 }
 
-const nothing = constructors.conc([
+const nothing = new constructors.Conc([
   new constructors.Term(
     new constructors.Mult(
       new constructors.Multiplicand(
@@ -71,7 +71,7 @@ const nothing = constructors.conc([
   )
 ])
 
-// It is assumed that the conc being passed in is from a pattern
+// It is assumed that the Conc being passed in is from a pattern
 // which has already undergone the `upliftAnchors` processing.
 export const deAnchorConc = conc => {
   // *cracks knuckles*
@@ -113,7 +113,7 @@ export const deAnchorConc = conc => {
 
   // e.g. input is /$a{0,4}^/, return //
   if (indexOfFirstEndAnchor < indexOfLastStartAnchor) {
-    return constructors.conc([])
+    return new constructors.Conc([])
   }
 
   const terms = conc.terms.slice(indexOfLastStartAnchor + 1, indexOfFirstEndAnchor)
@@ -135,7 +135,7 @@ export const deAnchorConc = conc => {
     terms.push(dotStarTerm)
   }
 
-  return constructors.conc(terms)
+  return new constructors.Conc(terms)
 }
 
 export const deAnchorPattern = pattern =>

@@ -5,6 +5,7 @@ import escapesRegular from './escapes-regular.js'
 import { equals } from './equals.js'
 import { fsmify } from './fsmify.js'
 import { getUsedChars } from './get-used-chars.js'
+import matchers from './matchers.js'
 import { matchesEmptyString } from './matches-empty-string.js'
 import { serialise } from './serialise.js'
 import { reduce } from './reduce.js'
@@ -411,34 +412,118 @@ export class Term {
 }
 
 /**
-  To express the empty string, use an empty conc, conc().
+  To express the empty string, use an empty Conc, new Conc().
 */
-export const conc = terms => {
-  terms.forEach(term => {
-    if (!(term instanceof Term)) {
-      throw Error('Bad type ' + term.type + ', expected term')
+export class Conc {
+  constructor (terms) {
+    terms.forEach(term => {
+      if (!(term instanceof Term)) {
+        throw Error('Bad type ' + term.type + ', expected term')
+      }
+    })
+
+    this.terms = terms
+  }
+
+  equals (other) {
+    return other instanceof Conc &&
+      this.terms.length === other.terms.length &&
+      this.terms.every((term, i) => equals(term, other.terms[i]))
+  }
+
+  fsmify (alphabet) {
+    return concatenate(this.terms.map(term => fsmify(term, alphabet)))
+  }
+
+  getUsedChars () {
+    return Object.assign.apply(Object, [{}].concat(this.terms.map(getUsedChars)))
+  }
+
+  matchesEmptyString () {
+    return this.terms.every(matchesEmptyString)
+  }
+
+  serialise () {
+    return this.terms.map(serialise).join('')
+  }
+
+  reduced () {
+    // First things first, ANCHORS.
+    // /a?^/ becomes /^/
+    // /a?^b?^/ becomes /^/
+
+    // Strip out []*, []{0}, etc. from the listing
+    // /abc[]*def/ becomes /abcdef/
+    const killDeads = this.terms.filter(term =>
+      term.inner instanceof Mult && (
+        !equals(term.inner.multiplicand, matchers.multiplicand.parse1('[]')) ||
+        term.inner.multiplier.lower !== 0
+      )
+    )
+    if (killDeads.length < this.terms.length) {
+      return reduce(new Conc(killDeads))
     }
-  })
-  return { type: 'conc', terms }
+
+    // /abc[]def/ becomes /[]/
+    if (this.terms.length > 1 && this.terms.some(term => equals(term, matchers.term.parse1('[]')))) {
+      return reduce(new Conc([matchers.term.parse1('[]')]))
+    }
+
+    // /(((aby)))/ becomes /aby/
+    if (
+      this.terms.length === 1 &&
+      this.terms[0].inner instanceof Mult &&
+      this.terms[0].inner.multiplicand.inner.type === 'pattern' &&
+      this.terms[0].inner.multiplicand.inner.concs.length === 1 &&
+      equals(this.terms[0].inner.multiplier, new Multiplier(1, 1))
+    ) {
+      return reduce(this.terms[0].inner.multiplicand.inner.concs[0])
+    }
+
+    // /a(d(ab|a*c))/ to /ad(ab|a*c)/
+    // /ab(cd)ef/ to /abcdef/
+    for (let i = 0; i < this.terms.length; i++) {
+      if (
+        this.terms[i].inner instanceof Mult &&
+        this.terms[i].inner.multiplicand.inner.type === 'pattern' &&
+        this.terms[i].inner.multiplicand.inner.concs.length === 1 &&
+        this.terms[i].inner.multiplier.lower === 1 &&
+        this.terms[i].inner.multiplier.upper === 1
+      ) {
+        return reduce(new Conc(
+          this.terms.slice(0, i)
+            .concat(this.terms[i].inner.multiplicand.inner.concs[0].terms)
+            .concat(this.terms.slice(i + 1))
+        ))
+      }
+    }
+
+    const shrunk = new Conc(this.terms.map(reduce))
+    if (!equals(shrunk, this)) {
+      return reduce(shrunk)
+    }
+
+    return this
+  }
 }
 
 /**
   A pattern (also known as an "alt", short for "alternation") is a
-  set of concs. A pattern expresses multiple alternate possibilities.
+  set of Concs. A pattern expresses multiple alternate possibilities.
   When written out as a regex, these would separated by pipes. A pattern
   containing no possibilities is possible and represents a regular expression
   matching no strings whatsoever (there is no conventional string form for
   this).
 
-  e.g. "abc|def(ghi|jkl)" is an alt containing two concs: "abc" and
-  "def(ghi|jkl)". The latter is a conc containing four terms: "d", "e", "f"
+  e.g. "abc|def(ghi|jkl)" is an alt containing two Concs: "abc" and
+  "def(ghi|jkl)". The latter is a Conc containing four terms: "d", "e", "f"
   and "(ghi|jkl)". The latter in turn is a Mult consisting of an upper bound
   1, a lower bound 1, and a multiplicand which is a new subpattern, "ghi|jkl".
-  This new subpattern again consists of two concs: "ghi" and "jkl".
+  This new subpattern again consists of two Concs: "ghi" and "jkl".
 */
 
 export const pattern = concs => {
-  if (concs.some(conc => conc.type !== 'conc')) {
+  if (concs.some(conc => !(conc instanceof Conc))) {
     throw Error('Bad type')
   }
   return { type: 'pattern', concs }

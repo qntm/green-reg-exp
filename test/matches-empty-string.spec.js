@@ -7,7 +7,7 @@ import * as constructors from '../src/constructors.js'
 
 describe('matchesEmptyString', () => {
   it('works', () => {
-    assert.strictEqual(matchesEmptyString(constructors.conc([])), true)
+    assert.strictEqual(matchesEmptyString(new constructors.Conc([])), true)
   })
 
   it('works', () => {

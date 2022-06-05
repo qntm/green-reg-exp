@@ -13,71 +13,13 @@ export const reduce = thing => {
     thing instanceof constructors.Charclass ||
     thing instanceof constructors.Multiplicand ||
     thing instanceof constructors.Mult ||
-    thing instanceof constructors.Term
+    thing instanceof constructors.Term ||
+    thing instanceof constructors.Conc
   ) {
     return thing.reduced()
   }
 
   return {
-    conc: conc => {
-      // First things first, ANCHORS.
-      // /a?^/ becomes /^/
-      // /a?^b?^/ becomes /^/
-
-      // Strip out []*, []{0}, etc. from the listing
-      // /abc[]*def/ becomes /abcdef/
-      const killDeads = conc.terms.filter(term =>
-        term.inner instanceof constructors.Mult && (
-          !equals(term.inner.multiplicand, matchers.multiplicand.parse1('[]')) ||
-          term.inner.multiplier.lower !== 0
-        )
-      )
-      if (killDeads.length < conc.terms.length) {
-        return reduce(constructors.conc(killDeads))
-      }
-
-      // /abc[]def/ becomes /[]/
-      if (conc.terms.length > 1 && conc.terms.some(term => equals(term, matchers.term.parse1('[]')))) {
-        return reduce(constructors.conc([matchers.term.parse1('[]')]))
-      }
-
-      // /(((aby)))/ becomes /aby/
-      if (
-        conc.terms.length === 1 &&
-        conc.terms[0].inner instanceof constructors.Mult &&
-        conc.terms[0].inner.multiplicand.inner.type === 'pattern' &&
-        conc.terms[0].inner.multiplicand.inner.concs.length === 1 &&
-        equals(conc.terms[0].inner.multiplier, new constructors.Multiplier(1, 1))
-      ) {
-        return reduce(conc.terms[0].inner.multiplicand.inner.concs[0])
-      }
-
-      // /a(d(ab|a*c))/ to /ad(ab|a*c)/
-      // /ab(cd)ef/ to /abcdef/
-      for (let i = 0; i < conc.terms.length; i++) {
-        if (
-          conc.terms[i].inner instanceof constructors.Mult &&
-          conc.terms[i].inner.multiplicand.inner.type === 'pattern' &&
-          conc.terms[i].inner.multiplicand.inner.concs.length === 1 &&
-          conc.terms[i].inner.multiplier.lower === 1 &&
-          conc.terms[i].inner.multiplier.upper === 1
-        ) {
-          return reduce(constructors.conc(
-            conc.terms.slice(0, i)
-              .concat(conc.terms[i].inner.multiplicand.inner.concs[0].terms)
-              .concat(conc.terms.slice(i + 1))
-          ))
-        }
-      }
-
-      const shrunk = constructors.conc(conc.terms.map(reduce))
-      if (!equals(shrunk, conc)) {
-        return reduce(shrunk)
-      }
-
-      return conc
-    },
-
     pattern: pattern => {
       // Unify charclasses e.g. /a|b|cde/ becomes /[ab]|cde/
       const charclassConcs = []
@@ -117,7 +59,7 @@ export const reduce = thing => {
           }
         }, new constructors.Charclass([], false))
 
-        const combinedCharclassConc = constructors.conc([
+        const combinedCharclassConc = new constructors.Conc([
           new constructors.Term(
             new constructors.Mult(
               new constructors.Multiplicand(

@@ -93,7 +93,7 @@ export const intersection = (...strings) => {
       [a]: Object.assign.apply(Object, [{}].concat([...f.states, outside].map(b =>
         ({
           [b]: constructors.pattern([
-            constructors.conc([
+            new constructors.Conc([
               new constructors.Term(
                 new constructors.Mult(
                   new constructors.Multiplicand(
@@ -117,7 +117,7 @@ export const intersection = (...strings) => {
         const b = f.map[a][symbol]
         brz[a][b] = ourReduce(constructors.pattern([
           ...brz[a][b].concs,
-          constructors.conc([
+          new constructors.Conc([
             new constructors.Term(
               new constructors.Mult(
                 new constructors.Multiplicand(
@@ -135,7 +135,7 @@ export const intersection = (...strings) => {
     if (f.finals.includes(a)) {
       brz[a][outside] = ourReduce(constructors.pattern([
         ...brz[a][outside].concs,
-        constructors.conc([])
+        new constructors.Conc([])
       ]))
     }
   })
@@ -153,7 +153,7 @@ export const intersection = (...strings) => {
 
     Reflect.ownKeys(brz[a]).forEach(right => {
       brz[a][right] = ourReduce(constructors.pattern([
-        constructors.conc([
+        new constructors.Conc([
           new constructors.Term(
             new constructors.Mult(
               new constructors.Multiplicand(loopFactor),
@@ -186,7 +186,7 @@ export const intersection = (...strings) => {
       Reflect.ownKeys(brz[a]).forEach(right => {
         brz[b][right] = ourReduce(constructors.pattern([
           ...brz[b][right].concs,
-          constructors.conc([
+          new constructors.Conc([
             new constructors.Term(
               new constructors.Mult(
                 new constructors.Multiplicand(univ),

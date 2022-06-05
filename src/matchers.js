@@ -182,7 +182,7 @@ export default resolve(ref => ({
     .map(inner => new constructors.Term(inner)),
 
   conc: ref('term').star()
-    .map(terms => constructors.conc(terms)),
+    .map(terms => new constructors.Conc(terms)),
 
   pattern: ref('conc').plus(fixed('|'))
     .map(concs => constructors.pattern(concs))
