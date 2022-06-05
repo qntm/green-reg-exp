@@ -1,7 +1,6 @@
 import { anythingElse, intersection as fsmIntersection } from 'green-fsm'
 
 import matchers from './matchers.js'
-import { fsmify } from './fsmify.js'
 import * as constructors from './constructors.js'
 import { deAnchorPattern } from './de-anchor.js'
 
@@ -11,7 +10,7 @@ export const parse = string => {
   let fsm
   const toFsm = () => {
     if (!fsm) {
-      fsm = fsmify(pattern, Object.keys(pattern.getUsedChars()).concat([anythingElse]))
+      fsm = pattern.fsmify(Object.keys(pattern.getUsedChars()).concat([anythingElse]))
     }
     return fsm
   }
@@ -52,7 +51,7 @@ export const intersection = (...strings) => {
 
   const alphabet = Object.keys(charsUsed)
 
-  const fsms = patterns.map(pattern => fsmify(pattern, [...alphabet, anythingElse]))
+  const fsms = patterns.map(pattern => pattern.fsmify([...alphabet, anythingElse]))
 
   const f = fsmIntersection(fsms)
 

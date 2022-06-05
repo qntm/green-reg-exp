@@ -4,7 +4,6 @@ import { arrayOps } from './array-ops.js'
 import escapesBracket from './escapes-bracket.js'
 import escapesRegular from './escapes-regular.js'
 import { equals } from './equals.js'
-import { fsmify } from './fsmify.js'
 import matchers from './matchers.js'
 
 const bracketEscape = chars => {
@@ -230,7 +229,7 @@ export class Multiplicand {
   }
 
   fsmify (alphabet) {
-    return fsmify(this.inner, alphabet)
+    return this.inner.fsmify(alphabet)
   }
 
   getUsedChars () {
@@ -302,7 +301,7 @@ export class Mult {
     // worked example: (min, max) = (5, 7) or (5, inf)
     // (mandatory, optional) = (5, 2) or (5, inf)
 
-    const unit = fsmify(this.multiplicand, alphabet)
+    const unit = this.multiplicand.fsmify(alphabet)
     // accepts e.g. "ab"
 
     // accepts "ababababab"
@@ -385,7 +384,7 @@ export class Term {
   }
 
   fsmify (alphabet) {
-    return fsmify(this.inner, alphabet)
+    return this.inner.fsmify(alphabet)
   }
 
   getUsedChars () {
@@ -427,7 +426,7 @@ export class Conc {
   }
 
   fsmify (alphabet) {
-    return concatenate(this.terms.map(term => fsmify(term, alphabet)))
+    return concatenate(this.terms.map(term => term.fsmify(alphabet)))
   }
 
   getUsedChars () {
@@ -527,7 +526,7 @@ export class Pattern {
   }
 
   fsmify (alphabet) {
-    return union(this.concs.map(conc => fsmify(conc, alphabet)))
+    return union(this.concs.map(conc => conc.fsmify(alphabet)))
   }
 
   reduced () {
