@@ -8,7 +8,6 @@ import { fsmify } from './fsmify.js'
 import { getUsedChars } from './get-used-chars.js'
 import matchers from './matchers.js'
 import { matchesEmptyString } from './matches-empty-string.js'
-import { serialise } from './serialise.js'
 import { reduce } from './reduce.js'
 
 const bracketEscape = chars => {
@@ -276,8 +275,8 @@ export class Multiplicand {
 
   serialise () {
     return this.inner instanceof Pattern
-      ? '(' + serialise(this.inner) + ')'
-      : serialise(this.inner)
+      ? '(' + this.inner.serialise() + ')'
+      : this.inner.serialise()
   }
 }
 
@@ -340,7 +339,7 @@ export class Mult {
   }
 
   serialise () {
-    return serialise(this.multiplicand) + serialise(this.multiplier)
+    return this.multiplicand.serialise() + this.multiplier.serialise()
   }
 }
 
@@ -382,7 +381,7 @@ export class Term {
   }
 
   serialise () {
-    return serialise(this.inner)
+    return this.inner.serialise()
   }
 
   equals (other) {
@@ -445,7 +444,7 @@ export class Conc {
   }
 
   serialise () {
-    return this.terms.map(serialise).join('')
+    return this.terms.map(term => term.serialise()).join('')
   }
 
   reduced () {
@@ -620,7 +619,7 @@ export class Pattern {
     if (this.concs.length === 0) {
       return '[]'
     }
-    return this.concs.map(serialise).join('|')
+    return this.concs.map(conc => conc.serialise()).join('|')
   }
 
   equals (other) {

@@ -3,7 +3,6 @@ import { anythingElse, intersection as fsmIntersection } from 'green-fsm'
 import matchers from './matchers.js'
 import { getUsedChars } from './get-used-chars.js'
 import { fsmify } from './fsmify.js'
-import { serialise } from './serialise.js'
 import * as constructors from './constructors.js'
 import { reduce as ourReduce } from './reduce.js'
 import { deAnchorPattern } from './de-anchor.js'
@@ -205,11 +204,11 @@ export const intersection = (...strings) => {
     }
   }
 
-  return serialise(brz[f.initial][outside])
+  return brz[f.initial][outside].serialise()
 }
 
 export const reduce = string =>
-  serialise(ourReduce(matchers.pattern.parse1(string)))
+  ourReduce(matchers.pattern.parse1(string)).serialise()
 
 export const deAnchor = string =>
-  serialise(deAnchorPattern(matchers.pattern.parse1(string)))
+  deAnchorPattern(matchers.pattern.parse1(string)).serialise()
