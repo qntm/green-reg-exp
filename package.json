@@ -26,7 +26,7 @@
     "url": "https://github.com/qntm/green-reg-exp/issues"
   },
   "devDependencies": {
-    "c8": "^8.0.0",
+    "c8": "^9.1.0",
     "mocha": "^10.0.0",
     "standard": "^17.0.0"
   },
