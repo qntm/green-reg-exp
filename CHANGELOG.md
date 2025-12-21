@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.0.0
+
+Support for Node.js 18 and lower is dropped.
+
 ## 2.0.0
 
 `green-reg-exp` now uses ES modules, not CommonJS modules.
