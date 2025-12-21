@@ -1,6 +1,6 @@
 {
   "name": "green-reg-exp",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "A little library for parsing and manipulating regular expressions.",
   "homepage": "https://github.com/qntm/green-reg-exp",
   "repository": {
