@@ -1,6 +1,5 @@
-/* eslint-env mocha */
-
 import assert from 'node:assert/strict'
+import { describe, it } from 'node:test'
 
 import * as greenRegExp from '../src/green-reg-exp.js'
 
@@ -170,12 +169,12 @@ describe('greenRegExp', () => {
       })
     })
 
-    xit('symbols', () => {
+    it('symbols', { skip: true }, () => {
       assert.equal(greenRegExp.intersection('\\W*', '[a-g0-8$%\\^]+', '[^d]{2,8}'), '[$%\\^]{2,8}')
     })
 
     // need more reduction rules before this will work
-    xit('complex stars', () => {
+    it('complex stars', { skip: true }, () => {
       const intersection = greenRegExp.intersection('[bc]*[ab]*', '[ab]*[bc]*')
       assert.equal(intersection, '([ab]*a|[bc]*c)?b*')
     })

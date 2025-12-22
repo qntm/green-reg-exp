@@ -2,9 +2,8 @@
 // functionality which has already been unit-tested. If this isn't possible, then
 // additional tests are required!
 
-/* eslint-env mocha */
-
 import assert from 'node:assert/strict'
+import { describe, it } from 'node:test'
 
 import * as constructors from '../src/constructors.js'
 
