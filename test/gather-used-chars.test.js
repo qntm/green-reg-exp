@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import assert from 'assert'
+import assert from 'node:assert/strict'
 
 import matchers from '../src/matchers.js'
 
@@ -9,7 +9,7 @@ describe('gatherUsedChars', () => {
     it('[^abc]', () => {
       const usedChars = new Set()
       matchers.charclass.parse1('[^abc]').gatherUsedChars(usedChars)
-      assert.deepStrictEqual(usedChars, new Set(['a', 'b', 'c']))
+      assert.deepEqual(usedChars, new Set(['a', 'b', 'c']))
     })
   })
 
@@ -17,7 +17,7 @@ describe('gatherUsedChars', () => {
     it('works', () => {
       const usedChars = new Set()
       matchers.anchor.parse1('^').gatherUsedChars()
-      assert.deepStrictEqual(usedChars, new Set())
+      assert.deepEqual(usedChars, new Set())
     })
   })
 })
