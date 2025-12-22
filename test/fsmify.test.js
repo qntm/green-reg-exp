@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
-import assert from 'assert'
+import assert from 'node:assert/strict'
+
 import { anythingElse } from 'green-fsm'
 
 import matchers from '../src/matchers.js'
@@ -10,14 +11,14 @@ describe('fsmify', () => {
     it('[^a]', () => {
       const nota = matchers.charclass.parse1('[^a]').fsmify([anythingElse, 'a'])
 
-      assert.strictEqual(nota.accepts([]), false)
-      assert.strictEqual(nota.accepts(['a']), false)
-      assert.strictEqual(nota.accepts(['b']), true)
-      assert.strictEqual(nota.accepts([anythingElse]), true)
-      assert.strictEqual(nota.accepts(['c']), true)
-      assert.strictEqual(nota.accepts([{}]), true)
-      assert.strictEqual(nota.accepts([4358375923]), true)
-      assert.strictEqual(nota.accepts(['b', 'b']), false)
+      assert.equal(nota.accepts([]), false)
+      assert.equal(nota.accepts(['a']), false)
+      assert.equal(nota.accepts(['b']), true)
+      assert.equal(nota.accepts([anythingElse]), true)
+      assert.equal(nota.accepts(['c']), true)
+      assert.equal(nota.accepts([{}]), true)
+      assert.equal(nota.accepts([4358375923]), true)
+      assert.equal(nota.accepts(['b', 'b']), false)
     })
   })
 
@@ -26,11 +27,11 @@ describe('fsmify', () => {
     it('odd bug', () => {
       const bcStar = matchers.mult.parse1('[bc]*')
       const int5A = bcStar.fsmify(['a', 'b', 'c', anythingElse])
-      assert.strictEqual(int5A.accepts([]), true)
+      assert.equal(int5A.accepts([]), true)
 
       const c = matchers.mult.parse1('c')
       const int5B = c.fsmify(['a', 'b', 'c', anythingElse])
-      assert.strictEqual(int5B.accepts(['c']), true)
+      assert.equal(int5B.accepts(['c']), true)
     })
   })
 
