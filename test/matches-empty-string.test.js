@@ -1,15 +1,15 @@
 /* eslint-env mocha */
 
-import assert from 'assert'
+import assert from 'node:assert/strict'
 
 import * as constructors from '../src/constructors.js'
 
 describe('matchesEmptyString', () => {
   it('works', () => {
-    assert.strictEqual(new constructors.Conc([]).matchesEmptyString(), true)
+    assert.equal(new constructors.Conc([]).matchesEmptyString(), true)
   })
 
   it('works', () => {
-    assert.strictEqual(new constructors.Pattern([]).matchesEmptyString(), false)
+    assert.equal(new constructors.Pattern([]).matchesEmptyString(), false)
   })
 })
