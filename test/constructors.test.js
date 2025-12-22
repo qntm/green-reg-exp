@@ -4,7 +4,7 @@
 
 /* eslint-env mocha */
 
-import assert from 'assert'
+import assert from 'node:assert/strict'
 
 import * as constructors from '../src/constructors.js'
 
