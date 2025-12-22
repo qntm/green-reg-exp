@@ -31,7 +31,7 @@ describe('reduce', () => {
   describe('mult', () => {
     it('works', () => {
       assert.deepEqual(matchers.mult.parse1('([ab])*').reduced(), matchers.mult.parse1('[ab]*'))
-      assert.notdeepEqual(matchers.mult.parse1('([ab]*)').reduced(), matchers.mult.parse1('[ab]*'))
+      assert.notDeepEqual(matchers.mult.parse1('([ab]*)').reduced(), matchers.mult.parse1('[ab]*'))
     })
   })
 
@@ -48,7 +48,7 @@ describe('reduce', () => {
 
     it('what', () => {
       assert.deepEqual(matchers.conc.parse1('(c)').reduced(), matchers.conc.parse1('c'))
-      assert.notdeepEqual(matchers.conc.parse1('((c))').reduced(), matchers.conc.parse1(''))
+      assert.notDeepEqual(matchers.conc.parse1('((c))').reduced(), matchers.conc.parse1(''))
       assert.deepEqual(matchers.conc.parse1('((c))').reduced(), matchers.conc.parse1('c'))
       assert.deepEqual(matchers.conc.parse1('(|c)').reduced(), matchers.conc.parse1('(|c)'))
       assert.deepEqual(matchers.conc.parse1('((|c))').reduced(), matchers.conc.parse1('(|c)'))
