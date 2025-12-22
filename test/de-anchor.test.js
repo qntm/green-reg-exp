@@ -1,6 +1,5 @@
-/* eslint-env mocha */
-
 import assert from 'node:assert/strict'
+import { describe, it } from 'node:test'
 
 import { upliftAnchors, deAnchorConc, deAnchorPattern } from '../src/de-anchor.js'
 import matchers from '../src/matchers.js'
