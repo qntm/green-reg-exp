@@ -25,7 +25,7 @@ describe('matchesEmptyString', () => {
           new constructors.Multiplier(1, 3)
         )
       )
-    ]).matchesEmptyString(), true)
+    ]).matchesEmptyString(), false)
   })
 
   it('works', () => {
