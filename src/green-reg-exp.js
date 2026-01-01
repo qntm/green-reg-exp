@@ -80,7 +80,7 @@ export const intersection = (...strings) => {
   const states = [f.initial]
   for (let i = 0; i < states.length; i++) {
     const current = states[i]
-    Object.keys(f.map[current] || {}).forEach(symbol => {
+    Object.keys(f.map[current]).forEach(symbol => {
       const next = f.map[current][symbol]
       if (states.indexOf(next) === -1) {
         states.push(next)
